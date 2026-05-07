@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Content Area Background -->
+  <rect x="0" y="0" width="1200" height="720" fill="#1a1a1a"/>
+
+  <!-- Vehicle Analytics & History Dashboard Content -->
+
+  <!-- Top Section: Performance Tracking -->
+  <g id="performance_tracking">
+    <rect x="20" y="20" width="1160" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Engine Performance Tracking</text>
+
+    <!-- Engine Operating Hours -->
+    <text x="30" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Engine Operating Hours by RPM Range:</text>
+
+    <!-- RPM Range Chart -->
+    <rect x="30" y="75" width="400" height="70" fill="#1a1a1a" stroke="#374151" stroke-width="1"/>
+    <text x="35" y="90" fill="#9ca3af" font-family="monospace" font-size="9">Operating Time Distribution</text>
+
+    <!-- Bar chart for RPM ranges -->
+    <text x="35" y="105" fill="#9ca3af" font-family="monospace" font-size="8">Idle (600-900)</text>
+    <rect x="120" y="100" width="80" height="8" fill="#68d391"/>
+    <text x="210" y="107" fill="#68d391" font-family="monospace" font-size="8">245h (45%)</text>
+
+    <text x="35" y="118" fill="#9ca3af" font-family="monospace" font-size="8">Cruising (900-2500)</text>
+    <rect x="120" y="113" width="120" height="8" fill="#4299e1"/>
+    <text x="250" y="120" fill="#4299e1" font-family="monospace" font-size="8">180h (33%)</text>
+
+    <text x="35" y="131" fill="#9ca3af" font-family="monospace" font-size="8">Performance (2500+)</text>
+    <rect x="120" y="126" width="40" height="8" fill="#fbbf24"/>
+    <text x="170" y="133" fill="#fbbf24" font-family="monospace" font-size="8">65h (12%)</text>
+
+    <text x="35" y="144" fill="#9ca3af" font-family="monospace" font-size="8">Redline (5500+)</text>
+    <rect x="120" y="139" width="15" height="8" fill="#f56565"/>
+    <text x="145" y="146" fill="#f56565" font-family="monospace" font-size="8">8h (1%)</text>
+
+    <!-- Fuel Consumption Patterns -->
+    <text x="450" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Fuel Economy Analysis:</text>
+
+    <text x="450" y="85" fill="#d1d5db" font-family="monospace" font-size="10">Average MPG:</text>
+    <text x="540" y="85" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">28.4 MPG</text>
+    <text x="590" y="85" fill="#d1d5db" font-family="monospace" font-size="9">(EPA: 26/36)</text>
+
+    <text x="450" y="100" fill="#d1d5db" font-family="monospace" font-size="10">City Driving:</text>
+    <text x="530" y="100" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">24.8 MPG</text>
+    <text x="580" y="100" fill="#d1d5db" font-family="monospace" font-size="9">(65% of driving)</text>
+
+    <text x="450" y="115" fill="#d1d5db" font-family="monospace" font-size="10">Highway:</text>
+    <text x="510" y="115" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">34.2 MPG</text>
+    <text x="560" y="115" fill="#d1d5db" font-family="monospace" font-size="9">(35% of driving)</text>
+
+    <text x="450" y="130" fill="#d1d5db" font-family="monospace" font-size="10">Best Tank:</text>
+    <text x="520" y="130" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">38.1 MPG</text>
+    <text x="570" y="130" fill="#d1d5db" font-family="monospace" font-size="9">(Highway trip)</text>
+
+    <text x="450" y="145" fill="#d1d5db" font-family="monospace" font-size="10">Total Fuel:</text>
+    <text x="520" y="145" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">1,247 gal</text>
+    <text x="570" y="145" fill="#d1d5db" font-family="monospace" font-size="9">(Lifetime)</text>
+
+    <!-- Driving Style Analysis -->
+    <text x="700" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Driving Style Analysis:</text>
+
+    <text x="700" y="85" fill="#d1d5db" font-family="monospace" font-size="10">Acceleration Profile:</text>
+    <text x="820" y="85" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Moderate</text>
+
+    <text x="700" y="100" fill="#d1d5db" font-family="monospace" font-size="10">Braking Events:</text>
+    <text x="790" y="100" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">1,248</text>
+    <text x="830" y="100" fill="#d1d5db" font-family="monospace" font-size="9">(3.2/trip avg)</text>
+
+    <text x="700" y="115" fill="#d1d5db" font-family="monospace" font-size="10">Hard Braking:</text>
+    <text x="790" y="115" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">23</text>
+    <text x="820" y="115" fill="#fbbf24" font-family="monospace" font-size="9">(>0.4g)</text>
+
+    <text x="700" y="130" fill="#d1d5db" font-family="monospace" font-size="10">Cornering G:</text>
+    <text x="780" y="130" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">±0.25g max</text>
+
+    <text x="700" y="145" fill="#d1d5db" font-family="monospace" font-size="10">Driving Score:</text>
+    <rect x="780" y="140" width="60" height="10" fill="#374151"/>
+    <rect x="780" y="140" width="48" height="10" fill="#68d391"/>
+    <text x="850" y="148" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">80/100</text>
+
+    <!-- Vehicle Utilization -->
+    <text x="950" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Vehicle Utilization:</text>
+
+    <text x="950" y="85" fill="#d1d5db" font-family="monospace" font-size="10">Total Miles:</text>
+    <text x="1020" y="85" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">35,472</text>
+
+    <text x="950" y="100" fill="#d1d5db" font-family="monospace" font-size="10">Avg per Month:</text>
+    <text x="1040" y="100" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">892</text>
+
+    <text x="950" y="115" fill="#d1d5db" font-family="monospace" font-size="10">Cold Starts:</text>
+    <text x="1020" y="115" fill="#d1d5db" font-family="monospace" font-size="10" font-weight="bold">2,156</text>
+
+    <text x="950" y="130" fill="#d1d5db" font-family="monospace" font-size="10">Avg Trip:</text>
+    <text x="1010" y="130" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">8.7 mi</text>
+
+    <text x="950" y="145" fill="#d1d5db" font-family="monospace" font-size="10">Max Speed:</text>
+    <text x="1010" y="145" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">87 mph</text>
+  </g>
+
+  <!-- Middle Left: Trip Data Visualization -->
+  <g id="trip_data_visualization">
+    <rect x="20" y="180" width="580" height="200" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Trip Data &amp; Route Analysis</text>
+
+    <!-- Recent Trips -->
+    <text x="30" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Recent Trips (Last 7 days):</text>
+
+    <!-- Trip List -->
+    <text x="30" y="245" fill="#d1d5db" font-family="monospace" font-size="9">Date       Start Time  Distance   Duration   Avg MPG   Max Speed</text>
+    <line x1="30" y1="250" x2="580" y2="250" stroke="#4a5568" stroke-width="1"/>
+
+    <text x="30" y="265" fill="#68d391" font-family="monospace" font-size="9">2025-05-07  08:15 AM    14.2 mi    28 min     26.8      45 mph</text>
+    <text x="30" y="278" fill="#68d391" font-family="monospace" font-size="9">2025-05-06  17:45 PM    32.7 mi    52 min     31.2      72 mph</text>
+    <text x="30" y="291" fill="#68d391" font-family="monospace" font-size="9">2025-05-06  07:30 AM    14.2 mi    31 min     25.4      48 mph</text>
+    <text x="30" y="304" fill="#68d391" font-family="monospace" font-size="9">2025-05-05  15:20 PM     8.5 mi    18 min     22.1      35 mph</text>
+    <text x="30" y="317" fill="#68d391" font-family="monospace" font-size="9">2025-05-04  19:15 PM    45.8 mi    58 min     35.2      78 mph</text>
+    <text x="30" y="330" fill="#68d391" font-family="monospace" font-size="9">2025-05-04  09:10 AM     6.2 mi    15 min     19.8      25 mph</text>
+
+    <!-- Trip Statistics -->
+    <text x="350" y="245" fill="#d1d5db" font-family="monospace" font-size="11">Weekly Statistics:</text>
+    <text x="350" y="260" fill="#4299e1" font-family="monospace" font-size="10">Total Distance: 182.4 mi</text>
+    <text x="350" y="275" fill="#4299e1" font-family="monospace" font-size="10">Total Time: 4h 28m</text>
+    <text x="350" y="290" fill="#68d391" font-family="monospace" font-size="10">Average MPG: 28.1</text>
+    <text x="350" y="305" fill="#d1d5db" font-family="monospace" font-size="10">Number of Trips: 23</text>
+    <text x="350" y="320" fill="#d1d5db" font-family="monospace" font-size="10">Idle Time: 12.5%</text>
+
+    <!-- Destination Analysis -->
+    <text x="30" y="355" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Common Destinations:</text>
+    <text x="30" y="370" fill="#68d391" font-family="monospace" font-size="10">1. Work/Office: 38% of trips (14.2 mi avg)</text>
+    <text x="320" y="370" fill="#4299e1" font-family="monospace" font-size="10">2. Shopping: 22% of trips (8.5 mi avg)</text>
+  </g>
+
+  <!-- Middle Right: Maintenance & Component Lifecycle -->
+  <g id="maintenance_component_lifecycle">
+    <rect x="620" y="180" width="560" height="200" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Maintenance &amp; Component Lifecycle Tracking</text>
+
+    <!-- Component Wear Tracking -->
+    <text x="630" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Component Wear Analysis:</text>
+
+    <!-- Brake Pads -->
+    <text x="630" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Brake Pads (Front):</text>
+    <rect x="750" y="240" width="100" height="10" fill="#374151"/>
+    <rect x="750" y="240" width="65" height="10" fill="#68d391"/>
+    <text x="860" y="248" fill="#68d391" font-family="monospace" font-size="10">65% remaining</text>
+
+    <text x="630" y="260" fill="#d1d5db" font-family="monospace" font-size="10">Brake Pads (Rear):</text>
+    <rect x="750" y="255" width="100" height="10" fill="#374151"/>
+    <rect x="750" y="255" width="75" height="10" fill="#68d391"/>
+    <text x="860" y="263" fill="#68d391" font-family="monospace" font-size="10">75% remaining</text>
+
+    <!-- Tires -->
+    <text x="630" y="280" fill="#d1d5db" font-family="monospace" font-size="10">Tire Wear (Est.):</text>
+    <rect x="730" y="275" width="100" height="10" fill="#374151"/>
+    <rect x="730" y="275" width="40" height="10" fill="#fbbf24"/>
+    <text x="840" y="283" fill="#fbbf24" font-family="monospace" font-size="10">40% remaining</text>
+
+    <!-- Engine Components -->
+    <text x="630" y="300" fill="#d1d5db" font-family="monospace" font-size="10">Spark Plugs:</text>
+    <rect x="700" y="295" width="100" height="10" fill="#374151"/>
+    <rect x="700" y="295" width="85" height="10" fill="#68d391"/>
+    <text x="810" y="303" fill="#68d391" font-family="monospace" font-size="10">85% life remaining</text>
+
+    <!-- Maintenance Schedule -->
+    <text x="950" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Next Services:</text>
+
+    <text x="950" y="245" fill="#fbbf24" font-family="monospace" font-size="10">Oil Change: 2,100 mi</text>
+    <text x="950" y="260" fill="#68d391" font-family="monospace" font-size="10">Tire Rotation: 5,800 mi</text>
+    <text x="950" y="275" fill="#68d391" font-family="monospace" font-size="10">Air Filter: 8,200 mi</text>
+    <text x="950" y="290" fill="#f56565" font-family="monospace" font-size="10">Transmission Service: Overdue</text>
+
+    <!-- Service History -->
+    <text x="630" y="325" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Recent Service History:</text>
+
+    <text x="630" y="345" fill="#68d391" font-family="monospace" font-size="10">2025-03-15: Oil Change @ 33,250 mi</text>
+    <text x="630" y="360" fill="#68d391" font-family="monospace" font-size="10">2025-01-08: Tire Rotation @ 30,180 mi</text>
+    <text x="630" y="375" fill="#68d391" font-family="monospace" font-size="10">2024-11-22: Brake Inspection @ 28,450 mi</text>
+  </g>
+
+  <!-- Bottom Left: Environmental Impact -->
+  <g id="environmental_impact">
+    <rect x="20" y="400" width="580" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="420" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Environmental Impact &amp; Efficiency Trends</text>
+
+    <!-- Emissions Tracking -->
+    <text x="30" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Estimated Emissions (CO₂):</text>
+
+    <text x="30" y="465" fill="#d1d5db" font-family="monospace" font-size="10">This Month:</text>
+    <text x="110" y="465" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">485 lbs</text>
+    <text x="160" y="465" fill="#d1d5db" font-family="monospace" font-size="9">(892 miles @ 28.4 MPG)</text>
+
+    <text x="30" y="480" fill="#d1d5db" font-family="monospace" font-size="10">This Year:</text>
+    <text x="100" y="480" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">6,247 lbs</text>
+    <text x="160" y="480" fill="#68d391" font-family="monospace" font-size="9">(15% below avg sedan)</text>
+
+    <text x="30" y="495" fill="#d1d5db" font-family="monospace" font-size="10">Lifetime:</text>
+    <text x="90" y="495" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">31,458 lbs</text>
+
+    <!-- Efficiency Trends -->
+    <text x="300" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Efficiency Trends:</text>
+
+    <text x="300" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Improving Factors:</text>
+    <text x="300" y="480" fill="#68d391" font-family="monospace" font-size="10">• Better route planning</text>
+    <text x="300" y="495" fill="#68d391" font-family="monospace" font-size="10">• Reduced city driving</text>
+    <text x="300" y="510" fill="#68d391" font-family="monospace" font-size="10">• Maintenance up to date</text>
+
+    <text x="450" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Opportunities:</text>
+    <text x="450" y="480" fill="#fbbf24" font-family="monospace" font-size="10">• Reduce idling time</text>
+    <text x="450" y="495" fill="#fbbf24" font-family="monospace" font-size="10">• Gentler acceleration</text>
+    <text x="450" y="510" fill="#fbbf24" font-family="monospace" font-size="10">• Combine short trips</text>
+
+    <!-- Cost Analysis -->
+    <text x="30" y="530" fill="#d1d5db" font-family="monospace" font-size="11">Fuel Cost Analysis:</text>
+    <text x="150" y="530" fill="#4299e1" font-family="monospace" font-size="10">Monthly: $145 • Yearly: $1,847 • Cost/Mile: $0.124</text>
+  </g>
+
+  <!-- Bottom Right: Performance Envelope -->
+  <g id="performance_envelope">
+    <rect x="620" y="400" width="560" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="420" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Performance Envelope Usage</text>
+
+    <!-- Performance Metrics -->
+    <text x="630" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Peak Performance Events:</text>
+
+    <text x="630" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Max Acceleration:</text>
+    <text x="740" y="465" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">0.65g</text>
+    <text x="780" y="465" fill="#d1d5db" font-family="monospace" font-size="9">(Sport mode)</text>
+
+    <text x="630" y="480" fill="#d1d5db" font-family="monospace" font-size="10">Max Braking:</text>
+    <text x="710" y="480" fill="#f56565" font-family="monospace" font-size="10" font-weight="bold">-0.85g</text>
+    <text x="750" y="480" fill="#f56565" font-family="monospace" font-size="9">(Emergency stop)</text>
+
+    <text x="630" y="495" fill="#d1d5db" font-family="monospace" font-size="10">Max Cornering:</text>
+    <text x="720" y="495" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">±0.72g</text>
+
+    <text x="630" y="510" fill="#d1d5db" font-family="monospace" font-size="10">Track Mode Uses:</text>
+    <text x="730" y="510" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">0</text>
+    <text x="750" y="510" fill="#9ca3af" font-family="monospace" font-size="9">(Never activated)</text>
+
+    <!-- Operating Conditions -->
+    <text x="850" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Operating Conditions:</text>
+
+    <text x="850" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Temperature Range:</text>
+    <text x="970" y="465" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">-8°C to 38°C</text>
+
+    <text x="850" y="480" fill="#d1d5db" font-family="monospace" font-size="10">Altitude Range:</text>
+    <text x="940" y="480" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">50m - 1,250m</text>
+
+    <text x="850" y="495" fill="#d1d5db" font-family="monospace" font-size="10">Load Factor:</text>
+    <text x="920" y="495" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">65% avg</text>
+    <text x="970" y="495" fill="#d1d5db" font-family="monospace" font-size="9">(2.6 people)</text>
+
+    <text x="850" y="510" fill="#d1d5db" font-family="monospace" font-size="10">Stress Events:</text>
+    <text x="930" y="510" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Very Low</text>
+
+    <!-- Vehicle Health Score -->
+    <text x="630" y="530" fill="#d1d5db" font-family="monospace" font-size="11">Overall Vehicle Health Score:</text>
+    <rect x="800" y="525" width="150" height="12" fill="#374151"/>
+    <rect x="800" y="525" width="127" height="12" fill="#68d391"/>
+    <text x="960" y="535" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">85/100</text>
+    <text x="1010" y="535" fill="#68d391" font-family="monospace" font-size="10">(Very Good)</text>
+  </g>
+
+  <!-- Bottom Status Bar -->
+  <g id="status_bar">
+    <rect x="20" y="560" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="580" fill="#68d391" font-family="monospace" font-size="11">Analytics: Current • Total Miles: 35,472 • Health Score: 85/100 • Fuel Economy: 28.4 MPG • Data Since: 2021</text>
+
+    <text x="750" y="580" fill="#9ca3af" font-family="monospace" font-size="10">[TAB] Next Panel • [R] Reset Trip • [E] Export Data • [F1] Help</text>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="620" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="640" fill="#ffffff" font-family="monospace" font-size="11" font-weight="bold">Analytics Legend:</text>
+
+    <circle cx="140" cy="635" r="4" fill="#68d391"/>
+    <text x="150" y="640" fill="#68d391" font-family="monospace" font-size="10">Good/Normal</text>
+
+    <circle cx="240" cy="635" r="4" fill="#4299e1"/>
+    <text x="250" y="640" fill="#4299e1" font-family="monospace" font-size="10">Data/Information</text>
+
+    <circle cx="350" cy="635" r="4" fill="#fbbf24"/>
+    <text x="360" y="640" fill="#fbbf24" font-family="monospace" font-size="10">Attention Needed</text>
+
+    <circle cx="470" cy="635" r="4" fill="#f56565"/>
+    <text x="480" y="640" fill="#f56565" font-family="monospace" font-size="10">Concern/Overdue</text>
+
+    <circle cx="580" cy="635" r="4" fill="#9ca3af"/>
+    <text x="590" y="640" fill="#9ca3af" font-family="monospace" font-size="10">Inactive/N/A</text>
+
+    <text x="700" y="640" fill="#9ca3af" font-family="monospace" font-size="9">All data is estimated based on vehicle sensors and driving patterns</text>
+  </g>
+</svg>

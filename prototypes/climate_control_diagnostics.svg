@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Content Area Background -->
+  <rect x="0" y="0" width="1200" height="720" fill="#1a1a1a"/>
+
+  <!-- Climate Control Diagnostics Dashboard Content -->
+
+  <!-- Top Section: Temperature Monitoring -->
+  <g id="temperature_monitoring">
+    <rect x="20" y="20" width="1160" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Multi-Zone Temperature Control (HVAC Module)</text>
+
+    <!-- Driver Zone -->
+    <rect x="30" y="50" width="200" height="100" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="130" y="70" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">Driver Zone</text>
+    <text x="130" y="90" fill="#4299e1" font-family="monospace" font-size="20" text-anchor="middle" font-weight="bold">22°C</text>
+    <text x="130" y="110" fill="#d1d5db" font-family="monospace" font-size="10" text-anchor="middle">Target: 22°C</text>
+    <text x="130" y="125" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Status: Maintain</text>
+    <text x="130" y="140" fill="#9ca3af" font-family="monospace" font-size="9" text-anchor="middle">Auto Mode</text>
+
+    <!-- Passenger Zone -->
+    <rect x="250" y="50" width="200" height="100" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="350" y="70" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">Passenger Zone</text>
+    <text x="350" y="90" fill="#4299e1" font-family="monospace" font-size="20" text-anchor="middle" font-weight="bold">21°C</text>
+    <text x="350" y="110" fill="#d1d5db" font-family="monospace" font-size="10" text-anchor="middle">Target: 21°C</text>
+    <text x="350" y="125" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Status: Maintain</text>
+    <text x="350" y="140" fill="#9ca3af" font-family="monospace" font-size="9" text-anchor="middle">Auto Mode</text>
+
+    <!-- Rear Zone (if equipped) -->
+    <rect x="470" y="50" width="200" height="100" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="570" y="70" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">Rear Zone</text>
+    <text x="570" y="90" fill="#9ca3af" font-family="monospace" font-size="16" text-anchor="middle">N/A</text>
+    <text x="570" y="110" fill="#9ca3af" font-family="monospace" font-size="10" text-anchor="middle">Not Equipped</text>
+    <text x="570" y="125" fill="#9ca3af" font-family="monospace" font-size="10" text-anchor="middle">Single Zone</text>
+
+    <!-- Ambient Conditions -->
+    <rect x="690" y="50" width="200" height="100" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="790" y="70" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">Ambient</text>
+    <text x="790" y="90" fill="#fbbf24" font-family="monospace" font-size="20" text-anchor="middle" font-weight="bold">15°C</text>
+    <text x="790" y="110" fill="#d1d5db" font-family="monospace" font-size="10" text-anchor="middle">Humidity: 65%</text>
+    <text x="790" y="125" fill="#d1d5db" font-family="monospace" font-size="10" text-anchor="middle">Air Quality: Good</text>
+    <text x="790" y="140" fill="#68d391" font-family="monospace" font-size="9" text-anchor="middle">Recirculation: OFF</text>
+
+    <!-- System Status -->
+    <rect x="910" y="50" width="250" height="100" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="1035" y="70" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle" font-weight="bold">System Status</text>
+
+    <circle cx="930" cy="85" r="4" fill="#68d391"/>
+    <text x="940" y="90" fill="#68d391" font-family="monospace" font-size="10">A/C System: Ready</text>
+
+    <circle cx="930" cy="100" r="4" fill="#68d391"/>
+    <text x="940" y="105" fill="#68d391" font-family="monospace" font-size="10">Heater Core: Normal</text>
+
+    <circle cx="930" cy="115" r="4" fill="#fbbf24"/>
+    <text x="940" y="120" fill="#fbbf24" font-family="monospace" font-size="10">A/C Compressor: Cycling</text>
+
+    <circle cx="930" cy="130" r="4" fill="#68d391"/>
+    <text x="940" y="135" fill="#68d391" font-family="monospace" font-size="10">Cabin Filter: Good</text>
+  </g>
+
+  <!-- Middle Left: AC System Diagnostics -->
+  <g id="ac_system_diagnostics">
+    <rect x="20" y="180" width="580" height="220" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">A/C Refrigeration System</text>
+
+    <!-- Compressor Status -->
+    <text x="30" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Compressor Performance:</text>
+
+    <text x="30" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Status:</text>
+    <text x="80" y="245" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">Cycling</text>
+    <text x="140" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Duty Cycle: 65%</text>
+
+    <text x="30" y="260" fill="#d1d5db" font-family="monospace" font-size="10">Load:</text>
+    <text x="70" y="260" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">8.5A</text>
+    <text x="110" y="260" fill="#d1d5db" font-family="monospace" font-size="10">(12A max)</text>
+
+    <text x="30" y="275" fill="#d1d5db" font-family="monospace" font-size="10">Speed:</text>
+    <text x="80" y="275" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">1,850 RPM</text>
+
+    <!-- Pressure Readings -->
+    <text x="240" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Refrigerant Pressure:</text>
+
+    <text x="240" y="245" fill="#d1d5db" font-family="monospace" font-size="10">High Side:</text>
+    <text x="320" y="245" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">1.8 MPa</text>
+    <text x="380" y="245" fill="#68d391" font-family="monospace" font-size="10">(Normal)</text>
+
+    <text x="240" y="260" fill="#d1d5db" font-family="monospace" font-size="10">Low Side:</text>
+    <text x="310" y="260" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">0.3 MPa</text>
+    <text x="370" y="260" fill="#68d391" font-family="monospace" font-size="10">(Normal)</text>
+
+    <text x="240" y="275" fill="#d1d5db" font-family="monospace" font-size="10">Differential:</text>
+    <text x="330" y="275" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">1.5 MPa</text>
+
+    <!-- Temperature Sensors -->
+    <text x="30" y="305" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Temperature Sensors:</text>
+
+    <text x="30" y="325" fill="#d1d5db" font-family="monospace" font-size="10">Evaporator In:</text>
+    <text x="130" y="325" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">18°C</text>
+
+    <text x="30" y="340" fill="#d1d5db" font-family="monospace" font-size="10">Evaporator Out:</text>
+    <text x="140" y="340" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">8°C</text>
+    <text x="180" y="340" fill="#68d391" font-family="monospace" font-size="10">(10°C ΔT)</text>
+
+    <text x="290" y="325" fill="#d1d5db" font-family="monospace" font-size="10">Condenser:</text>
+    <text x="360" y="325" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">45°C</text>
+
+    <text x="290" y="340" fill="#d1d5db" font-family="monospace" font-size="10">Expansion Valve:</text>
+    <text x="400" y="340" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">5°C</text>
+
+    <!-- System Efficiency -->
+    <text x="30" y="370" fill="#d1d5db" font-family="monospace" font-size="11">System Efficiency:</text>
+    <rect x="150" y="365" width="200" height="12" fill="#374151"/>
+    <rect x="150" y="365" width="160" height="12" fill="#68d391"/>
+    <text x="360" y="375" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">80%</text>
+    <text x="400" y="375" fill="#68d391" font-family="monospace" font-size="10">(Good)</text>
+
+    <!-- Refrigerant Level -->
+    <text x="30" y="390" fill="#d1d5db" font-family="monospace" font-size="11">Refrigerant Level:</text>
+    <text x="160" y="390" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">Normal</text>
+    <text x="220" y="390" fill="#d1d5db" font-family="monospace" font-size="10">No leaks detected</text>
+  </g>
+
+  <!-- Middle Right: Blend Door & Airflow -->
+  <g id="blend_door_airflow">
+    <rect x="620" y="180" width="560" height="220" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Blend Door Control &amp; Airflow Management</text>
+
+    <!-- Blend Door Positions -->
+    <text x="630" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Blend Door Positions:</text>
+
+    <!-- Driver Side -->
+    <text x="630" y="245" fill="#d1d5db" font-family="monospace" font-size="11">Driver Side:</text>
+
+    <text x="630" y="260" fill="#d1d5db" font-family="monospace" font-size="10">Temperature:</text>
+    <rect x="720" y="255" width="80" height="10" fill="#374151"/>
+    <rect x="720" y="255" width="48" height="10" fill="#4299e1"/>
+    <text x="810" y="263" fill="#4299e1" font-family="monospace" font-size="10">60%</text>
+    <text x="840" y="263" fill="#d1d5db" font-family="monospace" font-size="9">(22°C)</text>
+
+    <text x="630" y="280" fill="#d1d5db" font-family="monospace" font-size="10">Mode:</text>
+    <rect x="720" y="275" width="80" height="10" fill="#374151"/>
+    <rect x="720" y="275" width="40" height="10" fill="#68d391"/>
+    <text x="810" y="283" fill="#68d391" font-family="monospace" font-size="10">50%</text>
+    <text x="840" y="283" fill="#d1d5db" font-family="monospace" font-size="9">(Panel/Floor)</text>
+
+    <!-- Passenger Side -->
+    <text x="630" y="305" fill="#d1d5db" font-family="monospace" font-size="11">Passenger Side:</text>
+
+    <text x="630" y="320" fill="#d1d5db" font-family="monospace" font-size="10">Temperature:</text>
+    <rect x="720" y="315" width="80" height="10" fill="#374151"/>
+    <rect x="720" y="315" width="44" height="10" fill="#4299e1"/>
+    <text x="810" y="323" fill="#4299e1" font-family="monospace" font-size="10">55%</text>
+    <text x="840" y="323" fill="#d1d5db" font-family="monospace" font-size="9">(21°C)</text>
+
+    <text x="630" y="340" fill="#d1d5db" font-family="monospace" font-size="10">Mode:</text>
+    <rect x="720" y="335" width="80" height="10" fill="#374151"/>
+    <rect x="720" y="335" width="40" height="10" fill="#68d391"/>
+    <text x="810" y="343" fill="#68d391" font-family="monospace" font-size="10">50%</text>
+    <text x="840" y="343" fill="#d1d5db" font-family="monospace" font-size="9">(Panel/Floor)</text>
+
+    <!-- Airflow Distribution -->
+    <text x="930" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Airflow:</text>
+
+    <text x="930" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Panel Vents:</text>
+    <text x="1020" y="245" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">60%</text>
+
+    <text x="930" y="260" fill="#d1d5db" font-family="monospace" font-size="10">Floor Vents:</text>
+    <text x="1010" y="260" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">40%</text>
+
+    <text x="930" y="275" fill="#d1d5db" font-family="monospace" font-size="10">Defrost:</text>
+    <text x="990" y="275" fill="#9ca3af" font-family="monospace" font-size="10" font-weight="bold">0%</text>
+
+    <!-- Air Intake Control -->
+    <text x="630" y="370" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Air Intake Control:</text>
+
+    <text x="630" y="385" fill="#d1d5db" font-family="monospace" font-size="10">Fresh Air Door:</text>
+    <text x="740" y="385" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">85% Open</text>
+    <text x="820" y="385" fill="#68d391" font-family="monospace" font-size="10">(Fresh Air)</text>
+
+    <text x="930" y="370" fill="#d1d5db" font-family="monospace" font-size="11">Filter Status:</text>
+    <text x="930" y="385" fill="#68d391" font-family="monospace" font-size="10">Cabin Filter: Good</text>
+    <text x="930" y="395" fill="#d1d5db" font-family="monospace" font-size="9">Last Changed: 8,000 km ago</text>
+  </g>
+
+  <!-- Bottom Left: Automatic Climate Learning -->
+  <g id="automatic_climate_learning">
+    <rect x="20" y="420" width="580" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="440" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Automatic Climate Learning &amp; Preferences</text>
+
+    <!-- Learning Status -->
+    <text x="30" y="465" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Learning Status:</text>
+
+    <circle cx="170" cy="460" r="4" fill="#fbbf24"/>
+    <text x="180" y="465" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">Active Learning</text>
+    <text x="280" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Adaptation Level: 65%</text>
+
+    <!-- User Preferences -->
+    <text x="30" y="485" fill="#d1d5db" font-family="monospace" font-size="11">Learned Preferences:</text>
+    <text x="30" y="500" fill="#68d391" font-family="monospace" font-size="10">Morning Warmup: 22°C → 24°C (5 min)</text>
+    <text x="30" y="515" fill="#68d391" font-family="monospace" font-size="10">Evening Cooldown: 22°C → 20°C (Auto)</text>
+
+    <!-- Seasonal Adjustments -->
+    <text x="320" y="485" fill="#d1d5db" font-family="monospace" font-size="11">Seasonal Adaptation:</text>
+    <text x="320" y="500" fill="#4299e1" font-family="monospace" font-size="10">Winter Mode: Active</text>
+    <text x="320" y="515" fill="#4299e1" font-family="monospace" font-size="10">Preconditioning: Enabled</text>
+
+    <!-- Comfort Score -->
+    <text x="30" y="540" fill="#d1d5db" font-family="monospace" font-size="11">Comfort Score:</text>
+    <rect x="130" y="535" width="150" height="12" fill="#374151"/>
+    <rect x="130" y="535" width="120" height="12" fill="#68d391"/>
+    <text x="290" y="545" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">80%</text>
+    <text x="320" y="545" fill="#68d391" font-family="monospace" font-size="10">(Very Good)</text>
+  </g>
+
+  <!-- Bottom Right: Environmental & Air Quality -->
+  <g id="environmental_air_quality">
+    <rect x="620" y="420" width="560" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="440" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Environmental Monitoring &amp; Air Quality</text>
+
+    <!-- Air Quality Sensors -->
+    <text x="630" y="465" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Air Quality Sensors:</text>
+
+    <text x="630" y="485" fill="#d1d5db" font-family="monospace" font-size="10">Particulate Matter:</text>
+    <text x="750" y="485" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">15 μg/m³</text>
+    <text x="810" y="485" fill="#68d391" font-family="monospace" font-size="10">(Good)</text>
+
+    <text x="630" y="500" fill="#d1d5db" font-family="monospace" font-size="10">VOC Levels:</text>
+    <text x="710" y="500" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Low</text>
+
+    <text x="630" y="515" fill="#d1d5db" font-family="monospace" font-size="10">Humidity:</text>
+    <text x="690" y="515" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">65%</text>
+    <text x="730" y="515" fill="#68d391" font-family="monospace" font-size="10">(Optimal)</text>
+
+    <!-- Auto Recirculation -->
+    <text x="870" y="465" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Auto Functions:</text>
+
+    <circle cx="890" cy="485" r="4" fill="#68d391"/>
+    <text x="900" y="490" fill="#68d391" font-family="monospace" font-size="10">Auto Recirculation: Ready</text>
+
+    <circle cx="890" cy="500" r="4" fill="#9ca3af"/>
+    <text x="900" y="505" fill="#9ca3af" font-family="monospace" font-size="10">Tunnel Detection: Inactive</text>
+
+    <circle cx="890" cy="515" r="4" fill="#68d391"/>
+    <text x="900" y="520" fill="#68d391" font-family="monospace" font-size="10">Pollution Alert: Armed</text>
+
+    <!-- Energy Efficiency -->
+    <text x="630" y="540" fill="#d1d5db" font-family="monospace" font-size="11">Energy Efficiency:</text>
+    <text x="630" y="555" fill="#4299e1" font-family="monospace" font-size="10">Power Consumption: 245W • Efficiency: 92% • ECO Mode: Active</text>
+  </g>
+
+  <!-- Bottom Status Bar -->
+  <g id="status_bar">
+    <rect x="20" y="580" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="600" fill="#68d391" font-family="monospace" font-size="11">Climate System: Normal • A/C: Cycling • Target Reached: Both Zones • Power: 245W • Filter: Good</text>
+
+    <text x="750" y="600" fill="#9ca3af" font-family="monospace" font-size="10">[TAB] Next Panel • [A] Auto Mode • [T] Temperature • [F1] Help</text>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="640" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="660" fill="#ffffff" font-family="monospace" font-size="11" font-weight="bold">Status Legend:</text>
+
+    <circle cx="140" cy="655" r="4" fill="#68d391"/>
+    <text x="150" y="660" fill="#68d391" font-family="monospace" font-size="10">Normal/Ready</text>
+
+    <circle cx="240" cy="655" r="4" fill="#4299e1"/>
+    <text x="250" y="660" fill="#4299e1" font-family="monospace" font-size="10">Active/Data</text>
+
+    <circle cx="340" cy="655" r="4" fill="#fbbf24"/>
+    <text x="350" y="660" fill="#fbbf24" font-family="monospace" font-size="10">Cycling/Learning</text>
+
+    <circle cx="460" cy="655" r="4" fill="#f56565"/>
+    <text x="470" y="660" fill="#f56565" font-family="monospace" font-size="10">Error/Fault</text>
+
+    <circle cx="560" cy="655" r="4" fill="#9ca3af"/>
+    <text x="570" y="660" fill="#9ca3af" font-family="monospace" font-size="10">Off/Inactive</text>
+
+    <text x="700" y="660" fill="#9ca3af" font-family="monospace" font-size="9">Blend door positions: 0% = Cold/Vent, 100% = Hot/Floor</text>
+  </g>
+</svg>

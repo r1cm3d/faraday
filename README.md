@@ -125,12 +125,28 @@ Live data TUI, YAML profiles, structured logging, documentation
 - **Structured logging:** 🔶 Partial (tracing exists, audit logging missing)
 - **Documentation:** ✅ Complete and comprehensive
 
+### Phase 6: Comprehensive Hidden Diagnostic TUI 🔶
+Transform TUI from basic OBD-II viewer to professional Ford diagnostic interface
+- **Current TUI:** Only displays 4 basic PIDs (RPM, Speed, Coolant Temp, Engine Load) representing <5% of available data
+- **Target TUI:** Multi-tab interface covering 95%+ of hidden diagnostic information across all vehicle systems
+- **Professional features:** Real-time monitoring of Engine/Powertrain, Transmission, Body Systems, Safety, ADAS, Climate, Infotainment, and Vehicle Analytics
+- **Advanced capabilities:** Performance tracking, predictive maintenance data, system health monitoring, and comprehensive vehicle history
+
+#### Key Features Planned:
+- **10 specialized diagnostic panels** for different vehicle systems
+- **Multi-tab interface** with responsive layout and color-coded status indicators
+- **Real-time analytics** including fuel consumption patterns, brake application frequency, and driving style analysis
+- **System health monitoring** with CAN bus communication errors, module temperatures, and calibration drift tracking
+- **Vehicle history tracking** with engine operating hours, trip data visualization, and cold start frequency
+- **Professional diagnostic capabilities** matching FORScan functionality
+
 ### Next Priority: Complete Phase 3 & 4 CLI Commands
 The core functionality exists but needs CLI interface implementation:
 1. Add `asbuilt dump/show` commands
 2. Add `asbuilt write/restore` commands with safety systems
 3. Implement snapshot and audit logging systems
 4. Add YAML profile support
+5. **Phase 6:** Implement comprehensive diagnostic TUI expansion
 
 ## 🚨 Important Disclaimers
 

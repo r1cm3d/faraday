@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Content Area Background -->
+  <rect x="0" y="0" width="1200" height="720" fill="#1a1a1a"/>
+
+  <!-- System Health Monitoring Dashboard Content -->
+
+  <!-- Top Section: Module Status Overview -->
+  <g id="module_status">
+    <rect x="20" y="20" width="1160" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Vehicle Module Status Overview</text>
+
+    <!-- Module Grid Layout -->
+    <!-- Row 1 -->
+    <rect x="30" y="50" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="85" y="65" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">PCM</text>
+    <text x="85" y="75" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Powertrain</text>
+    <text x="85" y="82" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 45°C</text>
+
+    <rect x="150" y="50" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="205" y="65" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">BCM</text>
+    <text x="205" y="75" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Body Control</text>
+    <text x="205" y="82" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 42°C</text>
+
+    <rect x="270" y="50" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="325" y="65" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">IPC</text>
+    <text x="325" y="75" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Instrument</text>
+    <text x="325" y="82" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 41°C</text>
+
+    <rect x="390" y="50" width="110" height="35" fill="#fbbf24" stroke="#f59e0b" stroke-width="1" rx="3"/>
+    <text x="445" y="65" fill="#1a1a1a" font-family="monospace" font-size="9" text-anchor="middle">APIM</text>
+    <text x="445" y="75" fill="#1a1a1a" font-family="monospace" font-size="8" text-anchor="middle">Infotainment</text>
+    <text x="445" y="82" fill="#1a1a1a" font-family="monospace" font-size="7" text-anchor="middle">Online • 58°C</text>
+
+    <rect x="510" y="50" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="565" y="65" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">ABS</text>
+    <text x="565" y="75" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Brakes</text>
+    <text x="565" y="82" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 46°C</text>
+
+    <rect x="630" y="50" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="685" y="65" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">RCM</text>
+    <text x="685" y="75" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Airbags</text>
+    <text x="685" y="82" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 44°C</text>
+
+    <!-- Row 2 -->
+    <rect x="30" y="95" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="85" y="110" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">TCM</text>
+    <text x="85" y="120" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Transmission</text>
+    <text x="85" y="127" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 82°C</text>
+
+    <rect x="150" y="95" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="205" y="110" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">HVAC</text>
+    <text x="205" y="120" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Climate</text>
+    <text x="205" y="127" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 39°C</text>
+
+    <rect x="270" y="95" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="325" y="110" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">PAM</text>
+    <text x="325" y="120" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Parking Aid</text>
+    <text x="325" y="127" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 43°C</text>
+
+    <rect x="390" y="95" width="110" height="35" fill="#68d391" stroke="#81c784" stroke-width="1" rx="3"/>
+    <text x="445" y="110" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">DSM</text>
+    <text x="445" y="120" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Door/Seat</text>
+    <text x="445" y="127" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Online • 40°C</text>
+
+    <rect x="510" y="95" width="110" height="35" fill="#f56565" stroke="#dc2626" stroke-width="1" rx="3"/>
+    <text x="565" y="110" fill="#ffffff" font-family="monospace" font-size="9" text-anchor="middle">PSCM</text>
+    <text x="565" y="120" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">Power Steering</text>
+    <text x="565" y="127" fill="#ffffff" font-family="monospace" font-size="7" text-anchor="middle">Error • --°C</text>
+
+    <rect x="630" y="95" width="110" height="35" fill="#9ca3af" stroke="#6b7280" stroke-width="1" rx="3"/>
+    <text x="685" y="110" fill="#1a1a1a" font-family="monospace" font-size="9" text-anchor="middle">ACM</text>
+    <text x="685" y="120" fill="#1a1a1a" font-family="monospace" font-size="8" text-anchor="middle">Audio</text>
+    <text x="685" y="127" fill="#1a1a1a" font-family="monospace" font-size="7" text-anchor="middle">No Response</text>
+
+    <!-- Summary Stats -->
+    <text x="780" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">System Summary:</text>
+    <text x="780" y="85" fill="#68d391" font-family="monospace" font-size="11">Online: 10 modules</text>
+    <text x="780" y="100" fill="#fbbf24" font-family="monospace" font-size="11">Warnings: 1 module</text>
+    <text x="780" y="115" fill="#f56565" font-family="monospace" font-size="11">Errors: 1 module</text>
+    <text x="780" y="130" fill="#9ca3af" font-family="monospace" font-size="11">No Response: 1 module</text>
+
+    <!-- Update Rate -->
+    <text x="950" y="65" fill="#9ca3af" font-family="monospace" font-size="10">Update Rate: 2Hz</text>
+    <text x="950" y="80" fill="#9ca3af" font-family="monospace" font-size="10">Last Scan: 0.5s ago</text>
+    <text x="950" y="95" fill="#9ca3af" font-family="monospace" font-size="10">Total Modules: 13</text>
+    <text x="950" y="110" fill="#9ca3af" font-family="monospace" font-size="10">Response Time: 2.1ms avg</text>
+  </g>
+
+  <!-- Middle Left: CAN Bus Health -->
+  <g id="can_bus_health">
+    <rect x="20" y="180" width="580" height="180" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">CAN Bus Communication Health</text>
+
+    <!-- HS-CAN Status -->
+    <text x="30" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">HS-CAN (500 kbps):</text>
+    <rect x="30" y="235" width="250" height="15" fill="#374151"/>
+    <rect x="30" y="235" width="180" height="15" fill="#68d391"/>
+    <text x="290" y="247" fill="#68d391" font-family="monospace" font-size="10">Bus Load: 72%</text>
+
+    <text x="30" y="265" fill="#d1d5db" font-family="monospace" font-size="10">Active Nodes: 6</text>
+    <text x="150" y="265" fill="#d1d5db" font-family="monospace" font-size="10">Messages/sec: 1,247</text>
+    <text x="30" y="280" fill="#d1d5db" font-family="monospace" font-size="10">Error Frames: 0</text>
+    <text x="150" y="280" fill="#d1d5db" font-family="monospace" font-size="10">Arbitration Lost: 12</text>
+
+    <!-- MS-CAN Status -->
+    <text x="30" y="305" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">MS-CAN (125 kbps):</text>
+    <rect x="30" y="315" width="250" height="15" fill="#374151"/>
+    <rect x="30" y="315" width="120" height="15" fill="#68d391"/>
+    <text x="290" y="327" fill="#68d391" font-family="monospace" font-size="10">Bus Load: 48%</text>
+
+    <text x="30" y="345" fill="#d1d5db" font-family="monospace" font-size="10">Active Nodes: 7</text>
+    <text x="150" y="345" fill="#d1d5db" font-family="monospace" font-size="10">Messages/sec: 384</text>
+    <text x="30" y="350" fill="#fbbf24" font-family="monospace" font-size="10">Error Frames: 3</text>
+    <text x="150" y="350" fill="#d1d5db" font-family="monospace" font-size="10">Arbitration Lost: 5</text>
+
+    <!-- Message Flow Chart -->
+    <rect x="320" y="235" width="260" height="90" fill="#1a1a1a" stroke="#374151" stroke-width="1"/>
+    <text x="325" y="250" fill="#9ca3af" font-family="monospace" font-size="9">Message Flow (msgs/sec)</text>
+
+    <!-- Chart lines for HS and MS CAN -->
+    <polyline points="325,280 350,275 375,285 400,270 425,275 450,280 475,285 500,275 525,280 550,275 575,280"
+              fill="none" stroke="#68d391" stroke-width="2"/>
+    <polyline points="325,300 350,295 375,305 400,290 425,295 450,300 475,305 500,295 525,300 550,295 575,300"
+              fill="none" stroke="#4299e1" stroke-width="2"/>
+
+    <text x="325" y="265" fill="#68d391" font-family="monospace" font-size="8">HS-CAN</text>
+    <text x="375" y="265" fill="#4299e1" font-family="monospace" font-size="8">MS-CAN</text>
+  </g>
+
+  <!-- Middle Right: Power & Environmental -->
+  <g id="power_environmental">
+    <rect x="620" y="180" width="560" height="180" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Power Supply &amp; Battery Analytics</text>
+
+    <!-- Battery Comprehensive Status -->
+    <text x="630" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Battery Health &amp; Status:</text>
+
+    <!-- SOC with visual bar -->
+    <text x="630" y="245" fill="#d1d5db" font-family="monospace" font-size="10">State of Charge (SOC):</text>
+    <rect x="770" y="240" width="60" height="10" fill="#374151"/>
+    <rect x="770" y="240" width="52" height="10" fill="#68d391"/>
+    <text x="840" y="248" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">87%</text>
+
+    <!-- SOH -->
+    <text x="630" y="260" fill="#d1d5db" font-family="monospace" font-size="10">State of Health (SOH):</text>
+    <text x="770" y="260" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">92%</text>
+    <text x="820" y="260" fill="#68d391" font-family="monospace" font-size="10">(Good)</text>
+
+    <!-- Voltage and Current -->
+    <text x="630" y="275" fill="#d1d5db" font-family="monospace" font-size="10">Battery Voltage:</text>
+    <text x="740" y="275" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">14.2V</text>
+    <text x="790" y="275" fill="#68d391" font-family="monospace" font-size="10">(Charging)</text>
+
+    <text x="630" y="290" fill="#d1d5db" font-family="monospace" font-size="10">Current Flow:</text>
+    <text x="720" y="290" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">+12.5A</text>
+    <text x="770" y="290" fill="#4299e1" font-family="monospace" font-size="10">(Charging)</text>
+
+    <!-- Temperature and Internal Resistance -->
+    <text x="630" y="305" fill="#d1d5db" font-family="monospace" font-size="10">Temperature:</text>
+    <text x="720" y="305" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">24°C</text>
+
+    <text x="630" y="320" fill="#d1d5db" font-family="monospace" font-size="10">Internal Resistance:</text>
+    <text x="770" y="320" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">2.8mΩ</text>
+
+    <!-- Charging System Status -->
+    <text x="900" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Charging System:</text>
+    <text x="900" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Alternator Output:</text>
+    <text x="1020" y="245" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">85A</text>
+    <text x="1060" y="245" fill="#d1d5db" font-family="monospace" font-size="9">(120A max)</text>
+
+    <text x="900" y="260" fill="#d1d5db" font-family="monospace" font-size="10">System Load:</text>
+    <text x="980" y="260" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">72.5A</text>
+
+    <text x="900" y="275" fill="#d1d5db" font-family="monospace" font-size="10">Cold Cranking Amps:</text>
+    <text x="1040" y="275" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">650A</text>
+
+    <!-- Battery Analytics -->
+    <text x="900" y="295" fill="#d1d5db" font-family="monospace" font-size="10">Charge Cycles:</text>
+    <text x="990" y="295" fill="#d1d5db" font-family="monospace" font-size="10" font-weight="bold">1,247</text>
+
+    <text x="900" y="310" fill="#d1d5db" font-family="monospace" font-size="10">Est. Replacement:</text>
+    <text x="1020" y="310" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">18 months</text>
+
+    <!-- Module Power Distribution (Condensed) -->
+    <text x="900" y="330" fill="#9ca3af" font-family="monospace" font-size="9">Module Power: PCM:14.1V BCM:14.2V IPC:14.1V APIM:13.8V TCM:14.0V ABS:14.1V</text>
+
+    <!-- Environmental Monitoring (Condensed) -->
+    <text x="630" y="345" fill="#d1d5db" font-family="monospace" font-size="11" font-weight="bold">Environmental:</text>
+    <text x="630" y="355" fill="#9ca3af" font-family="monospace" font-size="9">Ambient: 22°C • Engine Bay: 45°C • Cabin: 21°C • All modules: Normal • APIM: 58°C (Warm)</text>
+  </g>
+
+  <!-- Bottom Section: Diagnostics & Maintenance -->
+  <g id="diagnostics_maintenance">
+    <rect x="20" y="380" width="760" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="400" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Diagnostic Trouble Codes &amp; Maintenance</text>
+
+    <!-- Active DTCs -->
+    <text x="30" y="425" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Active DTCs:</text>
+    <text x="30" y="445" fill="#f56565" font-family="monospace" font-size="10">B1342: PSCM Communication Lost</text>
+    <text x="30" y="460" fill="#fbbf24" font-family="monospace" font-size="10">P0171: System Too Lean (Bank 1)</text>
+    <text x="30" y="475" fill="#9ca3af" font-family="monospace" font-size="10">Stored DTCs: 12 (cleared)</text>
+
+    <!-- Memory Usage -->
+    <text x="300" y="425" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Module Memory:</text>
+    <text x="300" y="445" fill="#d1d5db" font-family="monospace" font-size="10">PCM EEPROM:</text>
+    <text x="400" y="445" fill="#68d391" font-family="monospace" font-size="10">85%</text>
+    <text x="300" y="460" fill="#d1d5db" font-family="monospace" font-size="10">BCM Flash:</text>
+    <text x="400" y="460" fill="#68d391" font-family="monospace" font-size="10">62%</text>
+    <text x="300" y="475" fill="#d1d5db" font-family="monospace" font-size="10">IPC NVRAM:</text>
+    <text x="400" y="475" fill="#68d391" font-family="monospace" font-size="10">78%</text>
+
+    <!-- Calibration Status -->
+    <text x="500" y="425" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Calibration Status:</text>
+    <text x="500" y="445" fill="#68d391" font-family="monospace" font-size="10">Fuel Trim: Learned</text>
+    <text x="500" y="460" fill="#68d391" font-family="monospace" font-size="10">Transmission: Adapted</text>
+    <text x="500" y="475" fill="#fbbf24" font-family="monospace" font-size="10">O2 Sensors: Learning</text>
+    <text x="500" y="490" fill="#68d391" font-family="monospace" font-size="10">Idle Speed: Stable</text>
+
+    <!-- Maintenance Tracking -->
+    <text x="30" y="510" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Maintenance Intervals:</text>
+    <text x="30" y="525" fill="#68d391" font-family="monospace" font-size="10">Engine Oil: 4,200 km remaining</text>
+    <text x="250" y="525" fill="#fbbf24" font-family="monospace" font-size="10">Trans Fluid: 15,000 km</text>
+    <text x="450" y="525" fill="#68d391" font-family="monospace" font-size="10">Air Filter: 8,500 km</text>
+  </g>
+
+  <!-- Bottom Right: System Performance -->
+  <g id="system_performance">
+    <rect x="800" y="380" width="380" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="810" y="400" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">System Performance Metrics</text>
+
+    <!-- Response Times -->
+    <text x="810" y="425" fill="#d1d5db" font-family="monospace" font-size="11">Module Response Times (ms):</text>
+    <rect x="810" y="435" width="350" height="60" fill="#1a1a1a" stroke="#374151" stroke-width="1"/>
+
+    <!-- Bar chart for response times -->
+    <text x="815" y="450" fill="#9ca3af" font-family="monospace" font-size="8">PCM</text>
+    <rect x="840" y="445" width="15" height="10" fill="#68d391"/>
+    <text x="860" y="452" fill="#68d391" font-family="monospace" font-size="8">1.2ms</text>
+
+    <text x="815" y="465" fill="#9ca3af" font-family="monospace" font-size="8">BCM</text>
+    <rect x="840" y="460" width="18" height="10" fill="#68d391"/>
+    <text x="860" y="467" fill="#68d391" font-family="monospace" font-size="8">1.4ms</text>
+
+    <text x="915" y="450" fill="#9ca3af" font-family="monospace" font-size="8">TCM</text>
+    <rect x="940" y="445" width="20" height="10" fill="#68d391"/>
+    <text x="965" y="452" fill="#68d391" font-family="monospace" font-size="8">1.6ms</text>
+
+    <text x="915" y="465" fill="#9ca3af" font-family="monospace" font-size="8">APIM</text>
+    <rect x="940" y="460" width="35" height="10" fill="#fbbf24"/>
+    <text x="980" y="467" fill="#fbbf24" font-family="monospace" font-size="8">2.8ms</text>
+
+    <text x="915" y="480" fill="#9ca3af" font-family="monospace" font-size="8">PSCM</text>
+    <rect x="940" y="475" width="60" height="10" fill="#f56565"/>
+    <text x="1005" y="482" fill="#f56565" font-family="monospace" font-size="8">Timeout</text>
+
+    <!-- System Health Score -->
+    <text x="810" y="515" fill="#d1d5db" font-family="monospace" font-size="11">Overall System Health:</text>
+    <rect x="810" y="520" width="300" height="15" fill="#374151"/>
+    <rect x="810" y="520" width="240" height="15" fill="#68d391"/>
+    <text x="1120" y="532" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">80%</text>
+  </g>
+
+  <!-- Bottom Status Bar -->
+  <g id="status_bar">
+    <rect x="20" y="560" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="580" fill="#68d391" font-family="monospace" font-size="11">System Health: Good (1 Error, 1 Warning) • Scan Rate: 2Hz • Modules: 10/12 Online</text>
+
+    <text x="750" y="580" fill="#9ca3af" font-family="monospace" font-size="10">[TAB] Next Panel • [S] Full Scan • [D] DTCs • [F1] Help</text>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="620" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="640" fill="#ffffff" font-family="monospace" font-size="11" font-weight="bold">Status Legend:</text>
+
+    <rect x="140" y="630" width="15" height="15" fill="#68d391"/>
+    <text x="160" y="642" fill="#68d391" font-family="monospace" font-size="10">Online/Normal</text>
+
+    <rect x="260" y="630" width="15" height="15" fill="#4299e1"/>
+    <text x="280" y="642" fill="#4299e1" font-family="monospace" font-size="10">Active/Data</text>
+
+    <rect x="360" y="630" width="15" height="15" fill="#fbbf24"/>
+    <text x="380" y="642" fill="#fbbf24" font-family="monospace" font-size="10">Warning/High</text>
+
+    <rect x="470" y="630" width="15" height="15" fill="#f56565"/>
+    <text x="490" y="642" fill="#f56565" font-family="monospace" font-size="10">Error/Critical</text>
+
+    <rect x="580" y="630" width="15" height="15" fill="#9ca3af"/>
+    <text x="600" y="642" fill="#9ca3af" font-family="monospace" font-size="10">Offline/No Response</text>
+
+    <text x="750" y="642" fill="#9ca3af" font-family="monospace" font-size="9">Temperatures shown are module internal temps, not coolant/oil</text>
+  </g>
+</svg>

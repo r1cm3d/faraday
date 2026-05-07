@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Content Area Background -->
+  <rect x="0" y="0" width="1200" height="720" fill="#1a1a1a"/>
+
+  <!-- Engine & Powertrain Dashboard Content -->
+
+  <!-- Left Column: Core Engine Metrics -->
+  <g id="core_metrics">
+    <!-- RPM Gauge -->
+    <rect x="20" y="20" width="240" height="180" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="140" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Engine RPM</text>
+
+    <!-- RPM Arc Gauge -->
+    <circle cx="140" cy="120" r="50" fill="none" stroke="#374151" stroke-width="8"/>
+    <path d="M 90 120 A 50 50 0 0 1 185 95" fill="none" stroke="#68d391" stroke-width="8"/>
+    <text x="140" y="130" fill="#ffffff" font-family="monospace" font-size="24" font-weight="bold" text-anchor="middle">2,450</text>
+    <text x="140" y="150" fill="#9ca3af" font-family="monospace" font-size="10" text-anchor="middle">rpm</text>
+    <text x="140" y="180" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Normal Range</text>
+
+    <!-- Engine Load -->
+    <rect x="280" y="20" width="240" height="180" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="400" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Engine Load</text>
+
+    <!-- Load Bar Chart -->
+    <rect x="300" y="60" width="200" height="20" fill="#374151"/>
+    <rect x="300" y="60" width="120" height="20" fill="#4299e1"/>
+    <text x="400" y="100" fill="#ffffff" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle">60%</text>
+    <text x="400" y="120" fill="#9ca3af" font-family="monospace" font-size="10" text-anchor="middle">Calculated Load Value</text>
+
+    <!-- Additional Load Metrics -->
+    <text x="310" y="140" fill="#d1d5db" font-family="monospace" font-size="10">Absolute: 145 kPa</text>
+    <text x="310" y="155" fill="#d1d5db" font-family="monospace" font-size="10">Relative: 42%</text>
+    <text x="310" y="170" fill="#68d391" font-family="monospace" font-size="10">Throttle: 35%</text>
+
+    <!-- Coolant Temperature -->
+    <rect x="540" y="20" width="240" height="180" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="660" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Coolant Temp</text>
+
+    <!-- Temperature Gauge -->
+    <rect x="570" y="60" width="140" height="15" fill="#374151"/>
+    <rect x="570" y="60" width="85" height="15" fill="#68d391"/>
+    <text x="660" y="100" fill="#ffffff" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle">87°C</text>
+    <text x="660" y="120" fill="#9ca3af" font-family="monospace" font-size="10" text-anchor="middle">(188°F)</text>
+
+    <!-- Temperature Status -->
+    <text x="570" y="140" fill="#68d391" font-family="monospace" font-size="10">Status: Normal</text>
+    <text x="570" y="155" fill="#d1d5db" font-family="monospace" font-size="10">Thermostat: Open</text>
+    <text x="570" y="170" fill="#d1d5db" font-family="monospace" font-size="10">Fan: Off</text>
+  </g>
+
+  <!-- Middle Section: Fuel System -->
+  <g id="fuel_system">
+    <rect x="20" y="220" width="760" height="120" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="240" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Fuel System Analytics</text>
+
+    <!-- Fuel Trim Values -->
+    <text x="30" y="260" fill="#d1d5db" font-family="monospace" font-size="11">Short Term Fuel Trim:</text>
+    <text x="200" y="260" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">Bank 1: +2.3%</text>
+    <text x="320" y="260" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">Bank 2: +1.8%</text>
+
+    <text x="30" y="275" fill="#d1d5db" font-family="monospace" font-size="11">Long Term Fuel Trim:</text>
+    <text x="200" y="275" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">Bank 1: +4.1%</text>
+    <text x="320" y="275" fill="#68d391" font-family="monospace" font-size="11" font-weight="bold">Bank 2: +3.9%</text>
+
+    <!-- Fuel Rail Pressure -->
+    <text x="450" y="260" fill="#d1d5db" font-family="monospace" font-size="11">Fuel Rail Pressure:</text>
+    <text x="590" y="260" fill="#4299e1" font-family="monospace" font-size="11" font-weight="bold">5.8 MPa</text>
+
+    <!-- Injector Data -->
+    <text x="450" y="275" fill="#d1d5db" font-family="monospace" font-size="11">Injector Pulse Width:</text>
+    <text x="590" y="275" fill="#4299e1" font-family="monospace" font-size="11" font-weight="bold">3.2 ms</text>
+
+    <!-- Fuel Trim Chart Area -->
+    <rect x="30" y="290" width="320" height="40" fill="#1a1a1a" stroke="#374151" stroke-width="1"/>
+    <text x="35" y="305" fill="#9ca3af" font-family="monospace" font-size="9">Fuel Trim History</text>
+    <!-- Simple chart lines -->
+    <polyline points="35,315 60,310 85,312 110,308 135,311 160,309 185,313 210,307 235,310 260,308 285,312 310,309 335,311"
+              fill="none" stroke="#68d391" stroke-width="2"/>
+    <polyline points="35,318 60,316 85,319 110,315 135,320 160,317 185,321 210,314 235,318 260,316 285,320 310,317 335,319"
+              fill="none" stroke="#4299e1" stroke-width="2"/>
+  </g>
+
+  <!-- Right Column: Advanced Diagnostics -->
+  <g id="advanced_diagnostics">
+    <!-- Ignition System -->
+    <rect x="800" y="20" width="380" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="810" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Ignition System</text>
+
+    <!-- Cylinder Misfire Counters -->
+    <text x="810" y="60" fill="#d1d5db" font-family="monospace" font-size="11">Misfire Counters:</text>
+    <text x="810" y="75" fill="#68d391" font-family="monospace" font-size="10">Cyl 1: 0</text>
+    <text x="870" y="75" fill="#68d391" font-family="monospace" font-size="10">Cyl 2: 0</text>
+    <text x="930" y="75" fill="#68d391" font-family="monospace" font-size="10">Cyl 3: 0</text>
+    <text x="990" y="75" fill="#68d391" font-family="monospace" font-size="10">Cyl 4: 0</text>
+
+    <!-- Ignition Timing -->
+    <text x="810" y="100" fill="#d1d5db" font-family="monospace" font-size="11">Ignition Advance:</text>
+    <text x="810" y="115" fill="#4299e1" font-family="monospace" font-size="10">Cyl 1: 12.5°</text>
+    <text x="870" y="115" fill="#4299e1" font-family="monospace" font-size="10">Cyl 2: 12.8°</text>
+    <text x="930" y="115" fill="#4299e1" font-family="monospace" font-size="10">Cyl 3: 12.3°</text>
+    <text x="990" y="115" fill="#4299e1" font-family="monospace" font-size="10">Cyl 4: 12.7°</text>
+
+    <!-- Timing Status -->
+    <text x="810" y="140" fill="#d1d5db" font-family="monospace" font-size="11">Base Timing: 10° BTDC</text>
+    <text x="810" y="155" fill="#68d391" font-family="monospace" font-size="11">Knock Sensor: Active</text>
+
+    <!-- Emissions System -->
+    <rect x="800" y="200" width="380" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="810" y="220" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Emissions System</text>
+
+    <!-- Catalyst Efficiency -->
+    <text x="810" y="240" fill="#d1d5db" font-family="monospace" font-size="11">Catalyst Efficiency:</text>
+    <text x="810" y="255" fill="#68d391" font-family="monospace" font-size="11">Bank 1: 97.2%</text>
+    <text x="940" y="255" fill="#68d391" font-family="monospace" font-size="11">Bank 2: 96.8%</text>
+
+    <!-- O2 Sensors -->
+    <text x="810" y="275" fill="#d1d5db" font-family="monospace" font-size="11">O2 Sensors:</text>
+    <text x="810" y="290" fill="#4299e1" font-family="monospace" font-size="10">B1S1: 0.45V</text>
+    <text x="870" y="290" fill="#4299e1" font-family="monospace" font-size="10">B1S2: 0.52V</text>
+    <text x="930" y="290" fill="#4299e1" font-family="monospace" font-size="10">B2S1: 0.47V</text>
+    <text x="990" y="290" fill="#4299e1" font-family="monospace" font-size="10">B2S2: 0.51V</text>
+
+    <!-- EGR Status -->
+    <text x="810" y="315" fill="#d1d5db" font-family="monospace" font-size="11">EGR Valve: 15% Open</text>
+    <text x="810" y="330" fill="#68d391" font-family="monospace" font-size="11">EVAP System: Ready</text>
+  </g>
+
+  <!-- Bottom Section: Real-time Charts -->
+  <g id="realtime_charts">
+    <rect x="20" y="360" width="560" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="380" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Real-time Performance</text>
+
+    <!-- Chart Area -->
+    <rect x="30" y="390" width="540" height="120" fill="#1a1a1a" stroke="#374151" stroke-width="1"/>
+
+    <!-- Chart Grid -->
+    <line x1="30" y1="430" x2="570" y2="430" stroke="#374151" stroke-width="1"/>
+    <line x1="30" y1="470" x2="570" y2="470" stroke="#374151" stroke-width="1"/>
+
+    <!-- RPM Line -->
+    <polyline points="30,460 70,445 110,430 150,425 190,440 230,435 270,450 310,445 350,440 370,435 410,430 450,425 490,430 530,435 570,440"
+              fill="none" stroke="#68d391" stroke-width="2"/>
+
+    <!-- Load Line -->
+    <polyline points="30,480 70,475 110,470 150,465 190,475 230,470 270,485 310,480 350,475 370,470 410,465 450,460 490,465 530,470 570,475"
+              fill="none" stroke="#4299e1" stroke-width="2"/>
+
+    <!-- Chart Labels -->
+    <text x="35" y="405" fill="#68d391" font-family="monospace" font-size="9">RPM</text>
+    <text x="80" y="405" fill="#4299e1" font-family="monospace" font-size="9">Load %</text>
+    <text x="520" y="405" fill="#9ca3af" font-family="monospace" font-size="9">Last 30s</text>
+  </g>
+
+  <!-- Warning/Status Panel -->
+  <g id="status_panel">
+    <rect x="600" y="360" width="180" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="610" y="380" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">System Status</text>
+
+    <!-- Status Indicators -->
+    <circle cx="620" cy="400" r="5" fill="#68d391"/>
+    <text x="635" y="405" fill="#68d391" font-family="monospace" font-size="10">Engine Normal</text>
+
+    <circle cx="620" cy="420" r="5" fill="#68d391"/>
+    <text x="635" y="425" fill="#68d391" font-family="monospace" font-size="10">Fuel System OK</text>
+
+    <circle cx="620" cy="440" r="5" fill="#fbbf24"/>
+    <text x="635" y="445" fill="#fbbf24" font-family="monospace" font-size="10">O2 Sensor Slow</text>
+
+    <circle cx="620" cy="460" r="5" fill="#68d391"/>
+    <text x="635" y="465" fill="#68d391" font-family="monospace" font-size="10">Ignition Normal</text>
+
+    <circle cx="620" cy="480" r="5" fill="#68d391"/>
+    <text x="635" y="485" fill="#68d391" font-family="monospace" font-size="10">Emissions Ready</text>
+
+    <text x="610" y="505" fill="#9ca3af" font-family="monospace" font-size="9">Last updated: 0.1s</text>
+  </g>
+</svg>

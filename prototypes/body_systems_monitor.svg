@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Content Area Background -->
+  <rect x="0" y="0" width="1200" height="720" fill="#1a1a1a"/>
+
+  <!-- Body Systems Monitor Dashboard Content -->
+
+  <!-- Top Section: Electrical System Overview -->
+  <g id="electrical_system">
+    <rect x="20" y="20" width="1160" height="140" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="40" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Electrical System Overview (BCM)</text>
+
+    <!-- Battery & Charging System -->
+    <text x="30" y="65" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Power Distribution:</text>
+
+    <!-- Main Battery Status -->
+    <rect x="30" y="75" width="200" height="70" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="130" y="90" fill="#ffffff" font-family="monospace" font-size="11" text-anchor="middle">12V Battery</text>
+    <text x="130" y="105" fill="#68d391" font-family="monospace" font-size="16" text-anchor="middle" font-weight="bold">14.2V</text>
+    <text x="130" y="120" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Load: 45A</text>
+    <text x="130" y="135" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Charging: +8A</text>
+
+    <!-- Alternator Status -->
+    <rect x="250" y="75" width="200" height="70" fill="#374151" stroke="#4a5568" stroke-width="1" rx="3"/>
+    <text x="350" y="90" fill="#ffffff" font-family="monospace" font-size="11" text-anchor="middle">Alternator</text>
+    <text x="350" y="105" fill="#4299e1" font-family="monospace" font-size="16" text-anchor="middle" font-weight="bold">120A</text>
+    <text x="350" y="120" fill="#4299e1" font-family="monospace" font-size="10" text-anchor="middle">Output: 85%</text>
+    <text x="350" y="135" fill="#68d391" font-family="monospace" font-size="10" text-anchor="middle">Status: Normal</text>
+
+    <!-- Individual Module Power -->
+    <text x="480" y="85" fill="#d1d5db" font-family="monospace" font-size="11">Module Power Supply (V):</text>
+    <text x="480" y="100" fill="#68d391" font-family="monospace" font-size="10">PCM: 14.1</text>
+    <text x="550" y="100" fill="#68d391" font-family="monospace" font-size="10">TCM: 14.0</text>
+    <text x="620" y="100" fill="#68d391" font-family="monospace" font-size="10">ABS: 14.1</text>
+    <text x="690" y="100" fill="#68d391" font-family="monospace" font-size="10">RCM: 14.0</text>
+
+    <text x="480" y="115" fill="#68d391" font-family="monospace" font-size="10">BCM: 14.2</text>
+    <text x="550" y="115" fill="#68d391" font-family="monospace" font-size="10">IPC: 14.1</text>
+    <text x="620" y="115" fill="#fbbf24" font-family="monospace" font-size="10">APIM: 13.8</text>
+    <text x="690" y="115" fill="#68d391" font-family="monospace" font-size="10">HVAC: 14.0</text>
+
+    <text x="480" y="130" fill="#68d391" font-family="monospace" font-size="10">DSM: 14.1</text>
+    <text x="550" y="130" fill="#68d391" font-family="monospace" font-size="10">PAM: 14.0</text>
+    <text x="620" y="130" fill="#68d391" font-family="monospace" font-size="10">ACM: 14.1</text>
+    <text x="690" y="130" fill="#f56565" font-family="monospace" font-size="10">PSCM: --</text>
+
+    <!-- Ground Circuit Status -->
+    <text x="800" y="85" fill="#d1d5db" font-family="monospace" font-size="11">Ground Circuits:</text>
+    <circle cx="820" cy="95" r="4" fill="#68d391"/>
+    <text x="830" y="100" fill="#68d391" font-family="monospace" font-size="10">Engine Ground: 0.02Ω</text>
+    <circle cx="820" cy="110" r="4" fill="#68d391"/>
+    <text x="830" y="115" fill="#68d391" font-family="monospace" font-size="10">Body Ground: 0.01Ω</text>
+    <circle cx="820" cy="125" r="4" fill="#fbbf24"/>
+    <text x="830" y="130" fill="#fbbf24" font-family="monospace" font-size="10">Chassis Ground: 0.08Ω</text>
+
+    <!-- Load Distribution -->
+    <text x="1000" y="85" fill="#d1d5db" font-family="monospace" font-size="11">Current Loads (A):</text>
+    <text x="1000" y="100" fill="#4299e1" font-family="monospace" font-size="10">Ignition: 12.5</text>
+    <text x="1000" y="115" fill="#4299e1" font-family="monospace" font-size="10">Lighting: 8.2</text>
+    <text x="1000" y="130" fill="#4299e1" font-family="monospace" font-size="10">HVAC: 15.8</text>
+    <text x="1000" y="145" fill="#4299e1" font-family="monospace" font-size="10">Accessories: 8.5</text>
+  </g>
+
+  <!-- Middle Left: Lighting Systems -->
+  <g id="lighting_systems">
+    <rect x="20" y="180" width="580" height="200" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Lighting System Status</text>
+
+    <!-- Exterior Lighting -->
+    <text x="30" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Exterior Lighting:</text>
+
+    <!-- Headlights -->
+    <text x="30" y="245" fill="#d1d5db" font-family="monospace" font-size="11">Headlights:</text>
+    <circle cx="120" cy="240" r="4" fill="#68d391"/>
+    <text x="130" y="245" fill="#68d391" font-family="monospace" font-size="10">Low Beam: ON</text>
+    <text x="220" y="245" fill="#d1d5db" font-family="monospace" font-size="10">Current: 9.8A</text>
+
+    <circle cx="120" cy="255" r="4" fill="#9ca3af"/>
+    <text x="130" y="260" fill="#9ca3af" font-family="monospace" font-size="10">High Beam: OFF</text>
+    <text x="220" y="260" fill="#9ca3af" font-family="monospace" font-size="10">Current: 0A</text>
+
+    <!-- DRL and Position Lights -->
+    <text x="30" y="280" fill="#d1d5db" font-family="monospace" font-size="11">DRL/Position:</text>
+    <circle cx="140" cy="275" r="4" fill="#68d391"/>
+    <text x="150" y="280" fill="#68d391" font-family="monospace" font-size="10">DRL: ON</text>
+    <text x="200" y="280" fill="#d1d5db" font-family="monospace" font-size="10">2.4A</text>
+
+    <circle cx="140" cy="290" r="4" fill="#68d391"/>
+    <text x="150" y="295" fill="#68d391" font-family="monospace" font-size="10">Position: ON</text>
+    <text x="220" y="295" fill="#d1d5db" font-family="monospace" font-size="10">1.8A</text>
+
+    <!-- Turn Signals and Hazards -->
+    <text x="30" y="315" fill="#d1d5db" font-family="monospace" font-size="11">Turn Signals:</text>
+    <circle cx="130" cy="310" r="4" fill="#9ca3af"/>
+    <text x="140" y="315" fill="#9ca3af" font-family="monospace" font-size="10">Left: OFF</text>
+    <circle cx="200" cy="310" r="4" fill="#9ca3af"/>
+    <text x="210" y="315" fill="#9ca3af" font-family="monospace" font-size="10">Right: OFF</text>
+
+    <text x="30" y="335" fill="#d1d5db" font-family="monospace" font-size="11">Brake Lights:</text>
+    <circle cx="130" cy="330" r="4" fill="#68d391"/>
+    <text x="140" y="335" fill="#68d391" font-family="monospace" font-size="10">Rear: Ready</text>
+    <text x="210" y="335" fill="#d1d5db" font-family="monospace" font-size="10">3rd: Ready</text>
+
+    <!-- Interior Lighting -->
+    <text x="320" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Interior Lighting:</text>
+
+    <text x="320" y="245" fill="#d1d5db" font-family="monospace" font-size="11">Cabin Lights:</text>
+    <circle cx="410" cy="240" r="4" fill="#9ca3af"/>
+    <text x="420" y="245" fill="#9ca3af" font-family="monospace" font-size="10">Dome: OFF</text>
+    <circle cx="410" cy="255" r="4" fill="#68d391"/>
+    <text x="420" y="260" fill="#68d391" font-family="monospace" font-size="10">Footwell: ON</text>
+
+    <text x="320" y="280" fill="#d1d5db" font-family="monospace" font-size="11">Welcome Lighting:</text>
+    <circle cx="440" cy="275" r="4" fill="#68d391"/>
+    <text x="450" y="280" fill="#68d391" font-family="monospace" font-size="10">Active</text>
+    <text x="450" y="295" fill="#d1d5db" font-family="monospace" font-size="10">Duration: 5 seconds</text>
+
+    <text x="320" y="315" fill="#d1d5db" font-family="monospace" font-size="11">Ambient Lighting:</text>
+    <circle cx="430" cy="310" r="4" fill="#68d391"/>
+    <text x="440" y="315" fill="#68d391" font-family="monospace" font-size="10">Enabled</text>
+    <text x="440" y="330" fill="#d1d5db" font-family="monospace" font-size="10">Brightness: 60%</text>
+
+    <!-- Auto-leveling Status -->
+    <text x="320" y="355" fill="#d1d5db" font-family="monospace" font-size="11">Headlight Level:</text>
+    <text x="440" y="355" fill="#68d391" font-family="monospace" font-size="10">Auto: ON</text>
+    <text x="440" y="370" fill="#d1d5db" font-family="monospace" font-size="10">Position: 0°</text>
+  </g>
+
+  <!-- Middle Right: Door & Window Systems -->
+  <g id="door_window_systems">
+    <rect x="620" y="180" width="560" height="200" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="200" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Door &amp; Window Systems</text>
+
+    <!-- Door Lock Status -->
+    <text x="630" y="225" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Door Lock Status:</text>
+
+    <!-- Vehicle diagram with door status -->
+    <g id="door_diagram">
+      <!-- Vehicle outline -->
+      <rect x="740" y="240" width="100" height="60" fill="none" stroke="#4a5568" stroke-width="2" rx="5"/>
+
+      <!-- Door indicators -->
+      <!-- Driver door -->
+      <rect x="720" y="250" width="15" height="20" fill="#68d391" stroke="#81c784" stroke-width="1"/>
+      <text x="727" y="262" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">L</text>
+
+      <!-- Passenger door -->
+      <rect x="845" y="250" width="15" height="20" fill="#68d391" stroke="#81c784" stroke-width="1"/>
+      <text x="852" y="262" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">L</text>
+
+      <!-- Rear doors -->
+      <rect x="720" y="280" width="15" height="20" fill="#68d391" stroke="#81c784" stroke-width="1"/>
+      <text x="727" y="292" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">L</text>
+
+      <rect x="845" y="280" width="15" height="20" fill="#68d391" stroke="#81c784" stroke-width="1"/>
+      <text x="852" y="292" fill="#ffffff" font-family="monospace" font-size="8" text-anchor="middle">L</text>
+    </g>
+
+    <!-- Lock Status Details -->
+    <text x="630" y="250" fill="#d1d5db" font-family="monospace" font-size="10">Driver Door:</text>
+    <text x="710" y="250" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Locked</text>
+    <text x="770" y="250" fill="#d1d5db" font-family="monospace" font-size="10">Feedback: OK</text>
+
+    <text x="630" y="265" fill="#d1d5db" font-family="monospace" font-size="10">Passenger Door:</text>
+    <text x="730" y="265" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Locked</text>
+    <text x="790" y="265" fill="#d1d5db" font-family="monospace" font-size="10">Feedback: OK</text>
+
+    <!-- Window Status -->
+    <text x="880" y="240" fill="#d1d5db" font-family="monospace" font-size="11">Window Position (%):</text>
+    <text x="880" y="255" fill="#68d391" font-family="monospace" font-size="10">Driver: 100% (Closed)</text>
+    <text x="880" y="270" fill="#68d391" font-family="monospace" font-size="10">Pass: 100% (Closed)</text>
+    <text x="880" y="285" fill="#68d391" font-family="monospace" font-size="10">Rear L: 85% (Cracked)</text>
+    <text x="880" y="300" fill="#68d391" font-family="monospace" font-size="10">Rear R: 100% (Closed)</text>
+
+    <!-- Window Motor Status -->
+    <text x="630" y="325" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Window Motor Diagnostics:</text>
+
+    <text x="630" y="345" fill="#d1d5db" font-family="monospace" font-size="10">Current Draw (A):</text>
+    <text x="630" y="360" fill="#68d391" font-family="monospace" font-size="10">Driver: 0.0 (Idle)</text>
+    <text x="750" y="360" fill="#68d391" font-family="monospace" font-size="10">Passenger: 0.0 (Idle)</text>
+
+    <!-- Auto-up/down status -->
+    <text x="880" y="325" fill="#d1d5db" font-family="monospace" font-size="11">Auto Features:</text>
+    <circle cx="900" cy="340" r="4" fill="#68d391"/>
+    <text x="910" y="345" fill="#68d391" font-family="monospace" font-size="10">Driver Auto-down: ON</text>
+    <circle cx="900" cy="355" r="4" fill="#9ca3af"/>
+    <text x="910" y="360" fill="#9ca3af" font-family="monospace" font-size="10">Driver Auto-up: OFF</text>
+
+    <!-- Mirror Status -->
+    <text x="880" y="375" fill="#d1d5db" font-family="monospace" font-size="11">Mirror Control:</text>
+    <text x="1000" y="375" fill="#68d391" font-family="monospace" font-size="10">Power: OK</text>
+  </g>
+
+  <!-- Bottom Left: Security Systems -->
+  <g id="security_systems">
+    <rect x="20" y="400" width="580" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="420" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">Security &amp; Access Systems</text>
+
+    <!-- Key Fob Status -->
+    <text x="30" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Key Fob Status:</text>
+
+    <text x="30" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Active Key:</text>
+    <text x="110" y="465" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Key #1</text>
+    <text x="160" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Signal: -45dBm</text>
+    <text x="240" y="465" fill="#68d391" font-family="monospace" font-size="10">Battery: Good</text>
+
+    <text x="30" y="480" fill="#d1d5db" font-family="monospace" font-size="10">Backup Key:</text>
+    <text x="110" y="480" fill="#9ca3af" font-family="monospace" font-size="10">Key #2</text>
+    <text x="160" y="480" fill="#9ca3af" font-family="monospace" font-size="10">Signal: N/A</text>
+    <text x="240" y="480" fill="#fbbf24" font-family="monospace" font-size="10">Battery: Low</text>
+
+    <!-- Passive Entry -->
+    <text x="320" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Passive Entry:</text>
+
+    <circle cx="340" cy="465" r="4" fill="#68d391"/>
+    <text x="350" y="470" fill="#68d391" font-family="monospace" font-size="10">Door Handle Sensors: Active</text>
+
+    <circle cx="340" cy="480" r="4" fill="#68d391"/>
+    <text x="350" y="485" fill="#68d391" font-family="monospace" font-size="10">Range: 2.5m</text>
+
+    <!-- Immobilizer Status -->
+    <text x="30" y="505" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Immobilizer:</text>
+    <circle cx="130" cy="500" r="4" fill="#68d391"/>
+    <text x="140" y="505" fill="#68d391" font-family="monospace" font-size="10">Authentication: Valid</text>
+
+    <text x="30" y="520" fill="#d1d5db" font-family="monospace" font-size="10">Transponder ID:</text>
+    <text x="140" y="520" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">A5E2-8F91</text>
+
+    <!-- Anti-theft Status -->
+    <text x="320" y="505" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Anti-theft:</text>
+    <circle cx="400" cy="500" r="4" fill="#68d391"/>
+    <text x="410" y="505" fill="#68d391" font-family="monospace" font-size="10">Perimeter Alarm: Armed</text>
+
+    <text x="320" y="520" fill="#d1d5db" font-family="monospace" font-size="10">Last Event:</text>
+    <text x="390" y="520" fill="#9ca3af" font-family="monospace" font-size="10">None</text>
+
+    <!-- Remote Functions -->
+    <text x="30" y="545" fill="#d1d5db" font-family="monospace" font-size="11">Remote Functions:</text>
+    <text x="160" y="545" fill="#68d391" font-family="monospace" font-size="10">Remote Start: Available</text>
+    <text x="320" y="545" fill="#68d391" font-family="monospace" font-size="10">Panic Alarm: Ready</text>
+  </g>
+
+  <!-- Bottom Right: HVAC Blower & Seat Systems -->
+  <g id="hvac_seat_systems">
+    <rect x="620" y="400" width="560" height="160" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="630" y="420" fill="#ffffff" font-family="monospace" font-size="14" font-weight="bold">HVAC Blower &amp; Seat Systems</text>
+
+    <!-- HVAC Blower Status -->
+    <text x="630" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">HVAC Blower Motor:</text>
+
+    <text x="630" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Speed Setting:</text>
+    <text x="730" y="465" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">3 (Auto)</text>
+    <text x="630" y="480" fill="#d1d5db" font-family="monospace" font-size="10">Actual Speed:</text>
+    <text x="720" y="480" fill="#4299e1" font-family="monospace" font-size="10" font-weight="bold">2,150 RPM</text>
+
+    <text x="630" y="495" fill="#d1d5db" font-family="monospace" font-size="10">Current Draw:</text>
+    <text x="720" y="495" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">8.5A</text>
+
+    <text x="630" y="510" fill="#d1d5db" font-family="monospace" font-size="10">Temperature:</text>
+    <text x="720" y="510" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">42°C</text>
+
+    <!-- Seat Systems -->
+    <text x="850" y="445" fill="#d1d5db" font-family="monospace" font-size="12" font-weight="bold">Seat Systems:</text>
+
+    <!-- Heated Seats -->
+    <text x="850" y="465" fill="#d1d5db" font-family="monospace" font-size="10">Heated Seats:</text>
+    <text x="850" y="480" fill="#9ca3af" font-family="monospace" font-size="10">Driver: OFF</text>
+    <text x="950" y="480" fill="#9ca3af" font-family="monospace" font-size="10">Pass: OFF</text>
+
+    <!-- Memory Seats -->
+    <text x="850" y="500" fill="#d1d5db" font-family="monospace" font-size="10">Memory Position:</text>
+    <text x="970" y="500" fill="#68d391" font-family="monospace" font-size="10" font-weight="bold">Position 1</text>
+
+    <text x="850" y="515" fill="#d1d5db" font-family="monospace" font-size="10">Power Seat Status:</text>
+    <text x="970" y="515" fill="#68d391" font-family="monospace" font-size="10">Normal</text>
+
+    <!-- Additional Load Monitoring -->
+    <text x="630" y="535" fill="#d1d5db" font-family="monospace" font-size="11">Electrical Load Summary:</text>
+    <text x="630" y="550" fill="#4299e1" font-family="monospace" font-size="10">Total BCM Load: 28.7A • Power Window: 0A • Lighting: 8.2A • HVAC: 8.5A</text>
+  </g>
+
+  <!-- Bottom Status Bar -->
+  <g id="status_bar">
+    <rect x="20" y="580" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="600" fill="#68d391" font-family="monospace" font-size="11">Body Systems: All Normal • Electrical Load: 45A/120A • BCM: Online • Last Update: 0.2s ago</text>
+
+    <text x="750" y="600" fill="#9ca3af" font-family="monospace" font-size="10">[TAB] Next Panel • [L] Toggle Lights • [W] Window Test • [F1] Help</text>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="640" width="1160" height="40" fill="#2d3748" stroke="#4a5568" stroke-width="1" rx="5"/>
+    <text x="30" y="660" fill="#ffffff" font-family="monospace" font-size="11" font-weight="bold">Status Legend:</text>
+
+    <circle cx="140" cy="655" r="4" fill="#68d391"/>
+    <text x="150" y="660" fill="#68d391" font-family="monospace" font-size="10">Normal/On</text>
+
+    <circle cx="230" cy="655" r="4" fill="#4299e1"/>
+    <text x="240" y="660" fill="#4299e1" font-family="monospace" font-size="10">Active/Data</text>
+
+    <circle cx="320" cy="655" r="4" fill="#fbbf24"/>
+    <text x="330" y="660" fill="#fbbf24" font-family="monospace" font-size="10">Warning/Low</text>
+
+    <circle cx="420" cy="655" r="4" fill="#f56565"/>
+    <text x="430" y="660" fill="#f56565" font-family="monospace" font-size="10">Error/Fault</text>
+
+    <circle cx="510" cy="655" r="4" fill="#9ca3af"/>
+    <text x="520" y="660" fill="#9ca3af" font-family="monospace" font-size="10">Off/Inactive</text>
+
+    <text x="700" y="660" fill="#9ca3af" font-family="monospace" font-size="9">L = Locked • Current values shown are real-time measurements</text>
+  </g>
+</svg>
