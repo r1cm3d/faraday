@@ -126,17 +126,32 @@ Configuration writes should only occur with:
 
 ## Development Phases
 
-### Phase 1: Read-only HS-CAN (standard OBD-II)
+### Phase 1: Read-only HS-CAN (standard OBD-II) ✅
 CLI commands: `read-dtc`, `clear-dtc`, `live <pids>`, `vin`
+- **Status:** Complete and functional
 
-### Phase 2: UDS basics, full ISO-TP
+### Phase 2: UDS basics, full ISO-TP ✅
 CLI commands: `read-did --module <module> <did>`, `session --module <module> extended`
+- **Status:** Complete with full UDS implementation
 
-### Phase 3: MS-CAN + as-built reads
+### Phase 3: MS-CAN + as-built reads 🔶
 CLI commands: `asbuilt dump --module <module>`, `asbuilt show --module <module> --feature <feature>`
+- **Core library:** Complete (`faraday-asbuilt` crate)
+- **CLI commands:** Need implementation
+- **MS-CAN support:** Complete
 
-### Phase 4: Security Access + Write
+### Phase 4: Security Access + Write 🔶
 CLI commands: `asbuilt write --module <module> --block <block>`, `asbuilt restore <snapshot>`
+- **Protocol support:** Complete
+- **CLI commands:** Need implementation
+- **Safety systems:** Need implementation (snapshots, audit logging)
+
+### Phase 5: Polish and ergonomics 🔶
+Live data TUI, YAML profiles, structured logging, documentation
+- **TUI:** ✅ Complete (`faraday-tui`)
+- **YAML profiles:** Need implementation
+- **Structured logging:** Partial (need audit logging)
+- **Documentation:** ✅ Complete
 
 ## Testing Strategy
 

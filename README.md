@@ -100,18 +100,37 @@ Configuration writes should only occur with:
 
 ### Phase 1: Read-only HS-CAN (standard OBD-II) ✅
 CLI commands: `read-dtc`, `clear-dtc`, `live <pids>`, `vin`
+- **Status:** Complete and functional
 
-### Phase 2: UDS basics, full ISO-TP
+### Phase 2: UDS basics, full ISO-TP ✅
 CLI commands: `read-did --module <module> <did>`, `session --module <module> extended`
+- **Status:** Complete with full UDS implementation
 
-### Phase 3: MS-CAN + as-built reads
+### Phase 3: MS-CAN + as-built reads 🔶
 CLI commands: `asbuilt dump --module <module>`, `asbuilt show --module <module> --feature <feature>`
+- **Core library:** Complete (`faraday-asbuilt` crate with full decoding)
+- **CLI commands:** Missing - need to implement `asbuilt` subcommands
+- **MS-CAN support:** Complete in transport layer
 
-### Phase 4: Security Access + Write
+### Phase 4: Security Access + Write 🔶
 CLI commands: `asbuilt write --module <module> --block <block>`, `asbuilt restore <snapshot>`
+- **Protocol support:** Complete (Security Access, WriteDataByIdentifier in UDS)
+- **CLI commands:** Missing - no write/restore commands implemented
+- **Safety systems:** Missing - snapshot creation and audit logging not implemented
 
-### Phase 5: Polish and ergonomics
+### Phase 5: Polish and ergonomics 🔶
 Live data TUI, YAML profiles, structured logging, documentation
+- **Live data TUI:** ✅ Complete (`faraday-tui` fully functional)
+- **YAML profiles:** ❌ Not implemented
+- **Structured logging:** 🔶 Partial (tracing exists, audit logging missing)
+- **Documentation:** ✅ Complete and comprehensive
+
+### Next Priority: Complete Phase 3 & 4 CLI Commands
+The core functionality exists but needs CLI interface implementation:
+1. Add `asbuilt dump/show` commands
+2. Add `asbuilt write/restore` commands with safety systems
+3. Implement snapshot and audit logging systems
+4. Add YAML profile support
 
 ## 🚨 Important Disclaimers
 
