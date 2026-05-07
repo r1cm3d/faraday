@@ -61,6 +61,7 @@ Understanding Ford vehicle diagnostics requires knowledge of various automotive 
 
 ### Hardware and Communication
 - **[Adapters](docs/Adapters.md)** - OBD-II adapters and their differences, compatibility requirements
+- **[Device Detection](docs/DeviceDetection.md)** - Guide for identifying and configuring OBD-II adapter device paths
 - **[HS-CAN](docs/HS-CAN.md)** - High-Speed CAN bus: powertrain modules (PCM, TCM, ABS, RCM, PSCM) via pins 6/14
 - **[MS-CAN](docs/MS-CAN.md)** - Medium-Speed CAN bus: body control modules (BCM, IPC, APIM, HVAC, DSM, PAM) via pins 3/11
 
