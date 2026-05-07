@@ -46,6 +46,26 @@ The project follows a strict 5-layer architecture:
 └─────────────────────────────────────────────────────────┘
 ```
 
+## 📚 Technical Documentation
+
+Understanding Ford vehicle diagnostics requires knowledge of various automotive protocols, bus architectures, and diagnostic concepts. The following documentation provides detailed explanations of the technical terms and concepts used throughout this project:
+
+### Core Concepts
+- **[DTCs](docs/DTCs.md)** - Diagnostic Trouble Codes: standardized fault codes stored in vehicle modules
+- **[As-Built](docs/AsBuilt.md)** - Configuration data that defines vehicle feature behavior and settings
+- **[DIDs](docs/DIDs.md)** - Data Identifiers used to access specific data within vehicle modules
+
+### Protocols and Standards
+- **[UDS](docs/UDS.md)** - Unified Diagnostic Services (ISO 14229): advanced diagnostic protocol
+- **[FORScan](docs/FORScan.md)** - Popular Ford diagnostic software and its relationship to Faraday
+
+### Hardware and Communication
+- **[Adapters](docs/Adapters.md)** - OBD-II adapters and their differences, compatibility requirements
+- **[HS-CAN](docs/HS-CAN.md)** - High-Speed CAN bus: powertrain modules (PCM, TCM, ABS, RCM, PSCM) via pins 6/14
+- **[MS-CAN](docs/MS-CAN.md)** - Medium-Speed CAN bus: body control modules (BCM, IPC, APIM, HVAC, DSM, PAM) via pins 3/11
+
+Each document is written specifically for the **Ford Fusion 2017 SEL** context and explains how these concepts apply to the Faraday project's implementation.
+
 ### Workspace Structure
 
 ```
