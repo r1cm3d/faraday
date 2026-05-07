@@ -1,0 +1,25 @@
+[package]
+name = "faraday-asbuilt"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "As-built configuration data and decoders for Ford Fusion 2017 SEL"
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Utilities
+hex = { workspace = true }
+
+[dev-dependencies]
+# Testing
+proptest = { workspace = true }

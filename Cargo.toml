@@ -1,0 +1,61 @@
+[workspace]
+members = [
+    "crates/faraday-core",
+    "crates/faraday-cli",
+    "crates/faraday-asbuilt",
+    "crates/faraday-tui",
+]
+
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+authors = ["r1cm3d"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/r1cm3d/faraday"
+homepage = "https://github.com/r1cm3d/faraday"
+keywords = ["automotive", "obd", "ford", "diagnostics", "can"]
+categories = ["command-line-utilities", "embedded", "hardware-support"]
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# CLI
+clap = { version = "4.0", features = ["derive", "env"] }
+
+# Hardware communication
+serialport = "4.0"
+
+# Parsing
+nom = "7.0"
+
+# Testing
+proptest = "1.0"
+
+# TUI
+ratatui = "0.20"
+crossterm = "0.27"
+
+# Utilities
+uuid = { version = "1.0", features = ["v4", "serde"] }
+hex = "0.4"
+bytes = "1.0"
+
+# Internal workspace dependencies
+faraday-core = { path = "crates/faraday-core" }
+faraday-asbuilt = { path = "crates/faraday-asbuilt" }

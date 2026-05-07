@@ -1,0 +1,42 @@
+[package]
+name = "faraday-core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Core library for OBD-II diagnostics and Ford-specific protocols"
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Hardware communication
+serialport = { workspace = true }
+tokio-serial = "5.4"
+
+# Parsing
+nom = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+
+# Utilities
+hex = { workspace = true }
+bytes = { workspace = true }
+
+# Async traits
+async-trait = "0.1"
+
+[dev-dependencies]
+proptest = { workspace = true }
+tokio-test = "0.4"

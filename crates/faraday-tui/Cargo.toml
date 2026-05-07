@@ -1,0 +1,39 @@
+[package]
+name = "faraday-tui"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Terminal UI for live OBD-II data visualization"
+
+[[bin]]
+name = "faraday-tui"
+path = "src/main.rs"
+
+[dependencies]
+# Core library
+faraday-core = { workspace = true }
+
+# TUI framework
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+
+# CLI framework
+clap = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Utilities
+uuid = { workspace = true }

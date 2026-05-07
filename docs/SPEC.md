@@ -61,7 +61,16 @@ The tool covers three classes of operation:
 
 ### 2.3 OBD-II Adapter
 
-Adapter with HS-CAN/MS-CAN switch (FORScan-compatible, in the ELS27 / vLinker FD / OBDLink EX class). Host communication via USB serial or Bluetooth.
+**Primary Target:** Vgate vLinker FS (USB/Bluetooth variants) — FORScan-recommended adapter with automatic HS-CAN/MS-CAN switching.
+
+**Key specifications:**
+- 32-bit processor with up to 3Mbps transmission speeds
+- Automatic electronic HS-CAN/MS-CAN switching (no manual toggle)
+- STN1170/STN2120 chipset (proprietary commands, not standard ELM327 AT)
+- FEPS 18V programming voltage support
+- USB serial and Bluetooth variants available
+
+**Alternative compatible adapters:** OBDLink EX, ELS27 with STN chips. Host communication via USB serial (Phase 1) or Bluetooth (later phases).
 
 ---
 
@@ -287,11 +296,14 @@ Capture real bus traces from the vehicle and store them in `tests/fixtures/` for
 
 ---
 
-## 9. Open Questions
+## 9. Implementation Decisions
 
-- Confirm exact adapter model (vLinker FD vs ELS27 vs OBDLink EX) — AT commands for MS-CAN switching vary.
+**Adapter Model:** Confirmed vLinker FS as primary target adapter. Uses proprietary STN commands for MS-CAN switching rather than standard ELM327 AT commands.
+
+**Phase 1 Communication:** USB serial only. Bluetooth support deferred to later phases for reduced complexity.
+
+**Remaining Open Questions:**
 - 2017 Fusion seed→key algorithm: validate against a real dump before Phase 4.
-- Decision on Bluetooth support in Phase 1 or USB serial only initially.
 - Versioning policy for `faraday-asbuilt`: data is derived from community reverse engineering — attribution and licensing.
 
 ---

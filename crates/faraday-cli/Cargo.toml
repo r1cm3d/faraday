@@ -1,0 +1,44 @@
+[package]
+name = "faraday-cli"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Command-line interface for Faraday OBD-II diagnostics"
+
+[[bin]]
+name = "faraday"
+path = "src/main.rs"
+
+[dependencies]
+# Core library
+faraday-core = { workspace = true }
+
+# CLI framework
+clap = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_yaml = { workspace = true }
+serde_json = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Utilities
+uuid = { workspace = true }
+hex = { workspace = true }
+
+# Terminal output
+termcolor = "1.0"

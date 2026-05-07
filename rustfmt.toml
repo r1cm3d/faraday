@@ -1,0 +1,37 @@
+# Rust formatting configuration for Faraday project
+# Following the project guidelines for consistent code style
+
+# Basic formatting
+max_width = 100
+tab_spaces = 4
+edition = "2021"
+
+# Imports
+group_imports = "StdExternalCrate"
+imports_granularity = "Crate"
+reorder_imports = true
+
+# Function formatting
+fn_params_layout = "Tall"
+fn_single_line = false
+format_code_in_doc_comments = true
+
+# Control flow
+control_brace_style = "AlwaysSameLine"
+brace_style = "SameLineWhere"
+
+# Expressions
+condense_wildcard_suffixes = true
+format_strings = true
+normalize_comments = true
+normalize_doc_attributes = true
+
+# Misc
+remove_nested_parens = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+
+# Comments and documentation
+comment_width = 80
+doc_comment_code_block_width = 100
+format_generated_files = false
