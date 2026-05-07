@@ -5,6 +5,100 @@
 
 A Rust CLI tool for communicating with the Ford Fusion 2017 SEL via OBD-II. It performs diagnostics and configuration through FORScan-compatible adapters using CAN bus protocols (HS-CAN + MS-CAN).
 
+Named in tribute to Michael Faraday, whose work on electromagnetism underpins all electrical/CAN communication in vehicles. The project aims to partially replace FORScan for scriptable, version-controllable automotive operations while serving as a deep exercise in automotive protocols.
+
+## 🎯 Project Goals
+
+- **Standard diagnostics** — Read DTCs, live data, and vehicle information via SAE J1979
+- **Proprietary reads** — Read "as-built" data and Ford-specific DIDs via UDS (ISO 14229)
+- **Configuration writes** — Modify as-built blocks with Security Access, including mandatory snapshots and rollback capability
+- **Scriptable operations** — Replace manual FORScan workflows with version-controllable CLI commands
+- **Reusable library** — Produce a decoupled `faraday-core` library for other projects
+
+## 🚗 Vehicle Support
+
+**Target Vehicle:** Ford Fusion 2017 SEL (Brazilian/Mercosur market, assembled in Hermosillo)
+
+**Supported Adapters:**
+- Primary: Vgate vLinker FS (USB/Bluetooth variants)
+- Compatible: OBDLink EX, ELS27 with STN chips
+
+**CAN Bus Architecture:**
+- **HS-CAN** (500 kbps): PCM, TCM, ABS, RCM, PSCM - pins 6/14
+- **MS-CAN** (125 kbps): BCM, IPC, APIM, HVAC, DSM, PAM - pins 3/11
+
+## 🏗️ Architecture
+
+The project follows a strict 5-layer architecture:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  CLI Layer (faraday-cli) — Command parsing with clap   │
+├─────────────────────────────────────────────────────────┤
+│  Command Layer — High-level operations                 │
+│  ReadDTCs, ReadAsBuilt, WriteAsBuilt, etc.             │
+├─────────────────────────────────────────────────────────┤
+│  Protocol Layer — J1979 (OBD-II) + UDS (ISO 14229)    │
+├─────────────────────────────────────────────────────────┤
+│  Transport Layer — ISO-TP (ISO 15765-2) over CAN       │
+├─────────────────────────────────────────────────────────┤
+│  Link Layer — ELM327 AT commands and SocketCAN         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Workspace Structure
+
+```
+faraday/
+├── Cargo.toml              # [workspace]
+├── crates/
+│   ├── faraday-core/       # Core library: link + transport + protocol + commands
+│   ├── faraday-cli/        # CLI binary (clap), produces `faraday` executable
+│   ├── faraday-asbuilt/    # As-built blocks catalog (data-only)
+│   └── faraday-tui/        # Live data viewer (ratatui)
+└── docs/SPEC.md           # Technical specification
+```
+
+## 🛡️ Safety Features
+
+**Write Operation Safety:**
+- Mandatory snapshots before any write operation
+- Validation against known blocks in `faraday-asbuilt`
+- Block writes to programming DIDs (`F1xx`, `F0xx`)
+- `--dry-run` mode required for real writes
+- Double confirmation for configuration changes
+- Audit logging in `~/.local/share/faraday/audit.jsonl`
+
+**Operational Requirements:**
+Configuration writes should only occur with:
+- Engine off, ignition in KOEO (Key On Engine Off)
+- Battery voltage ≥ 12.4V
+- No active communication DTCs
+
+## 🗺️ Development Roadmap
+
+### Phase 1: Read-only HS-CAN (standard OBD-II) ✅
+CLI commands: `read-dtc`, `clear-dtc`, `live <pids>`, `vin`
+
+### Phase 2: UDS basics, full ISO-TP
+CLI commands: `read-did --module <module> <did>`, `session --module <module> extended`
+
+### Phase 3: MS-CAN + as-built reads
+CLI commands: `asbuilt dump --module <module>`, `asbuilt show --module <module> --feature <feature>`
+
+### Phase 4: Security Access + Write
+CLI commands: `asbuilt write --module <module> --block <block>`, `asbuilt restore <snapshot>`
+
+### Phase 5: Polish and ergonomics
+Live data TUI, YAML profiles, structured logging, documentation
+
+## 🚨 Important Disclaimers
+
+- **Vehicle-specific:** Currently supports only Ford Fusion 2017 SEL
+- **No firmware reprogramming:** UDS Modes 34/36 are out of scope (high risk)
+- **CLI/TUI only:** No GUI planned
+- **Experimental:** Use at your own risk - always create snapshots before modifications
+
 ## 🔧 Development
 
 ### Prerequisites
