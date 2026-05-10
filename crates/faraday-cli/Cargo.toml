@@ -40,6 +40,7 @@ tracing-subscriber = { workspace = true }
 # Utilities
 uuid = { workspace = true }
 hex = { workspace = true }
+chrono = { workspace = true }
 
 # Terminal output
 termcolor = "1.0"

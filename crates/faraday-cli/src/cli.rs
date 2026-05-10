@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand, ValueEnum};
 use faraday_core::Module;
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(
@@ -125,6 +126,48 @@ pub enum AsBuiltAction {
 
         #[arg(long, help = "Feature name (e.g. drl_enabled)")]
         feature: String,
+    },
+
+    #[command(name = "write", about = "Write a feature value to a module")]
+    Write {
+        #[arg(long, value_enum, help = "Target module (bcm, ipc, pcm)")]
+        module: ModuleArg,
+
+        #[arg(long, help = "Feature name (e.g. drl_enabled)")]
+        feature: String,
+
+        #[arg(long, help = "New value (e.g. true, false, 0, 1, mph)")]
+        value: String,
+
+        #[arg(long, help = "Preview changes without writing to the vehicle")]
+        dry_run: bool,
+
+        #[arg(long, short = 'y', help = "Skip confirmation prompt")]
+        yes: bool,
+    },
+
+    #[command(name = "snapshot", about = "Capture an as-built snapshot for a module")]
+    Snapshot {
+        #[arg(long, value_enum, help = "Target module (bcm, ipc, pcm)")]
+        module: ModuleArg,
+
+        #[arg(
+            long,
+            help = "Output file path (default: ~/.local/share/faraday/snapshots/)"
+        )]
+        output: Option<PathBuf>,
+    },
+
+    #[command(
+        name = "restore",
+        about = "Restore module configuration from a snapshot file"
+    )]
+    Restore {
+        #[arg(help = "Path to snapshot JSON file")]
+        snapshot: PathBuf,
+
+        #[arg(long, short = 'y', help = "Skip confirmation prompt")]
+        yes: bool,
     },
 }
 

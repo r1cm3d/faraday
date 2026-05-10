@@ -16,7 +16,9 @@ pub mod ipc;
 pub mod pcm;
 
 pub mod decoder;
+pub mod encoder;
 pub mod error;
+pub mod snapshot;
 pub mod types;
 
 pub use error::{Error, Result};

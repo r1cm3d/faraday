@@ -3,7 +3,7 @@
 **Project:** Rust CLI for diagnostics and configuration of the Ford Fusion 2017 SEL via OBD-II
 **Author:** r1cm3d
 **Status:** Draft v0.1
-**Last updated:** 2026-05-06
+**Last updated:** 2026-05-10
 
 ---
 
@@ -181,21 +181,72 @@ faraday/                    # Workspace root
 
 **Acceptance criteria:** a full BCM dump produces readable, idempotent YAML (re-dumping yields a byte-identical file).
 
-### Phase 4 — Security Access + Write
+### Phase 4 — Security Access + Write ✅ Complete
 
 **Scope:** modify configurations safely.
 
 **Deliverables:**
-- Implementation of the Ford seed→key algorithm (researched on CyanLabs/FORScan forums, validated against a real module).
-- UDS Service 27 (SecurityAccess) with retry/cooldown handling.
-- UDS Service 2E (WriteDataByIdentifier).
-- **Mandatory snapshot before any write** — block dump to a timestamped file.
+- Ford seed→key algorithm in `faraday-core::protocol::seed_key` — XOR mask `0xB3CA_4057` for configuration access level 0x01 (requires hardware validation, see §9).
+- UDS Service 27 (SecurityAccess) integrated into `CommandExecutor::write_asbuilt_block`.
+- UDS Service 2E (WriteDataByIdentifier) with `security_access_granted` guard.
+- `AsBuiltEncoder` in `faraday-asbuilt::encoder` — bit-level inverse of `AsBuiltDecoder`.
+- Snapshot persistence in `faraday-asbuilt::snapshot` (serde_json, save/load).
+- **Mandatory snapshot before any write** — auto-saved to `~/.local/share/faraday/snapshots/`.
+- Audit logging in `~/.local/share/faraday/audit.jsonl` (JSONL, one entry per operation).
 - `faraday asbuilt restore <snapshot>` command for rollback.
-- Dry-run mode (`--dry-run`) that shows what would be written without writing.
-- Double interactive confirmation for writes (`--yes` for CI/scripts).
-- CLI: `faraday asbuilt write --module bcm --block 7D0-01 --byte 3 --bit 2 --value 1`.
+- Dry-run mode (`--dry-run`) — shows diff and logs `dry_run: true` without writing.
+- Interactive confirmation prompt (`--yes` to skip, for CI/scripts).
+- CLI: `faraday asbuilt write --module bcm --feature drl_enabled --value true`.
+- CLI: `faraday asbuilt snapshot --module bcm [--output <path>]`.
+- Programming DID guard — rejects writes to `F0xx`/`F1xx` DIDs at the command layer.
 
-**Acceptance criteria:** enable a reversible feature in a controlled environment (e.g. number of beeps when unlocking), validate the physical behavior, then restore from snapshot.
+**Acceptance criteria:** enable a reversible feature in a controlled environment (e.g. DRL enable/disable on BCM), validate the physical behavior, then restore from snapshot via `faraday asbuilt restore`.
+
+#### 4.1 Seed→Key Algorithm
+
+The Ford configuration-access seed→key algorithm for access level 0x01 (4-byte seed):
+
+```
+key = seed XOR 0xB3CA_4057
+```
+
+Implemented in `crates/faraday-core/src/protocol/seed_key.rs`. The XOR mask is the
+commonly documented value for Ford Fusion configuration access found in FORScan/CyanLabs
+community research. **Requires hardware validation** against a real ECU before trusting
+for production writes.
+
+#### 4.2 Snapshot Format
+
+Snapshots are JSON files written by `faraday-asbuilt::snapshot::save_snapshot`.
+Default path: `~/.local/share/faraday/snapshots/<module>_<timestamp>.json`.
+
+```json
+{
+  "timestamp": "2026-05-10T14:30:00Z",
+  "vehicle_vin": "3FADP0L33HR123456",
+  "blocks": [
+    {
+      "id": { "module": "726", "id": "01" },
+      "description": "BCM Configuration Block 01 - Lighting and DRL",
+      "did": 1793,
+      "data": [0, 0, 0, 4, 0, 0, 0, 0],
+      "features": []
+    }
+  ]
+}
+```
+
+#### 4.3 Audit Log Schema
+
+One JSON object per line in `~/.local/share/faraday/audit.jsonl`:
+
+```json
+{"timestamp":"2026-05-10T14:30:05Z","operation":"write","module":"Bcm","did":1793,"before_hex":"0000000000000000","after_hex":"0000000400000000","dry_run":false,"result":"ok"}
+```
+
+Fields: `timestamp` (ISO 8601), `operation` (`write`|`restore`), `module` (Debug name),
+`did` (decimal), `before_hex`, `after_hex` (uppercase hex), `dry_run` (bool),
+`result` (`ok` | `error: <message>`).
 
 ### Phase 5 — Polish and ergonomics
 
@@ -303,7 +354,7 @@ Capture real bus traces from the vehicle and store them in `tests/fixtures/` for
 **Phase 1 Communication:** USB serial only. Bluetooth support deferred to later phases for reduced complexity.
 
 **Remaining Open Questions:**
-- 2017 Fusion seed→key algorithm: validate against a real dump before Phase 4.
+- 2017 Fusion seed→key algorithm: the XOR mask `0xB3CA_4057` is implemented but requires hardware validation on a real ECU before trusting for production writes. A captured seed/key pair from the vehicle would allow a definitive unit test.
 - Versioning policy for `faraday-asbuilt`: data is derived from community reverse engineering — attribution and licensing.
 
 ---

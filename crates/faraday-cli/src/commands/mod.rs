@@ -6,6 +6,7 @@ use faraday_core::{
 };
 
 pub mod asbuilt;
+pub mod asbuilt_write;
 pub mod clear_dtc;
 pub mod live;
 pub mod read_did;

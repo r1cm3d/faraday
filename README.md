@@ -81,6 +81,31 @@ faraday/
 └── docs/SPEC.md            # Technical specification
 ```
 
+## ✏️ Phase 4 Commands — Security Access + Write
+
+```bash
+# Capture an as-built snapshot before making changes
+faraday --adapter /tmp/faraday-dev asbuilt snapshot --module bcm
+faraday --adapter /tmp/faraday-dev asbuilt snapshot --module bcm --output ./my_backup.json
+
+# Preview a write without touching the vehicle (dry-run)
+faraday --adapter /tmp/faraday-dev asbuilt write --module bcm --feature drl_enabled --value true --dry-run
+
+# Write a feature value (auto-captures snapshot, prompts for confirmation)
+faraday --adapter /tmp/faraday-dev asbuilt write --module bcm --feature drl_enabled --value true
+faraday --adapter /tmp/faraday-dev asbuilt write --module ipc --feature speed_units --value mph --yes
+
+# Restore all blocks from a snapshot file
+faraday --adapter /tmp/faraday-dev asbuilt restore ~/.local/share/faraday/snapshots/bcm_2026-05-10T14-30-00Z.json
+```
+
+**Supported value formats:**
+- Boolean features: `true`/`false`, `on`/`off`, `1`/`0`, `enabled`/`disabled`
+- Enumerated features: value name (case-insensitive) or numeric key
+- Numeric features: integer within the feature's defined range
+
+Each write appends an entry to `~/.local/share/faraday/audit.jsonl`.
+
 ## 🛡️ Safety Features
 
 **Write Operation Safety:**
@@ -114,17 +139,22 @@ CLI commands: `asbuilt dump --module <module>`, `asbuilt show --module <module> 
 - **CLI commands:** ✅ `asbuilt dump` and `asbuilt show` implemented
 - **MS-CAN support:** ✅ Automatic CAN bus switching per module
 
-### Phase 4: Security Access + Write 🔶
-CLI commands: `asbuilt write --module <module> --block <block>`, `asbuilt restore <snapshot>`
-- **Protocol support:** Complete (Security Access, WriteDataByIdentifier in UDS)
-- **CLI commands:** Missing - no write/restore commands implemented
-- **Safety systems:** Missing - snapshot creation and audit logging not implemented
+### Phase 4: Security Access + Write ✅
+CLI commands: `asbuilt write`, `asbuilt snapshot`, `asbuilt restore`
+- **Protocol support:** ✅ UDS 0x27 (SecurityAccess) + 0x2E (WriteDataByIdentifier)
+- **Seed→key algorithm:** ✅ Ford FORScan configuration-access algorithm (requires hardware validation)
+- **Feature-level writes:** ✅ `asbuilt write --module bcm --feature drl_enabled --value true`
+- **Snapshots:** ✅ Auto-captured before each write; `asbuilt snapshot --module bcm`
+- **Rollback:** ✅ `asbuilt restore <snapshot.json>`
+- **Dry-run:** ✅ `--dry-run` shows diff without touching the vehicle
+- **Audit logging:** ✅ `~/.local/share/faraday/audit.jsonl` (JSONL, one entry per operation)
+- **Safety guards:** ✅ Programming DID block (`F0xx`/`F1xx`), interactive confirmation, `--yes` for scripts
 
 ### Phase 5: Polish and ergonomics 🔶
 Live data TUI, YAML profiles, structured logging, documentation
 - **Live data TUI:** ✅ Complete (`faraday-tui` fully functional)
 - **YAML profiles:** ❌ Not implemented
-- **Structured logging:** 🔶 Partial (tracing exists, audit logging missing)
+- **Structured logging:** 🔶 Partial (tracing + audit JSONL done; session logging TBD)
 - **Documentation:** ✅ Complete and comprehensive
 
 ### Phase 6: Comprehensive Hidden Diagnostic TUI 🔶
@@ -142,13 +172,10 @@ Transform TUI from basic OBD-II viewer to professional Ford diagnostic interface
 - **Vehicle history tracking** with engine operating hours, trip data visualization, and cold start frequency
 - **Professional diagnostic capabilities** matching FORScan functionality
 
-### Next Priority: Complete Phase 3 & 4 CLI Commands
-The core functionality exists but needs CLI interface implementation:
-1. Add `asbuilt dump/show` commands
-2. Add `asbuilt write/restore` commands with safety systems
-3. Implement snapshot and audit logging systems
-4. Add YAML profile support
-5. **Phase 6:** Implement comprehensive diagnostic TUI expansion
+### Next Priority: Phase 5 & 6
+1. YAML profile support (`faraday profile apply my-fusion.yml`)
+2. Structured session logging beyond audit JSONL (mdBook documentation)
+3. **Phase 6:** Comprehensive diagnostic TUI expansion across all vehicle systems
 
 ## 🚨 Important Disclaimers
 

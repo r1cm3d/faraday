@@ -1,7 +1,10 @@
 # Faraday Makefile
 # Following project guidelines for target naming and organization
 
-.PHONY: help have deps build test clean lint fmt doc install install/tui install/emu
+.PHONY: help have deps build build/debug build/check test test/unit test/integration \
+        lint fmt fmt/check doc doc/open install install/tui install/emu \
+        clean clean/all dev/check dev/quick deps/update deps/audit size \
+        git/status git/prepare
 
 # Default target
 help: ## Show this help message
@@ -93,15 +96,6 @@ clean/all: clean ## Clean everything including cache
 dev/check: fmt lint build/check test ## Full development check (format, lint, compile, test)
 
 dev/quick: build/check test/unit ## Quick development check (compile, unit tests)
-
-# Phase 1 specific targets
-phase1/build: ## Build Phase 1 components (read-only HS-CAN)
-	@echo "🚗 Building Phase 1 components..."
-	@cargo build --package faraday-core --package faraday-cli
-
-phase1/test: ## Test Phase 1 functionality
-	@echo "🚗 Testing Phase 1 functionality..."
-	@cargo test --package faraday-core --package faraday-cli
 
 # Utility targets
 deps/update: ## Update dependencies

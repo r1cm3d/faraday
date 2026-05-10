@@ -233,6 +233,156 @@ faraday read-did --module ipc F190 --verbose
 - [ ] Different modules respond appropriately
 - [ ] MS-CAN modules (BCM, IPC) work correctly
 
+## Phase 3 Validation: MS-CAN + As-Built Reads
+
+### 3.1 As-Built Dump
+
+```bash
+# Dump all known BCM blocks
+faraday asbuilt dump --module bcm --verbose
+
+# Dump IPC and PCM
+faraday asbuilt dump --module ipc --verbose
+faraday asbuilt dump --module pcm --verbose
+```
+
+**Validation checklist:**
+- [ ] Command completes without errors
+- [ ] Output is human-readable YAML with feature names and values
+- [ ] Re-running produces identical output (idempotent)
+- [ ] MS-CAN switching works (BCM/IPC differ from PCM bus)
+
+### 3.2 Feature Show
+
+```bash
+# Read a specific feature from BCM
+faraday asbuilt show --module bcm --feature drl_enabled
+faraday asbuilt show --module bcm --feature auto_lock_on_drive
+
+# Read IPC features
+faraday asbuilt show --module ipc --feature speed_units
+faraday asbuilt show --module ipc --feature show_digital_speedometer
+```
+
+**Validation checklist:**
+- [ ] Feature values make sense for current vehicle configuration
+- [ ] Boolean features display true/false descriptions
+- [ ] Enumerated features display correct option names
+
+---
+
+## Phase 4 Validation: Security Access + Write
+
+> **⚠️ IMPORTANT:** Start with dry-run and snapshot commands before any real writes.
+> The seed→key algorithm (`0xB3CA_4057` XOR mask) requires hardware validation.
+> Capture a real seed/key pair from the vehicle to confirm the algorithm is correct.
+
+### 4.1 Snapshot Capture
+
+```bash
+# Capture BCM snapshot before any changes
+faraday asbuilt snapshot --module bcm --verbose
+
+# Save to a specific path
+faraday asbuilt snapshot --module bcm --output ./bcm_before.json --verbose
+
+# Verify the file was created
+cat ~/.local/share/faraday/snapshots/bcm_*.json | head -20
+```
+
+**Validation checklist:**
+- [ ] Snapshot file created successfully
+- [ ] JSON is valid and contains block data with correct hex bytes
+- [ ] Timestamp is present and correct
+- [ ] File is saved to `~/.local/share/faraday/snapshots/` by default
+
+### 4.2 Dry-Run Write
+
+Test the write flow without touching the vehicle:
+
+```bash
+# Dry-run: shows diff and logs entry, does NOT write
+faraday asbuilt write --module bcm --feature drl_enabled --value true --dry-run --verbose
+
+# Verify the audit log entry was created with dry_run=true
+tail -1 ~/.local/share/faraday/audit.jsonl
+```
+
+**Validation checklist:**
+- [ ] Output shows "Before" and "After" hex diff
+- [ ] Output prints `[DRY RUN] no changes written to vehicle`
+- [ ] Audit log entry has `"dry_run":true`
+- [ ] Snapshot was captured even in dry-run mode
+- [ ] Vehicle behavior is unchanged
+
+### 4.3 Seed→Key Algorithm Validation
+
+**This step must be done before any real write.**
+
+Capture the seed that the BCM returns and derive the expected key:
+
+```bash
+# Use verbose UDS session to capture seed
+faraday -vv session --module bcm extended 2>&1 | grep -i seed
+```
+
+Compare the key computed by `seed_key::compute_key` against the value the ECU
+accepts. If the ECU returns NRC `0x35` (Invalid key), the XOR mask
+`0xB3CA_4057` is wrong for your vehicle and the algorithm needs updating in
+`crates/faraday-core/src/protocol/seed_key.rs`.
+
+**Validation checklist:**
+- [ ] ECU responds with `0x67 0x02` (positive key acceptance) — not NRC 0x35
+- [ ] If NRC 0x35 is received: record the seed bytes and expected key, update `compute_key`
+
+### 4.4 Real Write (only after 4.3 passes)
+
+Choose a safe, reversible feature such as unlock beep count:
+
+```bash
+# 1. Capture a baseline snapshot
+faraday asbuilt snapshot --module bcm --output ./bcm_baseline.json
+
+# 2. Read the current value
+faraday asbuilt show --module bcm --feature unlock_beeps
+
+# 3. Write a new value (confirm prompt will appear)
+faraday asbuilt write --module bcm --feature unlock_beeps --value 1 --verbose
+
+# 4. Verify the new value
+faraday asbuilt show --module bcm --feature unlock_beeps
+
+# 5. Test physically (lock/unlock with key fob — listen for beeps)
+
+# 6. Restore from snapshot
+faraday asbuilt restore ./bcm_baseline.json --verbose
+
+# 7. Verify restored value
+faraday asbuilt show --module bcm --feature unlock_beeps
+```
+
+**Validation checklist:**
+- [ ] Security access granted (no NRC errors)
+- [ ] Write completes successfully
+- [ ] Physical behavior matches written value (beep count changes)
+- [ ] Audit log entry has `"dry_run":false,"result":"ok"`
+- [ ] Snapshot file exists in `~/.local/share/faraday/snapshots/`
+- [ ] Restore command returns value to original
+- [ ] Physical behavior returns to original after restore
+
+### 4.5 Programming DID Guard
+
+Verify that writes to reserved DIDs are blocked:
+
+```bash
+# This should be rejected without contacting the vehicle
+faraday asbuilt write --module pcm --feature any_feature --value 1 2>&1 | grep blocked
+# Expected: error containing "blocked for safety"
+```
+
+**Validation checklist:**
+- [ ] Command is rejected locally before any CAN traffic
+
 ## Phase 5 Validation: TUI Application
 
 ### 5.1 Live Data Visualization
@@ -356,7 +506,7 @@ faraday vin --verbose -vv
 3. **Don't leave ignition on for extended periods** (battery drain)
 4. **Monitor battery voltage during long sessions**
 5. **Never clear DTCs without understanding their meaning**
-6. **Create backups before any write operations** (when implemented)
+6. **Create backups before any write operations** (`faraday asbuilt snapshot --module <module>`)
 
 ### Best Practices
 
@@ -378,15 +528,21 @@ faraday vin --verbose -vv
 - **DID reading**: Should return valid data identifiers
 - **UDS commands**: Should work with both HS-CAN and MS-CAN modules
 
+### Phase 3 (Complete ✅)
+- **As-built dump**: Should return YAML with feature names and values for BCM, IPC, PCM
+- **Feature show**: Should return the correct interpreted value for known features
+
+### Phase 4 (Complete ✅)
+- **Snapshot**: Should create JSON file in `~/.local/share/faraday/snapshots/`
+- **Dry-run write**: Should show diff and log entry without writing to vehicle
+- **Real write**: Should change physical behavior and produce audit log entry (requires seed→key validation)
+- **Restore**: Should return module to previous state from snapshot
+- **Audit log**: Each operation appends one JSONL line to `~/.local/share/faraday/audit.jsonl`
+
 ### Phase 5 TUI (Complete ✅)
 - **Interface**: Should display clean, updating interface
 - **Live data**: Should show real-time vehicle data
 - **Performance**: Should be responsive and stable
-
-### Phases 3-4 (Core Complete, CLI Missing 🔶)
-- **No CLI commands available yet** for as-built operations
-- **Core libraries functional** but not accessible via command line
-- **Wait for CLI implementation** before testing write operations
 
 ## Hardware Validation Checklist
 
@@ -408,6 +564,19 @@ Use this checklist for complete validation:
 - [ ] Diagnostic sessions controllable
 - [ ] DID reading successful
 - [ ] UDS commands work on all modules
+
+### Phase 3 Testing
+- [ ] As-built dump produces correct YAML for BCM, IPC, PCM
+- [ ] Feature show returns expected values
+
+### Phase 4 Testing
+- [ ] Snapshot creates valid JSON file
+- [ ] Dry-run write shows diff without touching vehicle
+- [ ] Seed→key algorithm validated (ECU accepts key — no NRC 0x35)
+- [ ] Real write changes physical behavior
+- [ ] Restore returns module to original state
+- [ ] Audit log entries are correct JSONL
+- [ ] Programming DID guard rejects F0xx/F1xx writes
 
 ### Phase 5 Testing
 - [ ] TUI launches and runs stably

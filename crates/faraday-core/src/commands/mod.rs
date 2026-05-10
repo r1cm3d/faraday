@@ -13,6 +13,7 @@ pub mod asbuilt;
 pub mod diagnostics;
 pub mod live_data;
 pub mod vehicle_info;
+pub mod write_asbuilt;
 
 pub struct CommandExecutor<T: IsoTpTransport> {
     transport: T,

@@ -11,6 +11,19 @@ pub async fn execute(adapter_path: String, action: AsBuiltAction) -> Result<()> 
     match action {
         AsBuiltAction::Dump { module } => dump(adapter_path, module).await,
         AsBuiltAction::Show { module, feature } => show(adapter_path, module, feature).await,
+        AsBuiltAction::Write {
+            module,
+            feature,
+            value,
+            dry_run,
+            yes,
+        } => super::asbuilt_write::write(adapter_path, module, feature, value, dry_run, yes).await,
+        AsBuiltAction::Snapshot { module, output } => {
+            super::asbuilt_write::snapshot(adapter_path, module, output).await
+        }
+        AsBuiltAction::Restore { snapshot, yes } => {
+            super::asbuilt_write::restore(adapter_path, snapshot, yes).await
+        }
     }
 }
 

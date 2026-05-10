@@ -5,6 +5,7 @@ A command-line tool for automotive diagnostics and configuration
 through FORScan-compatible OBD-II adapters.
 */
 
+mod audit;
 mod cli;
 mod commands;
 mod error;

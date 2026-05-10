@@ -10,4 +10,5 @@ of the underlying CAN hardware.
 */
 
 pub mod j1979;
+pub mod seed_key;
 pub mod uds;
