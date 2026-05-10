@@ -77,10 +77,9 @@ impl VLinkerFs {
 
         let text = String::from_utf8_lossy(&raw);
         let last_line = text
-            .split(|c| c == '\r' || c == '\n')
+            .split(['\r', '\n'])
             .map(str::trim)
-            .filter(|s| !s.is_empty() && !command.trim().eq_ignore_ascii_case(s))
-            .last()
+            .rfind(|s| !s.is_empty() && !command.trim().eq_ignore_ascii_case(s))
             .unwrap_or("")
             .to_string();
 

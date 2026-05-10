@@ -2,8 +2,8 @@ use anyhow::Result;
 use faraday_core::Module;
 use crate::{cli::VinMethod, output::OutputFormatter};
 
-pub async fn execute(adapter_path: String, emulate: bool, method: VinMethod) -> Result<()> {
-    let mut executor = super::create_executor(adapter_path, emulate).await?;
+pub async fn execute(adapter_path: String, method: VinMethod) -> Result<()> {
+    let mut executor = super::create_executor(adapter_path).await?;
     let mut formatter = OutputFormatter::new(false);
 
     let vin = match method {

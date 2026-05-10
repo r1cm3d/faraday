@@ -76,8 +76,9 @@ faraday/
 │   ├── faraday-core/       # Core library: link + transport + protocol + commands
 │   ├── faraday-cli/        # CLI binary (clap), produces `faraday` executable
 │   ├── faraday-asbuilt/    # As-built blocks catalog (data-only)
-│   └── faraday-tui/        # Live data viewer (ratatui)
-└── docs/SPEC.md           # Technical specification
+│   ├── faraday-tui/        # Live data viewer (ratatui)
+│   └── faraday-emu/        # PTY-based ECU emulator, produces `faraday-emu` executable
+└── docs/SPEC.md            # Technical specification
 ```
 
 ## 🛡️ Safety Features
@@ -159,19 +160,23 @@ The core functionality exists but needs CLI interface implementation:
 
 ### ECU Emulator
 
-All commands support an `--emulator` flag that runs against a built-in ECU emulator instead of real hardware. No OBD-II adapter or vehicle connection is required.
+`faraday-emu` is a standalone process that creates a virtual serial port (PTY) and speaks the full ELM327/STN text protocol. It exercises the **complete 5-layer stack** — including `VLinkerFs`, baud rate configuration, and AT/STN command parsing — identical to a real adapter. No OBD-II adapter or vehicle connection is required.
 
 ```bash
-faraday --emulator vin
-faraday --emulator read-dtc
-faraday --emulator read-dtc --stored --pending --permanent
-faraday --emulator live 0C,05,0D
-faraday --emulator read-did --module pcm F190
-faraday --emulator session --module pcm extended
-faraday --emulator clear-dtc
+# Terminal 1 — start the emulator (prints slave device path, creates symlink)
+faraday-emu --link /tmp/faraday-dev
+
+# Terminal 2 — connect as if it were real hardware
+faraday --adapter /tmp/faraday-dev vin
+faraday --adapter /tmp/faraday-dev read-dtc
+faraday --adapter /tmp/faraday-dev live 0C,05,0D
+faraday --adapter /tmp/faraday-dev read-did --module pcm F190
+faraday --adapter /tmp/faraday-dev session --module pcm extended
 ```
 
-The emulator implements the full ISO-TP / J1979 / UDS stack, exercising the same code paths as real hardware. Emulated values:
+Omit `--link` to use the raw `/dev/pts/N` path printed on stdout. The emulator removes the symlink automatically on Ctrl-C or SIGTERM.
+
+**Simulated values:**
 
 | Data | Value |
 |---|---|

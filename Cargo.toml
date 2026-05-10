@@ -4,6 +4,7 @@ members = [
     "crates/faraday-cli",
     "crates/faraday-asbuilt",
     "crates/faraday-tui",
+    "crates/faraday-emu",
 ]
 
 resolver = "2"

@@ -32,25 +32,24 @@ async fn main() -> Result<()> {
 }
 
 async fn run_command(args: Args) -> Result<()> {
-    let emulate = args.emulate;
     match args.command {
         Commands::ReadDtc { module, stored, pending, permanent } => {
-            commands::read_dtc::execute(args.adapter, emulate, module, stored, pending, permanent).await
+            commands::read_dtc::execute(args.adapter, module, stored, pending, permanent).await
         }
         Commands::ClearDtc { module } => {
-            commands::clear_dtc::execute(args.adapter, emulate, module).await
+            commands::clear_dtc::execute(args.adapter, module).await
         }
         Commands::Live { pids, module, interval } => {
-            commands::live::execute(args.adapter, emulate, module, pids, interval).await
+            commands::live::execute(args.adapter, module, pids, interval).await
         }
         Commands::Vin { method } => {
-            commands::vin::execute(args.adapter, emulate, method).await
+            commands::vin::execute(args.adapter, method).await
         }
         Commands::ReadDid { module, did } => {
-            commands::read_did::execute(args.adapter, emulate, module, did).await
+            commands::read_did::execute(args.adapter, module, did).await
         }
         Commands::Session { module, session } => {
-            commands::session::execute(args.adapter, emulate, module, session).await
+            commands::session::execute(args.adapter, module, session).await
         }
     }
 }

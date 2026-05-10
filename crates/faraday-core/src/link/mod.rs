@@ -13,7 +13,6 @@ for the transport layer to send and receive CAN frames.
 use crate::{CanBus, CanFrame, Result};
 use async_trait::async_trait;
 
-pub mod sim;
 pub mod vlinker;
 
 #[async_trait]

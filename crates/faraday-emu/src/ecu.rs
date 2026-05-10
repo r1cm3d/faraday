@@ -1,5 +1,4 @@
-use crate::{CanBus, CanFrame, CanId, Error, Result};
-use async_trait::async_trait;
+use faraday_core::{CanFrame, CanId};
 use std::collections::VecDeque;
 
 pub struct SimulatedEcu {
@@ -11,6 +10,30 @@ impl SimulatedEcu {
         Self {
             response_queue: VecDeque::new(),
         }
+    }
+
+    pub fn process_frame(&mut self, frame: &CanFrame) {
+        if frame.data.is_empty() {
+            return;
+        }
+        let pci_type = (frame.data[0] & 0xF0) >> 4;
+        if pci_type == 3 {
+            return;
+        }
+        if pci_type == 0 {
+            let len = (frame.data[0] & 0x0F) as usize;
+            if len > 0 && frame.data.len() > len {
+                let payload = &frame.data[1..1 + len];
+                if let Some(response) = Self::generate_response(payload) {
+                    let resp_id = Self::response_id_for(frame.id);
+                    self.enqueue_iso_tp(resp_id, &response);
+                }
+            }
+        }
+    }
+
+    pub fn pop_response(&mut self) -> Option<CanFrame> {
+        self.response_queue.pop_front()
     }
 
     fn response_id_for(request_id: CanId) -> CanId {
@@ -31,17 +54,17 @@ impl SimulatedEcu {
 
     fn pid_bytes(pid: u8) -> Vec<u8> {
         match pid {
-            0x04 => vec![0x5A],       // engine load ~35%
-            0x05 => vec![0x69],       // coolant 65°C
-            0x0C => vec![0x0C, 0x80], // 800 rpm
-            0x0D => vec![0x00],       // 0 km/h
-            0x0F => vec![0x45],       // intake 29°C
-            0x10 => vec![0x00, 0x1E], // MAF 0.30 g/s
-            0x11 => vec![0x00],       // throttle 0%
-            0x2F => vec![0xB3],       // fuel ~70%
-            0x42 => vec![0x37, 0xB8], // 14.26V
-            0x46 => vec![0x37],       // ambient 15°C
-            0x5C => vec![0x69],       // oil 65°C
+            0x04 => vec![0x5A],
+            0x05 => vec![0x69],
+            0x0C => vec![0x0C, 0x80],
+            0x0D => vec![0x00],
+            0x0F => vec![0x45],
+            0x10 => vec![0x00, 0x1E],
+            0x11 => vec![0x00],
+            0x2F => vec![0xB3],
+            0x42 => vec![0x37, 0xB8],
+            0x46 => vec![0x37],
+            0x5C => vec![0x69],
             _ => vec![0x00],
         }
     }
@@ -97,12 +120,14 @@ impl SimulatedEcu {
             while frame.len() < 8 {
                 frame.push(0x55);
             }
-            self.response_queue.push_back(CanFrame::new(response_id, frame));
+            self.response_queue
+                .push_back(CanFrame::new(response_id, frame));
         } else {
             let total = data.len() as u16;
             let mut first = vec![0x10 | ((total >> 8) & 0x0F) as u8, (total & 0xFF) as u8];
             first.extend_from_slice(&data[..6]);
-            self.response_queue.push_back(CanFrame::new(response_id, first));
+            self.response_queue
+                .push_back(CanFrame::new(response_id, first));
 
             let mut offset = 6;
             let mut seq = 1u8;
@@ -113,7 +138,8 @@ impl SimulatedEcu {
                 while frame.len() < 8 {
                     frame.push(0x55);
                 }
-                self.response_queue.push_back(CanFrame::new(response_id, frame));
+                self.response_queue
+                    .push_back(CanFrame::new(response_id, frame));
                 offset = end;
                 seq = (seq + 1) % 16;
             }
@@ -121,102 +147,62 @@ impl SimulatedEcu {
     }
 }
 
-impl Default for SimulatedEcu {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-#[async_trait]
-impl super::LinkLayer for SimulatedEcu {
-    async fn connect(&mut self) -> Result<()> {
-        Ok(())
-    }
-
-    async fn disconnect(&mut self) -> Result<()> {
-        Ok(())
-    }
-
-    async fn send_frame(&mut self, frame: &CanFrame) -> Result<()> {
-        if frame.data.is_empty() {
-            return Ok(());
-        }
-        let pci_type = (frame.data[0] & 0xF0) >> 4;
-        if pci_type == 3 {
-            return Ok(());
-        }
-        if pci_type == 0 {
-            let len = (frame.data[0] & 0x0F) as usize;
-            if len > 0 && frame.data.len() >= 1 + len {
-                let payload = &frame.data[1..1 + len];
-                if let Some(response) = Self::generate_response(payload) {
-                    let resp_id = Self::response_id_for(frame.id);
-                    self.enqueue_iso_tp(resp_id, &response);
-                }
-            }
-        }
-        Ok(())
-    }
-
-    async fn receive_frame(&mut self) -> Result<CanFrame> {
-        self.response_queue
-            .pop_front()
-            .ok_or_else(|| Error::link("no simulated response available"))
-    }
-
-    async fn set_can_bus(&mut self, _bus: CanBus) -> Result<()> {
-        Ok(())
-    }
-
-    fn is_connected(&self) -> bool {
-        true
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::link::LinkLayer;
+    use faraday_core::CanId;
 
-    #[tokio::test]
-    async fn responds_to_mode01_rpm_request() {
+    #[test]
+    fn responds_to_mode01_rpm_request() {
         let mut ecu = SimulatedEcu::new();
-        let req = CanFrame::new(CanId::new(0x7DF), vec![0x02, 0x01, 0x0C, 0x55, 0x55, 0x55, 0x55, 0x55]);
-        ecu.send_frame(&req).await.unwrap();
-        let resp = ecu.receive_frame().await.unwrap();
+        let req = CanFrame::new(
+            CanId::new(0x7DF),
+            vec![0x02, 0x01, 0x0C, 0x55, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let resp = ecu.pop_response().unwrap();
         assert_eq!(resp.id, CanId::new(0x7E8));
-        assert_eq!(resp.data[0], 0x04); // SF length 4
-        assert_eq!(resp.data[1], 0x41); // positive response to 0x01
-        assert_eq!(resp.data[2], 0x0C); // PID echo
-        assert_eq!(resp.data[3..5], [0x0C, 0x80]); // 800 rpm
+        assert_eq!(resp.data[0], 0x04);
+        assert_eq!(resp.data[1], 0x41);
+        assert_eq!(resp.data[2], 0x0C);
+        assert_eq!(resp.data[3..5], [0x0C, 0x80]);
     }
 
-    #[tokio::test]
-    async fn responds_to_mode03_with_no_dtcs() {
+    #[test]
+    fn responds_to_mode03_with_no_dtcs() {
         let mut ecu = SimulatedEcu::new();
-        let req = CanFrame::new(CanId::new(0x7DF), vec![0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55]);
-        ecu.send_frame(&req).await.unwrap();
-        let resp = ecu.receive_frame().await.unwrap();
+        let req = CanFrame::new(
+            CanId::new(0x7DF),
+            vec![0x01, 0x03, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let resp = ecu.pop_response().unwrap();
         assert_eq!(resp.data[1], 0x43);
         assert_eq!(resp.data[2], 0x00);
     }
 
-    #[tokio::test]
-    async fn responds_to_vin_request_as_multiframe() {
+    #[test]
+    fn responds_to_vin_request_as_multiframe() {
         let mut ecu = SimulatedEcu::new();
-        let req = CanFrame::new(CanId::new(0x7DF), vec![0x02, 0x09, 0x02, 0x55, 0x55, 0x55, 0x55, 0x55]);
-        ecu.send_frame(&req).await.unwrap();
-        let ff = ecu.receive_frame().await.unwrap();
-        assert_eq!((ff.data[0] & 0xF0) >> 4, 1); // first frame
+        let req = CanFrame::new(
+            CanId::new(0x7DF),
+            vec![0x02, 0x09, 0x02, 0x55, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let ff = ecu.pop_response().unwrap();
+        assert_eq!((ff.data[0] & 0xF0) >> 4, 1);
         let total_len = (((ff.data[0] & 0x0F) as u16) << 8) | ff.data[1] as u16;
-        assert_eq!(total_len, 20); // [0x49, 0x02, 0x01] + 17 VIN bytes
+        assert_eq!(total_len, 20);
     }
 
-    #[tokio::test]
-    async fn flow_control_does_not_enqueue_response() {
+    #[test]
+    fn flow_control_does_not_enqueue_response() {
         let mut ecu = SimulatedEcu::new();
-        let fc = CanFrame::new(CanId::new(0x7DF), vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55]);
-        ecu.send_frame(&fc).await.unwrap();
-        assert!(ecu.receive_frame().await.is_err());
+        let fc = CanFrame::new(
+            CanId::new(0x7DF),
+            vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&fc);
+        assert!(ecu.pop_response().is_none());
     }
 }

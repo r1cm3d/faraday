@@ -27,14 +27,6 @@ pub struct Args {
     )]
     pub adapter: String,
 
-    #[arg(
-        long = "emulator",
-        global = true,
-        help = "Run against a built-in ECU emulator instead of real hardware",
-        action = clap::ArgAction::SetTrue
-    )]
-    pub emulate: bool,
-
     #[command(subcommand)]
     pub command: Commands,
 }
