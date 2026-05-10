@@ -17,7 +17,7 @@ pub mod isotp;
 pub trait IsoTpTransport: Send + Sync {
     async fn send(&mut self, request_id: CanId, data: &[u8]) -> Result<()>;
 
-    async fn receive(&mut self, response_id: CanId) -> Result<Vec<u8>>;
+    async fn receive(&mut self, request_id: CanId, response_id: CanId) -> Result<Vec<u8>>;
 
     async fn request_response(&mut self, request_id: CanId, response_id: CanId, data: &[u8]) -> Result<Vec<u8>>;
 

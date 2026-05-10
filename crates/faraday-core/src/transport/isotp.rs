@@ -123,6 +123,10 @@ impl<L: LinkLayer> IsoTp<L> {
     }
 
 
+    fn create_flow_control_frame(&self, request_id: CanId) -> CanFrame {
+        CanFrame::new(request_id, vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55])
+    }
+
     async fn receive_frame_with_id(&mut self, expected_id: CanId) -> Result<CanFrame> {
         loop {
             let frame = self.link.receive_frame().await?;
@@ -146,7 +150,7 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
         }
     }
 
-    async fn receive(&mut self, response_id: CanId) -> Result<Vec<u8>> {
+    async fn receive(&mut self, request_id: CanId, response_id: CanId) -> Result<Vec<u8>> {
         trace!("Receiving ISO-TP message from ID {:03X}", response_id.id());
 
         let first_frame = timeout(self.timeout, self.receive_frame_with_id(response_id)).await
@@ -170,6 +174,10 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
             PciType::FirstFrame => {
                 let length = (((first_frame.data[0] & 0x0F) as u16) << 8) | first_frame.data[1] as u16;
                 let mut data = first_frame.data[2..].to_vec();
+
+                let fc_frame = self.create_flow_control_frame(request_id);
+                self.link.send_frame(&fc_frame).await?;
+                trace!("Sent Flow Control frame to {:03X}", request_id.id());
 
                 let mut expected_sequence = 1u8;
                 while data.len() < length as usize {
@@ -211,10 +219,118 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
                request_id.id(), response_id.id(), data.len());
 
         self.send(request_id, data).await?;
-        self.receive(response_id).await
+        self.receive(request_id, response_id).await
     }
 
     async fn set_timeout(&mut self, timeout: Duration) {
         self.timeout = timeout;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{CanBus, CanFrame, CanId};
+    use crate::transport::IsoTpTransport;
+    use async_trait::async_trait;
+    use std::collections::VecDeque;
+    use std::sync::{Arc, Mutex};
+
+    struct MockLinkLayer {
+        sent_frames: Arc<Mutex<Vec<CanFrame>>>,
+        recv_queue: Arc<Mutex<VecDeque<CanFrame>>>,
+    }
+
+    impl MockLinkLayer {
+        fn new(recv_frames: Vec<CanFrame>) -> Self {
+            Self {
+                sent_frames: Arc::new(Mutex::new(Vec::new())),
+                recv_queue: Arc::new(Mutex::new(VecDeque::from(recv_frames))),
+            }
+        }
+    }
+
+    #[async_trait]
+    impl crate::link::LinkLayer for MockLinkLayer {
+        async fn connect(&mut self) -> crate::Result<()> { Ok(()) }
+        async fn disconnect(&mut self) -> crate::Result<()> { Ok(()) }
+
+        async fn send_frame(&mut self, frame: &CanFrame) -> crate::Result<()> {
+            self.sent_frames.lock().unwrap().push(frame.clone());
+            Ok(())
+        }
+
+        async fn receive_frame(&mut self) -> crate::Result<CanFrame> {
+            self.recv_queue
+                .lock()
+                .unwrap()
+                .pop_front()
+                .ok_or_else(|| crate::Error::link("mock recv queue exhausted"))
+        }
+
+        async fn set_can_bus(&mut self, _bus: CanBus) -> crate::Result<()> { Ok(()) }
+
+        fn is_connected(&self) -> bool { true }
+    }
+
+    #[tokio::test]
+    async fn receive_multi_frame_sends_flow_control_and_reassembles() {
+        let request_id = CanId::new(0x7E0);
+        let response_id = CanId::new(0x7E8);
+
+        // 13-byte payload 0x01..=0x0D split across a FirstFrame + one ConsecutiveFrame
+        let first_frame = CanFrame::new(
+            response_id,
+            vec![0x10, 0x0D, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06],
+        );
+        let consec_frame = CanFrame::new(
+            response_id,
+            vec![0x21, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D],
+        );
+
+        let mock = MockLinkLayer::new(vec![first_frame, consec_frame]);
+        let sent_ref = mock.sent_frames.clone();
+
+        let mut transport = IsoTp::new(mock);
+        let result: Vec<u8> = transport.receive(request_id, response_id).await.unwrap();
+
+        assert_eq!(result, (1u8..=13).collect::<Vec<u8>>());
+
+        let sent = sent_ref.lock().unwrap();
+        assert_eq!(sent.len(), 1, "expected exactly one FC frame sent");
+        assert_eq!(sent[0].id, request_id, "FC must be addressed to request_id");
+        assert_eq!(
+            sent[0].data,
+            vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55],
+            "FC must be ContinueToSend with block_size=0 and STmin=0"
+        );
+    }
+
+    proptest::proptest! {
+        #[test]
+        fn single_frame_receive_no_fc_sent(
+            payload in proptest::collection::vec(proptest::num::u8::ANY, 1usize..=7usize)
+        ) {
+            tokio::runtime::Runtime::new().unwrap().block_on(async {
+                let request_id = CanId::new(0x7E0);
+                let response_id = CanId::new(0x7E8);
+
+                let len = payload.len() as u8;
+                let mut frame_data = vec![len];
+                frame_data.extend_from_slice(&payload);
+                while frame_data.len() < 8 {
+                    frame_data.push(0x55);
+                }
+
+                let mock = MockLinkLayer::new(vec![CanFrame::new(response_id, frame_data)]);
+                let sent_ref = mock.sent_frames.clone();
+
+                let mut transport = IsoTp::new(mock);
+                let result: Vec<u8> = transport.receive(request_id, response_id).await.unwrap();
+
+                assert_eq!(result, payload);
+                assert!(sent_ref.lock().unwrap().is_empty(), "no FC for single-frame");
+            });
+        }
     }
 }

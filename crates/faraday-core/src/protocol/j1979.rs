@@ -97,7 +97,7 @@ impl PidValue {
     fn interpret_value(pid: Pid, raw_value: &[u8]) -> (Option<f64>, Option<String>) {
         match pid {
             Pid::ENGINE_LOAD => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = (raw_value[0] as f64 * 100.0) / 255.0;
                     (Some(value), Some("%".to_string()))
                 } else {
@@ -105,7 +105,7 @@ impl PidValue {
                 }
             }
             Pid::COOLANT_TEMP | Pid::INTAKE_TEMP | Pid::AMBIENT_TEMP => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = raw_value[0] as f64 - 40.0;
                     (Some(value), Some("°C".to_string()))
                 } else {
@@ -121,7 +121,7 @@ impl PidValue {
                 }
             }
             Pid::VEHICLE_SPEED => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = raw_value[0] as f64;
                     (Some(value), Some("km/h".to_string()))
                 } else {
@@ -129,7 +129,7 @@ impl PidValue {
                 }
             }
             Pid::THROTTLE_POS => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = (raw_value[0] as f64 * 100.0) / 255.0;
                     (Some(value), Some("%".to_string()))
                 } else {
@@ -145,7 +145,7 @@ impl PidValue {
                 }
             }
             Pid::FUEL_TANK_LEVEL => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = (raw_value[0] as f64 * 100.0) / 255.0;
                     (Some(value), Some("%".to_string()))
                 } else {
@@ -161,7 +161,7 @@ impl PidValue {
                 }
             }
             Pid::ENGINE_OIL_TEMP => {
-                if raw_value.len() >= 1 {
+                if !raw_value.is_empty() {
                     let value = raw_value[0] as f64 - 40.0;
                     (Some(value), Some("°C".to_string()))
                 } else {
@@ -219,7 +219,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
             .request_response(FUNCTIONAL_REQUEST_ID, module_response_id, &request)
             .await?;
 
-        if response.len() >= 1 && response[0] == 0x44 {
+        if !response.is_empty() && response[0] == 0x44 {
             debug!("DTCs cleared successfully");
             Ok(())
         } else {

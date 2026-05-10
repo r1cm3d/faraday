@@ -69,11 +69,11 @@ doc/open: ## Generate and open documentation
 # Installation
 install: build ## Install faraday CLI globally
 	@echo "⚡ Installing faraday CLI..."
-	@cargo install --path crates/faraday-cli --force
+	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-cli --force
 
 install/tui: build ## Install faraday TUI globally
 	@echo "📺 Installing faraday TUI..."
-	@cargo install --path crates/faraday-tui --force
+	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-tui --force
 
 # Clean targets
 clean: ## Clean build artifacts

@@ -157,6 +157,30 @@ The core functionality exists but needs CLI interface implementation:
 
 ## 🔧 Development
 
+### ECU Emulator
+
+All commands support an `--emulator` flag that runs against a built-in ECU emulator instead of real hardware. No OBD-II adapter or vehicle connection is required.
+
+```bash
+faraday --emulator vin
+faraday --emulator read-dtc
+faraday --emulator read-dtc --stored --pending --permanent
+faraday --emulator live 0C,05,0D
+faraday --emulator read-did --module pcm F190
+faraday --emulator session --module pcm extended
+faraday --emulator clear-dtc
+```
+
+The emulator implements the full ISO-TP / J1979 / UDS stack, exercising the same code paths as real hardware. Emulated values:
+
+| Data | Value |
+|---|---|
+| VIN | `1FA6P8TH5H5123456` |
+| Engine RPM | 800 rpm |
+| Coolant temp | 65 °C |
+| Stored / pending / permanent DTCs | None |
+| Control module voltage | 14.26 V |
+
 ### Prerequisites
 
 - Rust 1.70 or higher

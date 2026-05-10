@@ -9,7 +9,7 @@ MS-CAN/HS-CAN switching.
 use crate::{CanBus, CanFrame, CanId, Error, Result};
 use async_trait::async_trait;
 use std::time::Duration;
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_serial::SerialStream;
 use tracing::{debug, trace};
 
@@ -53,26 +53,48 @@ impl VLinkerFs {
 
         trace!("Sending command: {}", command);
 
-        let mut cmd = command.to_string();
-        cmd.push('\r');
-        port.write_all(cmd.as_bytes()).await?;
+        port.write_all(format!("{}\r", command).as_bytes()).await?;
 
-        let mut reader = BufReader::new(port);
-        let mut response = String::new();
-        reader.read_line(&mut response).await?;
-
-        let response = response.trim();
-        trace!("Received response: {}", response);
-
-        if response.contains("ERROR") {
-            return Err(Error::link(format!("Command failed: {}", response)));
+        // ELM327/STN adapters terminate each response with a '>' prompt and use
+        // '\r' (not '\n') as line separators.  Reading until '\n' hangs forever,
+        // so we read byte-by-byte until we see the prompt, with an explicit timeout
+        // to avoid blocking the runtime.
+        let mut raw: Vec<u8> = Vec::new();
+        let mut byte = [0u8; 1];
+        loop {
+            match tokio::time::timeout(Duration::from_millis(2000), port.read(&mut byte)).await {
+                Ok(Ok(0)) => break,
+                Ok(Ok(_)) => {
+                    if byte[0] == b'>' {
+                        break;
+                    }
+                    raw.push(byte[0]);
+                }
+                Ok(Err(e)) => return Err(Error::link(format!("Serial read error: {}", e))),
+                Err(_) => return Err(Error::Timeout),
+            }
         }
 
-        Ok(response.to_string())
+        let text = String::from_utf8_lossy(&raw);
+        let last_line = text
+            .split(|c| c == '\r' || c == '\n')
+            .map(str::trim)
+            .filter(|s| !s.is_empty() && !command.trim().eq_ignore_ascii_case(s))
+            .last()
+            .unwrap_or("")
+            .to_string();
+
+        trace!("Received response: {}", last_line);
+
+        if last_line.contains("ERROR") {
+            return Err(Error::link(format!("Command failed: {}", last_line)));
+        }
+
+        Ok(last_line)
     }
 
     async fn initialize(&mut self) -> Result<()> {
-        self.send_command("STI").await?;
+        self.send_command("ATZ").await?;
 
         let version = self.send_command("STI").await?;
         debug!("vLinker FS version: {}", version);
