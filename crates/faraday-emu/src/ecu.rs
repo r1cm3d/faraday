@@ -91,9 +91,7 @@ impl SimulatedEcu {
                 Some(resp)
             }
             0x0A => Some(vec![0x4A, 0x00]),
-            0x10 if payload.len() >= 2 => {
-                Some(vec![0x50, payload[1], 0x00, 0x19, 0x01, 0xF4])
-            }
+            0x10 if payload.len() >= 2 => Some(vec![0x50, payload[1], 0x00, 0x19, 0x01, 0xF4]),
             0x22 if payload.len() >= 3 => {
                 let did = ((payload[1] as u16) << 8) | payload[2] as u16;
                 let mut resp = vec![0x62, payload[1], payload[2]];
@@ -104,6 +102,26 @@ impl SimulatedEcu {
                     0xF18A => resp.extend_from_slice(b"FORD"),
                     0xF18B => resp.extend_from_slice(b"170101"),
                     0xF18C => resp.extend_from_slice(b"SIM000001"),
+                    // BCM as-built blocks (726-01: DRL=1 at byte3 bit2, welcome_lighting=3 at byte4 bit0)
+                    0x0701 => {
+                        resp.extend_from_slice(&[0x00, 0x00, 0x00, 0x04, 0x03, 0x00, 0x00, 0x00])
+                    }
+                    // BCM as-built block 02 (726-02: auto_lock=1 at byte1 bit3, unlock_beeps=1 at byte2 bit0, remote_start=1 at byte5 bit1)
+                    0x0702 => {
+                        resp.extend_from_slice(&[0x00, 0x08, 0x01, 0x00, 0x00, 0x02, 0x00, 0x00])
+                    }
+                    // IPC as-built block 01 (720-01: show_digital_speedometer=1 at byte2 bit1)
+                    0x0101 => {
+                        resp.extend_from_slice(&[0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00])
+                    }
+                    // IPC as-built block 02 (720-02: welcome_animation=1 at byte0 bit7, gauge_brightness=5 at byte2 bit0)
+                    0x0102 => {
+                        resp.extend_from_slice(&[0x80, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00])
+                    }
+                    // PCM as-built block 01 (7E0-01: fuel_type=0/Regular at byte2 bit0, auto_start_stop=1 at byte4 bit3)
+                    0xE001 => {
+                        resp.extend_from_slice(&[0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00])
+                    }
                     _ => resp.extend_from_slice(&[0x00, 0x00, 0x00, 0x00]),
                 }
                 Some(resp)
@@ -193,6 +211,44 @@ mod tests {
         assert_eq!((ff.data[0] & 0xF0) >> 4, 1);
         let total_len = (((ff.data[0] & 0x0F) as u16) << 8) | ff.data[1] as u16;
         assert_eq!(total_len, 20);
+    }
+
+    #[test]
+    fn responds_to_bcm_asbuilt_block_01() {
+        let mut ecu = SimulatedEcu::new();
+        let req = CanFrame::new(
+            CanId::new(0x726),
+            vec![0x03, 0x22, 0x07, 0x01, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let resp = ecu.pop_response().unwrap();
+        assert_eq!(resp.id, CanId::new(0x72E));
+        assert_eq!(
+            (resp.data[0] & 0xF0) >> 4,
+            1,
+            "should be first frame (multi-frame)"
+        );
+        let total_len = (((resp.data[0] & 0x0F) as u16) << 8) | resp.data[1] as u16;
+        assert_eq!(total_len, 11); // 3 (header: 0x62 0x07 0x01) + 8 data bytes
+    }
+
+    #[test]
+    fn responds_to_ipc_asbuilt_block_01() {
+        let mut ecu = SimulatedEcu::new();
+        let req = CanFrame::new(
+            CanId::new(0x720),
+            vec![0x03, 0x22, 0x01, 0x01, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let resp = ecu.pop_response().unwrap();
+        assert_eq!(resp.id, CanId::new(0x728));
+        assert_eq!(
+            (resp.data[0] & 0xF0) >> 4,
+            1,
+            "should be first frame (multi-frame)"
+        );
+        let total_len = (((resp.data[0] & 0x0F) as u16) << 8) | resp.data[1] as u16;
+        assert_eq!(total_len, 11);
     }
 
     #[test]

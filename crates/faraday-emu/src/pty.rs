@@ -21,6 +21,7 @@ pub struct PtyPair {
     pub master: OwnedFd,
     pub slave_path: PathBuf,
     pub cleanup: PtyCleanup,
+    _slave_keepalive: OwnedFd,
 }
 
 impl PtyPair {
@@ -29,7 +30,6 @@ impl PtyPair {
         let slave_path = ttyname(result.slave.as_fd()).context("ttyname failed")?;
         make_raw(result.master.as_raw_fd())?;
         set_nonblocking(result.master.as_raw_fd())?;
-        drop(result.slave);
 
         let cleanup = if let Some(link) = symlink_path {
             let _ = std::fs::remove_file(link);
@@ -43,6 +43,7 @@ impl PtyPair {
             master: result.master,
             slave_path,
             cleanup,
+            _slave_keepalive: result.slave,
         })
     }
 }

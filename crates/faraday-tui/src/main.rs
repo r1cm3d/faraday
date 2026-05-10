@@ -93,10 +93,7 @@ async fn run_tui(args: Args) -> Result<()> {
     Ok(())
 }
 
-async fn run_app<B: Backend>(
-    terminal: &mut Terminal<B>,
-    mut app: app::App,
-) -> Result<()> {
+async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> Result<()> {
     let mut last_tick = Instant::now();
     let tick_rate = Duration::from_millis(250);
 

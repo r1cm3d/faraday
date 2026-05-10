@@ -5,13 +5,11 @@ The PCM controls engine and transmission parameters. Most PCM configuration
 is not user-modifiable and relates to emissions compliance and performance.
 */
 
-use crate::{AsBuiltBlock, BlockId, Feature, FeatureType, BitPosition};
+use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
-    vec![
-        create_block_7e0_01(),
-    ]
+    vec![create_block_7e0_01()]
 }
 
 fn create_block_7e0_01() -> AsBuiltBlock {
@@ -23,15 +21,14 @@ fn create_block_7e0_01() -> AsBuiltBlock {
     AsBuiltBlock {
         id: BlockId::new("7E0", "01"),
         description: "PCM Configuration Block 01 - Engine Parameters".to_string(),
-        data: vec![0; 8], // Placeholder data
+        did: 0xE001,
+        data: vec![0; 8],
         features: vec![
             Feature {
                 name: "fuel_type".to_string(),
                 description: "Fuel Type Configuration".to_string(),
                 bit_position: BitPosition { byte: 2, bit: 0 },
-                feature_type: FeatureType::Enumerated {
-                    values: fuel_types,
-                },
+                feature_type: FeatureType::Enumerated { values: fuel_types },
             },
             Feature {
                 name: "auto_start_stop".to_string(),
@@ -96,5 +93,11 @@ mod tests {
         assert_eq!(fuel_type_feature.name, "fuel_type");
         assert_eq!(fuel_type_feature.bit_position.byte, 2);
         assert_eq!(fuel_type_feature.bit_position.bit, 0);
+    }
+
+    #[test]
+    fn test_block_did() {
+        let block = get_known_blocks().into_iter().next().unwrap();
+        assert_eq!(block.did, 0xE001);
     }
 }

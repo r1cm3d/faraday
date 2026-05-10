@@ -172,7 +172,10 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         response_id: CanId,
         access_type: u8,
     ) -> Result<Vec<u8>> {
-        debug!("Requesting security access seed for type {:02X}", access_type);
+        debug!(
+            "Requesting security access seed for type {:02X}",
+            access_type
+        );
 
         let request = vec![0x27, access_type];
         let response = self
@@ -219,7 +222,9 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         data: &[u8],
     ) -> Result<()> {
         if !self.security_access_granted {
-            return Err(Error::protocol("Security access required for write operations"));
+            return Err(Error::protocol(
+                "Security access required for write operations",
+            ));
         }
 
         debug!("Writing DID {:04X}: {} bytes", did.0, data.len());
@@ -263,7 +268,6 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         self.stop_tester_present().await;
 
         debug!("Starting tester present background task");
-
     }
 
     async fn stop_tester_present(&mut self) {
@@ -273,7 +277,12 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         }
     }
 
-    fn check_positive_response(&self, response: &[u8], expected_service: u8, min_length: usize) -> Result<()> {
+    fn check_positive_response(
+        &self,
+        response: &[u8],
+        expected_service: u8,
+        min_length: usize,
+    ) -> Result<()> {
         if response.len() < min_length {
             return Err(Error::protocol("Response too short"));
         }

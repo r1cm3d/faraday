@@ -26,6 +26,7 @@ impl std::fmt::Display for BlockId {
 pub struct AsBuiltBlock {
     pub id: BlockId,
     pub description: String,
+    pub did: u16,
     pub data: Vec<u8>,
     pub features: Vec<Feature>,
 }
@@ -46,9 +47,18 @@ pub struct BitPosition {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FeatureType {
-    Boolean { true_description: String, false_description: String },
-    Enumerated { values: HashMap<u8, String> },
-    Numeric { min: u8, max: u8, unit: Option<String> },
+    Boolean {
+        true_description: String,
+        false_description: String,
+    },
+    Enumerated {
+        values: HashMap<u8, String>,
+    },
+    Numeric {
+        min: u8,
+        max: u8,
+        unit: Option<String>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

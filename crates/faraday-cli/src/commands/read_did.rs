@@ -1,12 +1,8 @@
+use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::{protocol::uds::DataIdentifier, Module};
-use crate::{cli::ModuleArg, output::OutputFormatter};
 
-pub async fn execute(
-    adapter_path: String,
-    module: ModuleArg,
-    did_string: String,
-) -> Result<()> {
+pub async fn execute(adapter_path: String, module: ModuleArg, did_string: String) -> Result<()> {
     let mut executor = super::create_executor(adapter_path).await?;
     let mut formatter = OutputFormatter::new(false);
     let module: Module = module.into();
@@ -16,9 +12,14 @@ pub async fn execute(
 
     let did = DataIdentifier(did_value);
 
-    formatter.print_info(&format!("Reading DID {:04X} from {:?}...", did_value, module))?;
+    formatter.print_info(&format!(
+        "Reading DID {:04X} from {:?}...",
+        did_value, module
+    ))?;
 
-    let data = executor.read_data_by_identifier(module.request_id(), module.response_id(), did).await?;
+    let data = executor
+        .read_data_by_identifier(module.request_id(), module.response_id(), did)
+        .await?;
 
     formatter.print_did_data(did_value, &data)?;
 

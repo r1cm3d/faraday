@@ -1,6 +1,6 @@
+use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::Module;
-use crate::{cli::ModuleArg, output::OutputFormatter};
 
 pub async fn execute(adapter_path: String, module: ModuleArg) -> Result<()> {
     let mut executor = super::create_executor(adapter_path).await?;

@@ -5,14 +5,11 @@ The IPC controls the instrument cluster display, gauges, warning lights,
 and various display preferences.
 */
 
-use crate::{AsBuiltBlock, BlockId, Feature, FeatureType, BitPosition};
+use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
-    vec![
-        create_block_720_01(),
-        create_block_720_02(),
-    ]
+    vec![create_block_720_01(), create_block_720_02()]
 }
 
 fn create_block_720_01() -> AsBuiltBlock {
@@ -27,7 +24,8 @@ fn create_block_720_01() -> AsBuiltBlock {
     AsBuiltBlock {
         id: BlockId::new("720", "01"),
         description: "IPC Configuration Block 01 - Display Settings".to_string(),
-        data: vec![0; 8], // Placeholder data
+        did: 0x0101,
+        data: vec![0; 8],
         features: vec![
             Feature {
                 name: "show_digital_speedometer".to_string(),
@@ -50,9 +48,7 @@ fn create_block_720_01() -> AsBuiltBlock {
                 name: "temperature_units".to_string(),
                 description: "Temperature Display Units".to_string(),
                 bit_position: BitPosition { byte: 1, bit: 2 },
-                feature_type: FeatureType::Enumerated {
-                    values: temp_units,
-                },
+                feature_type: FeatureType::Enumerated { values: temp_units },
             },
             Feature {
                 name: "show_compass".to_string(),
@@ -76,7 +72,8 @@ fn create_block_720_02() -> AsBuiltBlock {
     AsBuiltBlock {
         id: BlockId::new("720", "02"),
         description: "IPC Configuration Block 02 - Lighting and Animation".to_string(),
-        data: vec![0; 8], // Placeholder data
+        did: 0x0102,
+        data: vec![0; 8],
         features: vec![
             Feature {
                 name: "welcome_animation".to_string(),
@@ -158,5 +155,12 @@ mod tests {
         assert_eq!(digital_speedo_feature.name, "show_digital_speedometer");
         assert_eq!(digital_speedo_feature.bit_position.byte, 2);
         assert_eq!(digital_speedo_feature.bit_position.bit, 1);
+    }
+
+    #[test]
+    fn test_block_dids() {
+        let blocks = get_known_blocks();
+        assert_eq!(blocks[0].did, 0x0101);
+        assert_eq!(blocks[1].did, 0x0102);
     }
 }

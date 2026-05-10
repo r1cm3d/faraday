@@ -66,7 +66,10 @@ impl Dtc {
         let second_digit = first_byte & 0x0F;
         let third_fourth_digits = second_byte;
 
-        let code = format!("{}{:X}{:X}{:02X}", prefix, first_digit, second_digit, third_fourth_digits);
+        let code = format!(
+            "{}{:X}{:X}{:02X}",
+            prefix, first_digit, second_digit, third_fourth_digits
+        );
 
         Ok(Dtc {
             code: code.clone(),
@@ -182,7 +185,11 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         Self { transport }
     }
 
-    pub async fn read_live_data(&mut self, module_response_id: CanId, pids: &[Pid]) -> Result<Vec<PidValue>> {
+    pub async fn read_live_data(
+        &mut self,
+        module_response_id: CanId,
+        pids: &[Pid],
+    ) -> Result<Vec<PidValue>> {
         let mut request = vec![0x01];
         for pid in pids {
             request.push(pid.0);
@@ -336,9 +343,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
             | Pid::AMBIENT_TEMP
             | Pid::ENGINE_OIL_TEMP => 1,
 
-            Pid::ENGINE_RPM
-            | Pid::MAF_RATE
-            | Pid::CONTROL_MODULE_VOLTAGE => 2,
+            Pid::ENGINE_RPM | Pid::MAF_RATE | Pid::CONTROL_MODULE_VOLTAGE => 2,
 
             _ => 1,
         }

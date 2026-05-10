@@ -1,4 +1,6 @@
+use faraday_asbuilt::{AsBuiltBlock, FeatureValue};
 use faraday_core::protocol::j1979::{Dtc, PidValue};
+use serde::Serialize;
 use std::io::{self, Write};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
@@ -50,7 +52,11 @@ impl OutputFormatter {
                     println!("PID {:02X}: {:.2}", value.pid.0, val);
                 }
                 _ => {
-                    println!("PID {:02X}: {} (raw)", value.pid.0, hex::encode(&value.raw_value));
+                    println!(
+                        "PID {:02X}: {} (raw)",
+                        value.pid.0,
+                        hex::encode(&value.raw_value)
+                    );
                 }
             }
         }
@@ -82,35 +88,94 @@ impl OutputFormatter {
     }
 
     pub fn print_success(&mut self, message: &str) -> io::Result<()> {
-        self.stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+        self.stdout
+            .set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
         writeln!(self.stdout, "✓ {}", message)?;
         self.stdout.reset()?;
         Ok(())
     }
 
     pub fn print_info(&mut self, message: &str) -> io::Result<()> {
-        self.stdout.set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
+        self.stdout
+            .set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
         writeln!(self.stdout, "ℹ {}", message)?;
         self.stdout.reset()?;
         Ok(())
     }
 
-
     pub fn print_error(&mut self, message: &str) -> io::Result<()> {
-        self.stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
+        self.stdout
+            .set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
         writeln!(self.stdout, "✗ {}", message)?;
         self.stdout.reset()?;
         Ok(())
     }
 
     pub fn print_header(&mut self, message: &str) -> io::Result<()> {
-        self.stdout.set_color(
-            ColorSpec::new()
-                .set_fg(Some(Color::Cyan))
-                .set_bold(true)
-        )?;
+        self.stdout
+            .set_color(ColorSpec::new().set_fg(Some(Color::Cyan)).set_bold(true))?;
         writeln!(self.stdout, "{}", message)?;
         self.stdout.reset()?;
+        Ok(())
+    }
+
+    pub fn print_asbuilt_dump(
+        &mut self,
+        blocks: &[(AsBuiltBlock, Vec<FeatureValue>)],
+    ) -> io::Result<()> {
+        #[derive(Serialize)]
+        struct DumpOutput {
+            blocks: Vec<BlockOutput>,
+        }
+
+        #[derive(Serialize)]
+        struct BlockOutput {
+            id: String,
+            description: String,
+            did: String,
+            data: String,
+            features: Vec<FeatureOutput>,
+        }
+
+        #[derive(Serialize)]
+        struct FeatureOutput {
+            name: String,
+            description: String,
+            value: String,
+            raw: u8,
+        }
+
+        let output = DumpOutput {
+            blocks: blocks
+                .iter()
+                .map(|(block, features)| BlockOutput {
+                    id: block.id.to_string(),
+                    description: block.description.clone(),
+                    did: format!("0x{:04X}", block.did),
+                    data: hex::encode_upper(&block.data),
+                    features: features
+                        .iter()
+                        .map(|fv| FeatureOutput {
+                            name: fv.feature.name.clone(),
+                            description: fv.feature.description.clone(),
+                            value: fv.interpreted_value.clone(),
+                            raw: fv.raw_value,
+                        })
+                        .collect(),
+                })
+                .collect(),
+        };
+
+        let yaml = serde_yaml::to_string(&output).map_err(io::Error::other)?;
+        print!("{}", yaml);
+        Ok(())
+    }
+
+    pub fn print_asbuilt_feature(&mut self, fv: &FeatureValue) -> io::Result<()> {
+        println!(
+            "{}: {} (raw: {})",
+            fv.feature.name, fv.interpreted_value, fv.raw_value
+        );
         Ok(())
     }
 }

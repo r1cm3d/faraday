@@ -1,10 +1,7 @@
 use anyhow::Result;
 use faraday_core::{
-    commands::CommandExecutor,
-    link::vlinker::VLinkerFs,
-    protocol::j1979::Pid,
-    transport::isotp::IsoTp,
-    Module,
+    commands::CommandExecutor, link::vlinker::VLinkerFs, protocol::j1979::Pid,
+    transport::isotp::IsoTp, Module,
 };
 use std::{
     collections::VecDeque,

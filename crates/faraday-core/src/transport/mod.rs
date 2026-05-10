@@ -8,7 +8,7 @@ Provides reliable transport of larger messages over CAN frames supporting:
 - Error detection and timeout handling
 */
 
-use crate::{CanId, Result};
+use crate::{CanBus, CanId, Result};
 use async_trait::async_trait;
 
 pub mod isotp;
@@ -19,7 +19,16 @@ pub trait IsoTpTransport: Send + Sync {
 
     async fn receive(&mut self, request_id: CanId, response_id: CanId) -> Result<Vec<u8>>;
 
-    async fn request_response(&mut self, request_id: CanId, response_id: CanId, data: &[u8]) -> Result<Vec<u8>>;
+    async fn request_response(
+        &mut self,
+        request_id: CanId,
+        response_id: CanId,
+        data: &[u8],
+    ) -> Result<Vec<u8>>;
 
     async fn set_timeout(&mut self, timeout: std::time::Duration);
+
+    async fn set_can_bus(&mut self, _bus: CanBus) -> Result<()> {
+        Ok(())
+    }
 }

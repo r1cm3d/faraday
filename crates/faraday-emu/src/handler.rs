@@ -43,9 +43,10 @@ impl EcuHandler {
         match cmd {
             StnCommand::Atz => b"ELM327 v1.5\r\n>".to_vec(),
             StnCommand::Sti => b"OBDII to RS232 Interpreter\r\n>".to_vec(),
-            StnCommand::Stslbrp | StnCommand::Stfap | StnCommand::StcpHsCan | StnCommand::StcpMsCan => {
-                b"OK\r\n>".to_vec()
-            }
+            StnCommand::Stslbrp
+            | StnCommand::Stfap
+            | StnCommand::StcpHsCan
+            | StnCommand::StcpMsCan => b"OK\r\n>".to_vec(),
             StnCommand::Stpx { can_id, data } => {
                 let frame = CanFrame::new(CanId::new(can_id), data);
                 self.ecu.process_frame(&frame);

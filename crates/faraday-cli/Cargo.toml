@@ -17,6 +17,7 @@ path = "src/main.rs"
 [dependencies]
 # Core library
 faraday-core = { workspace = true }
+faraday-asbuilt = { workspace = true }
 
 # CLI framework
 clap = { workspace = true }

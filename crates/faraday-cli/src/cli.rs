@@ -102,6 +102,30 @@ pub enum Commands {
         #[arg(value_enum, help = "Diagnostic session type")]
         session: SessionArg,
     },
+
+    #[command(name = "asbuilt", about = "Read as-built module configuration")]
+    Asbuilt {
+        #[command(subcommand)]
+        action: AsBuiltAction,
+    },
+}
+
+#[derive(Subcommand, Clone)]
+pub enum AsBuiltAction {
+    #[command(name = "dump", about = "Dump all as-built blocks for a module as YAML")]
+    Dump {
+        #[arg(long, value_enum, help = "Target module (bcm, ipc, pcm)")]
+        module: ModuleArg,
+    },
+
+    #[command(name = "show", about = "Show a specific feature value from a module")]
+    Show {
+        #[arg(long, value_enum, help = "Target module (bcm, ipc, pcm)")]
+        module: ModuleArg,
+
+        #[arg(long, help = "Feature name (e.g. drl_enabled)")]
+        feature: String,
+    },
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]

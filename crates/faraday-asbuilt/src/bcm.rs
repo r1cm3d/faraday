@@ -5,20 +5,18 @@ The BCM controls various convenience and comfort features including
 lighting, locking, and other body functions.
 */
 
-use crate::{AsBuiltBlock, BlockId, Feature, FeatureType, BitPosition};
+use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
-    vec![
-        create_block_726_01(),
-        create_block_726_02(),
-    ]
+    vec![create_block_726_01(), create_block_726_02()]
 }
 
 fn create_block_726_01() -> AsBuiltBlock {
     AsBuiltBlock {
         id: BlockId::new("726", "01"),
         description: "BCM Configuration Block 01 - Lighting and DRL".to_string(),
+        did: 0x0701,
         data: vec![0; 8], // Placeholder data
         features: vec![
             Feature {
@@ -63,6 +61,7 @@ fn create_block_726_02() -> AsBuiltBlock {
     AsBuiltBlock {
         id: BlockId::new("726", "02"),
         description: "BCM Configuration Block 02 - Security and Convenience".to_string(),
+        did: 0x0702,
         data: vec![0; 8], // Placeholder data
         features: vec![
             Feature {
@@ -136,5 +135,12 @@ mod tests {
         assert_eq!(drl_feature.name, "drl_enabled");
         assert_eq!(drl_feature.bit_position.byte, 3);
         assert_eq!(drl_feature.bit_position.bit, 2);
+    }
+
+    #[test]
+    fn test_block_dids() {
+        let blocks = get_known_blocks();
+        assert_eq!(blocks[0].did, 0x0701);
+        assert_eq!(blocks[1].did, 0x0702);
     }
 }

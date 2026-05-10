@@ -1,6 +1,6 @@
+use crate::{cli::VinMethod, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::Module;
-use crate::{cli::VinMethod, output::OutputFormatter};
 
 pub async fn execute(adapter_path: String, method: VinMethod) -> Result<()> {
     let mut executor = super::create_executor(adapter_path).await?;

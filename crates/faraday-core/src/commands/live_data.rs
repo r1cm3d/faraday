@@ -1,6 +1,6 @@
 use super::CommandExecutor;
 use crate::{
-    protocol::j1979::{J1979, Pid, PidValue},
+    protocol::j1979::{Pid, PidValue, J1979},
     transport::IsoTpTransport,
     Module, Result,
 };
@@ -25,10 +25,7 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
     }
 
     pub async fn read_fuel_data(&mut self) -> Result<Vec<PidValue>> {
-        let pids = vec![
-            Pid::FUEL_TANK_LEVEL,
-            Pid::MAF_RATE,
-        ];
+        let pids = vec![Pid::FUEL_TANK_LEVEL, Pid::MAF_RATE];
         self.read_live_data(Module::Pcm, &pids).await
     }
 

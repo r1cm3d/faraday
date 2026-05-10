@@ -21,7 +21,11 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
 
         let mut uds = Uds::new(&mut self.transport);
         let data = uds
-            .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::VIN)
+            .read_data_by_identifier(
+                module.request_id(),
+                module.response_id(),
+                DataIdentifier::VIN,
+            )
             .await?;
 
         let vin = String::from_utf8(data)
@@ -37,18 +41,22 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         {
             let mut uds = Uds::new(&mut self.transport);
             uds.diagnostic_session_control(
-                    module.request_id(),
-                    module.response_id(),
-                    DiagnosticSession::Extended,
-                )
-                .await?;
+                module.request_id(),
+                module.response_id(),
+                DiagnosticSession::Extended,
+            )
+            .await?;
         }
 
         // Read each DID sequentially with separate UDS instances
         let software_number = {
             let mut uds = Uds::new(&mut self.transport);
             let data = uds
-                .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::ECU_SOFTWARE_NUMBER)
+                .read_data_by_identifier(
+                    module.request_id(),
+                    module.response_id(),
+                    DataIdentifier::ECU_SOFTWARE_NUMBER,
+                )
                 .await
                 .ok()
                 .and_then(|data| String::from_utf8(data).ok())
@@ -59,7 +67,11 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         let hardware_number = {
             let mut uds = Uds::new(&mut self.transport);
             let data = uds
-                .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::ECU_HARDWARE_NUMBER)
+                .read_data_by_identifier(
+                    module.request_id(),
+                    module.response_id(),
+                    DataIdentifier::ECU_HARDWARE_NUMBER,
+                )
                 .await
                 .ok()
                 .and_then(|data| String::from_utf8(data).ok())
@@ -70,7 +82,11 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         let supplier_id = {
             let mut uds = Uds::new(&mut self.transport);
             let data = uds
-                .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::SUPPLIER_IDENTIFIER)
+                .read_data_by_identifier(
+                    module.request_id(),
+                    module.response_id(),
+                    DataIdentifier::SUPPLIER_IDENTIFIER,
+                )
                 .await
                 .ok()
                 .and_then(|data| String::from_utf8(data).ok())
@@ -81,7 +97,11 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         let manufacturing_date = {
             let mut uds = Uds::new(&mut self.transport);
             let data = uds
-                .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::ECU_MANUFACTURING_DATE)
+                .read_data_by_identifier(
+                    module.request_id(),
+                    module.response_id(),
+                    DataIdentifier::ECU_MANUFACTURING_DATE,
+                )
                 .await
                 .ok()
                 .and_then(|data| String::from_utf8(data).ok())
@@ -92,7 +112,11 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         let serial_number = {
             let mut uds = Uds::new(&mut self.transport);
             let data = uds
-                .read_data_by_identifier(module.request_id(), module.response_id(), DataIdentifier::ECU_SERIAL_NUMBER)
+                .read_data_by_identifier(
+                    module.request_id(),
+                    module.response_id(),
+                    DataIdentifier::ECU_SERIAL_NUMBER,
+                )
                 .await
                 .ok()
                 .and_then(|data| String::from_utf8(data).ok())
@@ -117,7 +141,8 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         did: DataIdentifier,
     ) -> Result<Vec<u8>> {
         let mut uds = Uds::new(&mut self.transport);
-        uds.read_data_by_identifier(request_id, response_id, did).await
+        uds.read_data_by_identifier(request_id, response_id, did)
+            .await
     }
 
     pub async fn diagnostic_session_control(
@@ -127,9 +152,9 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         session: DiagnosticSession,
     ) -> Result<()> {
         let mut uds = Uds::new(&mut self.transport);
-        uds.diagnostic_session_control(request_id, response_id, session).await
+        uds.diagnostic_session_control(request_id, response_id, session)
+            .await
     }
-
 }
 
 #[derive(Debug, Clone)]

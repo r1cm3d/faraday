@@ -5,6 +5,7 @@ use faraday_core::{
     transport::isotp::IsoTp,
 };
 
+pub mod asbuilt;
 pub mod clear_dtc;
 pub mod live;
 pub mod read_did;

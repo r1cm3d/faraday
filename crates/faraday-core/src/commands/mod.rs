@@ -7,10 +7,9 @@ handles the complete workflow including module connection, error handling,
 and data interpretation.
 */
 
-use crate::{
-    transport::IsoTpTransport,
-};
+use crate::transport::IsoTpTransport;
 
+pub mod asbuilt;
 pub mod diagnostics;
 pub mod live_data;
 pub mod vehicle_info;
@@ -21,9 +20,7 @@ pub struct CommandExecutor<T: IsoTpTransport> {
 
 impl<T: IsoTpTransport> CommandExecutor<T> {
     pub fn new(transport: T) -> Self {
-        Self {
-            transport,
-        }
+        Self { transport }
     }
 
     pub fn transport(&mut self) -> &mut T {

@@ -107,11 +107,12 @@ CLI commands: `read-dtc`, `clear-dtc`, `live <pids>`, `vin`
 CLI commands: `read-did --module <module> <did>`, `session --module <module> extended`
 - **Status:** Complete with full UDS implementation
 
-### Phase 3: MS-CAN + as-built reads 🔶
+### Phase 3: MS-CAN + as-built reads ✅
 CLI commands: `asbuilt dump --module <module>`, `asbuilt show --module <module> --feature <feature>`
-- **Core library:** Complete (`faraday-asbuilt` crate with full decoding)
-- **CLI commands:** Missing - need to implement `asbuilt` subcommands
-- **MS-CAN support:** Complete in transport layer
+- **Status:** Complete and functional
+- **Core library:** ✅ `faraday-asbuilt` crate with full decoding and DID mapping
+- **CLI commands:** ✅ `asbuilt dump` and `asbuilt show` implemented
+- **MS-CAN support:** ✅ Automatic CAN bus switching per module
 
 ### Phase 4: Security Access + Write 🔶
 CLI commands: `asbuilt write --module <module> --block <block>`, `asbuilt restore <snapshot>`

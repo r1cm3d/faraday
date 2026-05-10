@@ -137,7 +137,11 @@ impl super::LinkLayer for VLinkerFs {
         let data_hex = hex::encode_upper(&frame.data);
         let command = format!("STPX H:{:03X},0,{}", frame.id.id(), data_hex);
 
-        trace!("Sending CAN frame: ID={:03X}, Data={}", frame.id.id(), data_hex);
+        trace!(
+            "Sending CAN frame: ID={:03X}, Data={}",
+            frame.id.id(),
+            data_hex
+        );
 
         self.send_command(&command).await?;
         Ok(())
@@ -153,7 +157,11 @@ impl super::LinkLayer for VLinkerFs {
             }
 
             if let Some(frame) = self.parse_can_frame(&response)? {
-                trace!("Received CAN frame: ID={:03X}, Data={}", frame.id.id(), hex::encode_upper(&frame.data));
+                trace!(
+                    "Received CAN frame: ID={:03X}, Data={}",
+                    frame.id.id(),
+                    hex::encode_upper(&frame.data)
+                );
                 return Ok(frame);
             }
         }
@@ -165,8 +173,8 @@ impl super::LinkLayer for VLinkerFs {
         }
 
         let command = match bus {
-            CanBus::HsCan => "STCP 24",  // HS-CAN protocol
-            CanBus::MsCan => "STCP 25",  // MS-CAN protocol
+            CanBus::HsCan => "STCP 24", // HS-CAN protocol
+            CanBus::MsCan => "STCP 25", // MS-CAN protocol
         };
 
         self.send_command(command).await?;
@@ -195,11 +203,10 @@ impl VLinkerFs {
         let id_str = parts[0].trim();
         let data_str = parts[1].trim();
 
-        let id = u32::from_str_radix(id_str, 16)
-            .map_err(|_| Error::invalid_frame("Invalid CAN ID"))?;
+        let id =
+            u32::from_str_radix(id_str, 16).map_err(|_| Error::invalid_frame("Invalid CAN ID"))?;
 
-        let data = hex::decode(data_str)
-            .map_err(|_| Error::invalid_frame("Invalid hex data"))?;
+        let data = hex::decode(data_str).map_err(|_| Error::invalid_frame("Invalid hex data"))?;
 
         Ok(Some(CanFrame::new(CanId::new(id), data)))
     }

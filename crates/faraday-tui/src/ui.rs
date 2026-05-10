@@ -4,9 +4,7 @@ use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     symbols,
-    widgets::{
-        Axis, Block, Borders, Chart, Dataset, Gauge, Paragraph,
-    },
+    widgets::{Axis, Block, Borders, Chart, Dataset, Gauge, Paragraph},
     Frame,
 };
 
@@ -105,7 +103,11 @@ fn draw_gauges<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
         // Coolant Temperature
         let temp = snapshot.coolant_temp.unwrap_or(-40.0);
         let temp_percent = ((temp + 40.0) / 150.0 * 100.0) as u16;
-        let temp_color = if temp > 100.0 { Color::Red } else { Color::Blue };
+        let temp_color = if temp > 100.0 {
+            Color::Red
+        } else {
+            Color::Blue
+        };
         let temp_gauge = Gauge::default()
             .block(Block::default().borders(Borders::ALL).title("Coolant Temp"))
             .gauge_style(Style::default().fg(temp_color))
@@ -150,9 +152,7 @@ fn draw_rpm_chart<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
         .engine_data()
         .iter()
         .enumerate()
-        .filter_map(|(i, snapshot)| {
-            snapshot.rpm.map(|rpm| (i as f64, rpm))
-        })
+        .filter_map(|(i, snapshot)| snapshot.rpm.map(|rpm| (i as f64, rpm)))
         .collect();
 
     if !data.is_empty() {
@@ -191,9 +191,7 @@ fn draw_speed_chart<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
         .engine_data()
         .iter()
         .enumerate()
-        .filter_map(|(i, snapshot)| {
-            snapshot.speed.map(|speed| (i as f64, speed))
-        })
+        .filter_map(|(i, snapshot)| snapshot.speed.map(|speed| (i as f64, speed)))
         .collect();
 
     if !data.is_empty() {
@@ -204,7 +202,11 @@ fn draw_speed_chart<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
             .data(&data);
 
         let chart = Chart::new(vec![dataset])
-            .block(Block::default().borders(Borders::ALL).title("Speed History"))
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title("Speed History"),
+            )
             .x_axis(
                 Axis::default()
                     .title("Time")
@@ -221,7 +223,11 @@ fn draw_speed_chart<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
         f.render_widget(chart, area);
     } else {
         let no_data = Paragraph::new("No speed data available")
-            .block(Block::default().borders(Borders::ALL).title("Speed History"))
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title("Speed History"),
+            )
             .alignment(Alignment::Center);
         f.render_widget(no_data, area);
     }

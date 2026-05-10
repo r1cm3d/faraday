@@ -5,7 +5,7 @@ Supports single frame and multi-frame message transport with proper
 flow control and error handling.
 */
 
-use crate::{link::LinkLayer, CanFrame, CanId, Error, Result};
+use crate::{link::LinkLayer, CanBus, CanFrame, CanId, Error, Result};
 use async_trait::async_trait;
 use std::time::Duration;
 use tokio::time::timeout;
@@ -75,7 +75,12 @@ impl<L: LinkLayer> IsoTp<L> {
         Ok(CanFrame::new(request_id, frame_data))
     }
 
-    fn create_consecutive_frame(&self, request_id: CanId, sequence: u8, data: &[u8]) -> Result<CanFrame> {
+    fn create_consecutive_frame(
+        &self,
+        request_id: CanId,
+        sequence: u8,
+        data: &[u8],
+    ) -> Result<CanFrame> {
         let pci = 0x20 | (sequence & 0x0F);
         let mut frame_data = vec![pci];
         frame_data.extend_from_slice(data);
@@ -86,7 +91,6 @@ impl<L: LinkLayer> IsoTp<L> {
 
         Ok(CanFrame::new(request_id, frame_data))
     }
-
 
     async fn send_single_frame(&mut self, request_id: CanId, data: &[u8]) -> Result<()> {
         let frame = self.create_single_frame(request_id, data)?;
@@ -108,7 +112,11 @@ impl<L: LinkLayer> IsoTp<L> {
             let chunk = &remaining_data[..chunk_size];
 
             let consecutive_frame = self.create_consecutive_frame(request_id, sequence, chunk)?;
-            trace!("Sending consecutive frame {}: {:?}", sequence, consecutive_frame);
+            trace!(
+                "Sending consecutive frame {}: {:?}",
+                sequence,
+                consecutive_frame
+            );
             self.link.send_frame(&consecutive_frame).await?;
 
             remaining_data = &remaining_data[chunk_size..];
@@ -122,9 +130,11 @@ impl<L: LinkLayer> IsoTp<L> {
         Ok(())
     }
 
-
     fn create_flow_control_frame(&self, request_id: CanId) -> CanFrame {
-        CanFrame::new(request_id, vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55])
+        CanFrame::new(
+            request_id,
+            vec![0x30, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55],
+        )
     }
 
     async fn receive_frame_with_id(&mut self, expected_id: CanId) -> Result<CanFrame> {
@@ -153,7 +163,8 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
     async fn receive(&mut self, request_id: CanId, response_id: CanId) -> Result<Vec<u8>> {
         trace!("Receiving ISO-TP message from ID {:03X}", response_id.id());
 
-        let first_frame = timeout(self.timeout, self.receive_frame_with_id(response_id)).await
+        let first_frame = timeout(self.timeout, self.receive_frame_with_id(response_id))
+            .await
             .map_err(|_| Error::Timeout)??;
 
         if first_frame.data.is_empty() {
@@ -172,7 +183,8 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
                 Ok(first_frame.data[1..=length].to_vec())
             }
             PciType::FirstFrame => {
-                let length = (((first_frame.data[0] & 0x0F) as u16) << 8) | first_frame.data[1] as u16;
+                let length =
+                    (((first_frame.data[0] & 0x0F) as u16) << 8) | first_frame.data[1] as u16;
                 let mut data = first_frame.data[2..].to_vec();
 
                 let fc_frame = self.create_flow_control_frame(request_id);
@@ -181,7 +193,8 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
 
                 let mut expected_sequence = 1u8;
                 while data.len() < length as usize {
-                    let frame = timeout(self.timeout, self.receive_frame_with_id(response_id)).await
+                    let frame = timeout(self.timeout, self.receive_frame_with_id(response_id))
+                        .await
                         .map_err(|_| Error::Timeout)??;
 
                     let pci_type = PciType::from_byte(frame.data[0])
@@ -214,9 +227,18 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
         }
     }
 
-    async fn request_response(&mut self, request_id: CanId, response_id: CanId, data: &[u8]) -> Result<Vec<u8>> {
-        debug!("ISO-TP request-response: REQ={:03X} RSP={:03X} {} bytes",
-               request_id.id(), response_id.id(), data.len());
+    async fn request_response(
+        &mut self,
+        request_id: CanId,
+        response_id: CanId,
+        data: &[u8],
+    ) -> Result<Vec<u8>> {
+        debug!(
+            "ISO-TP request-response: REQ={:03X} RSP={:03X} {} bytes",
+            request_id.id(),
+            response_id.id(),
+            data.len()
+        );
 
         self.send(request_id, data).await?;
         self.receive(request_id, response_id).await
@@ -225,13 +247,17 @@ impl<L: LinkLayer> super::IsoTpTransport for IsoTp<L> {
     async fn set_timeout(&mut self, timeout: Duration) {
         self.timeout = timeout;
     }
+
+    async fn set_can_bus(&mut self, bus: CanBus) -> Result<()> {
+        self.link.set_can_bus(bus).await
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{CanBus, CanFrame, CanId};
     use crate::transport::IsoTpTransport;
+    use crate::{CanBus, CanFrame, CanId};
     use async_trait::async_trait;
     use std::collections::VecDeque;
     use std::sync::{Arc, Mutex};
@@ -252,8 +278,12 @@ mod tests {
 
     #[async_trait]
     impl crate::link::LinkLayer for MockLinkLayer {
-        async fn connect(&mut self) -> crate::Result<()> { Ok(()) }
-        async fn disconnect(&mut self) -> crate::Result<()> { Ok(()) }
+        async fn connect(&mut self) -> crate::Result<()> {
+            Ok(())
+        }
+        async fn disconnect(&mut self) -> crate::Result<()> {
+            Ok(())
+        }
 
         async fn send_frame(&mut self, frame: &CanFrame) -> crate::Result<()> {
             self.sent_frames.lock().unwrap().push(frame.clone());
@@ -268,9 +298,13 @@ mod tests {
                 .ok_or_else(|| crate::Error::link("mock recv queue exhausted"))
         }
 
-        async fn set_can_bus(&mut self, _bus: CanBus) -> crate::Result<()> { Ok(()) }
+        async fn set_can_bus(&mut self, _bus: CanBus) -> crate::Result<()> {
+            Ok(())
+        }
 
-        fn is_connected(&self) -> bool { true }
+        fn is_connected(&self) -> bool {
+            true
+        }
     }
 
     #[tokio::test]

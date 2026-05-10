@@ -56,10 +56,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn io_loop(
-    async_fd: &AsyncFd<OwnedFd>,
-    handler: &mut EcuHandler,
-) -> Result<()> {
+async fn io_loop(async_fd: &AsyncFd<OwnedFd>, handler: &mut EcuHandler) -> Result<()> {
     let fd = async_fd.as_raw_fd();
     let mut line_buf: Vec<u8> = Vec::with_capacity(128);
 
@@ -67,15 +64,12 @@ async fn io_loop(
         let mut guard = async_fd.readable().await?;
         let mut buf = [0u8; 256];
 
-        match guard.try_io(|_| {
-            nix::unistd::read(fd, &mut buf).map_err(std::io::Error::from)
-        }) {
+        match guard.try_io(|_| nix::unistd::read(fd, &mut buf).map_err(std::io::Error::from)) {
             Ok(Ok(0)) => return Ok(()),
             Ok(Ok(n)) => {
                 for &byte in &buf[..n] {
                     if byte == b'\r' {
-                        let line =
-                            String::from_utf8_lossy(&line_buf).trim().to_uppercase();
+                        let line = String::from_utf8_lossy(&line_buf).trim().to_uppercase();
                         let cmd = EcuHandler::parse_command(&line);
                         let response = handler.handle(cmd);
                         write_response(fd, &response)?;

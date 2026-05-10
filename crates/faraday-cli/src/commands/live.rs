@@ -1,6 +1,6 @@
+use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::{protocol::j1979::Pid, Module};
-use crate::{cli::ModuleArg, output::OutputFormatter};
 use std::time::Duration;
 
 pub async fn execute(
@@ -26,7 +26,9 @@ pub async fn execute(
 
     formatter.print_info(&format!(
         "Reading live data from {:?}, PIDs: {:02X?}, interval: {}ms",
-        module, pids.iter().map(|p| p.0).collect::<Vec<_>>(), interval_ms
+        module,
+        pids.iter().map(|p| p.0).collect::<Vec<_>>(),
+        interval_ms
     ))?;
 
     formatter.print_info("Press Ctrl+C to stop")?;

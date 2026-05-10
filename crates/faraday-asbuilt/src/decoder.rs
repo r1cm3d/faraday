@@ -1,4 +1,4 @@
-use crate::{AsBuiltBlock, Feature, FeatureType, FeatureValue, Result, Error, BitPosition};
+use crate::{AsBuiltBlock, BitPosition, Error, Feature, FeatureType, FeatureValue, Result};
 
 pub struct AsBuiltDecoder;
 
@@ -48,19 +48,20 @@ impl AsBuiltDecoder {
 
     fn interpret_value(feature_type: &FeatureType, raw_value: u8) -> String {
         match feature_type {
-            FeatureType::Boolean { true_description, false_description } => {
+            FeatureType::Boolean {
+                true_description,
+                false_description,
+            } => {
                 if raw_value != 0 {
                     true_description.clone()
                 } else {
                     false_description.clone()
                 }
             }
-            FeatureType::Enumerated { values } => {
-                values
-                    .get(&raw_value)
-                    .cloned()
-                    .unwrap_or_else(|| format!("Unknown value: {}", raw_value))
-            }
+            FeatureType::Enumerated { values } => values
+                .get(&raw_value)
+                .cloned()
+                .unwrap_or_else(|| format!("Unknown value: {}", raw_value)),
             FeatureType::Numeric { min, max, unit } => {
                 let clamped_value = raw_value.clamp(*min, *max);
                 if let Some(unit) = unit {
@@ -82,12 +83,27 @@ mod tests {
     fn test_extract_bit_value() {
         let data = vec![0b10101010, 0b11110000];
 
-        assert_eq!(AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 0 }).unwrap(), 0);
-        assert_eq!(AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 1 }).unwrap(), 1);
-        assert_eq!(AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 7 }).unwrap(), 1);
+        assert_eq!(
+            AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 0 }).unwrap(),
+            0
+        );
+        assert_eq!(
+            AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 1 }).unwrap(),
+            1
+        );
+        assert_eq!(
+            AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 0, bit: 7 }).unwrap(),
+            1
+        );
 
-        assert_eq!(AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 1, bit: 0 }).unwrap(), 0);
-        assert_eq!(AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 1, bit: 4 }).unwrap(), 1);
+        assert_eq!(
+            AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 1, bit: 0 }).unwrap(),
+            0
+        );
+        assert_eq!(
+            AsBuiltDecoder::extract_bit_value(&data, BitPosition { byte: 1, bit: 4 }).unwrap(),
+            1
+        );
     }
 
     #[test]
@@ -98,7 +114,10 @@ mod tests {
         };
 
         assert_eq!(AsBuiltDecoder::interpret_value(&feature_type, 1), "Enabled");
-        assert_eq!(AsBuiltDecoder::interpret_value(&feature_type, 0), "Disabled");
+        assert_eq!(
+            AsBuiltDecoder::interpret_value(&feature_type, 0),
+            "Disabled"
+        );
     }
 
     #[test]
@@ -112,6 +131,9 @@ mod tests {
 
         assert_eq!(AsBuiltDecoder::interpret_value(&feature_type, 0), "Off");
         assert_eq!(AsBuiltDecoder::interpret_value(&feature_type, 2), "Auto");
-        assert_eq!(AsBuiltDecoder::interpret_value(&feature_type, 5), "Unknown value: 5");
+        assert_eq!(
+            AsBuiltDecoder::interpret_value(&feature_type, 5),
+            "Unknown value: 5"
+        );
     }
 }

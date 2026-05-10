@@ -168,7 +168,7 @@ faraday/                    # Workspace root
 
 **Acceptance criteria:** read DID `F190` (VIN) from the PCM via UDS (not via Mode 09) successfully. Hold an extended session for 60s without timeout.
 
-### Phase 3 — MS-CAN + as-built reads
+### Phase 3 — MS-CAN + as-built reads ✅ Complete
 
 **Scope:** read configuration from BCM and IPC.
 

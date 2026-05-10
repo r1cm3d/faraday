@@ -33,24 +33,26 @@ async fn main() -> Result<()> {
 
 async fn run_command(args: Args) -> Result<()> {
     match args.command {
-        Commands::ReadDtc { module, stored, pending, permanent } => {
-            commands::read_dtc::execute(args.adapter, module, stored, pending, permanent).await
-        }
-        Commands::ClearDtc { module } => {
-            commands::clear_dtc::execute(args.adapter, module).await
-        }
-        Commands::Live { pids, module, interval } => {
-            commands::live::execute(args.adapter, module, pids, interval).await
-        }
-        Commands::Vin { method } => {
-            commands::vin::execute(args.adapter, method).await
-        }
+        Commands::ReadDtc {
+            module,
+            stored,
+            pending,
+            permanent,
+        } => commands::read_dtc::execute(args.adapter, module, stored, pending, permanent).await,
+        Commands::ClearDtc { module } => commands::clear_dtc::execute(args.adapter, module).await,
+        Commands::Live {
+            pids,
+            module,
+            interval,
+        } => commands::live::execute(args.adapter, module, pids, interval).await,
+        Commands::Vin { method } => commands::vin::execute(args.adapter, method).await,
         Commands::ReadDid { module, did } => {
             commands::read_did::execute(args.adapter, module, did).await
         }
         Commands::Session { module, session } => {
             commands::session::execute(args.adapter, module, session).await
         }
+        Commands::Asbuilt { action } => commands::asbuilt::execute(args.adapter, action).await,
     }
 }
 

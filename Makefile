@@ -1,7 +1,7 @@
 # Faraday Makefile
 # Following project guidelines for target naming and organization
 
-.PHONY: help have deps build test clean lint fmt doc install
+.PHONY: help have deps build test clean lint fmt doc install install/tui install/emu
 
 # Default target
 help: ## Show this help message
@@ -75,6 +75,10 @@ install/tui: build ## Install faraday TUI globally
 	@echo "📺 Installing faraday TUI..."
 	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-tui --force
 
+install/emu: build ## Install faraday-emu PTY emulator globally
+	@echo "🔌 Installing faraday-emu..."
+	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-emu --force
+
 # Clean targets
 clean: ## Clean build artifacts
 	@echo "🧹 Cleaning build artifacts..."
@@ -112,6 +116,7 @@ size: build ## Show binary sizes
 	@echo "📏 Binary sizes:"
 	@ls -lh target/release/faraday 2>/dev/null || echo "❌ faraday binary not found"
 	@ls -lh target/release/faraday-tui 2>/dev/null || echo "❌ faraday-tui binary not found"
+	@ls -lh target/release/faraday-emu 2>/dev/null || echo "❌ faraday-emu binary not found"
 
 # Git integration
 git/status: ## Show git status
