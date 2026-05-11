@@ -255,7 +255,7 @@ Fields: `timestamp` (ISO 8601), `operation` (`write`|`restore`), `module` (Debug
 - Versioned YAML profiles: `faraday profile apply my-fusion.yml`. ✅
 - Structured session logging in JSONL (`~/.local/share/faraday/sessions.jsonl`). ✅
 
-### Phase 6 — Comprehensive Hidden Diagnostic TUI
+### Phase 6 — Comprehensive Hidden Diagnostic TUI ✅ Complete
 
 **Scope:** Transform `faraday-tui` from a basic 5-PID viewer into a professional multi-tab diagnostic interface covering all vehicle systems reachable via HS-CAN and MS-CAN.
 

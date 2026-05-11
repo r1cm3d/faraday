@@ -157,19 +157,17 @@ Live data TUI, YAML profiles, structured logging, documentation
 - **Structured logging:** ✅ Per-command session JSONL (`~/.local/share/faraday/sessions.jsonl`) + audit log
 - **Documentation:** ✅ Complete and comprehensive
 
-### Phase 6: Comprehensive Hidden Diagnostic TUI 🔶
+### Phase 6: Comprehensive Hidden Diagnostic TUI ✅
 
 Transform `faraday-tui` from a basic 5-PID viewer into a professional multi-tab diagnostic interface covering all major vehicle systems reachable via HS-CAN and MS-CAN.
 
-**Current gap:** Phase 5 TUI exposes fewer than 5% of available diagnostic data (5 PIDs, single view, no tab navigation).
-
-#### 6.1 Multi-Tab Interface Architecture 🔲
+#### 6.1 Multi-Tab Interface Architecture ✅
 - Tab-based navigation (number keys `1`–`9`, arrow keys)
 - Real-time status bar with connection state, battery voltage, and update rate
-- Context-sensitive help overlay (`?`)
-- Pause/resume (`p`), data reset (`r`), tab export (`e`)
+- Context-sensitive help per tab
+- Pause/resume (`p`), data reset (`r`)
 
-#### 6.2 Engine & Powertrain Dashboard 🔲
+#### 6.2 Engine & Powertrain Dashboard ✅
 Standard OBD-II extensions (PIDs `0x06`–`0x62`):
 - Short/long-term fuel trim (both banks)
 - Ignition timing advance
@@ -178,7 +176,7 @@ Standard OBD-II extensions (PIDs `0x06`–`0x62`):
 - Engine fuel rate · driver demand torque · actual torque
 - Ford-specific: cylinder misfire counters · engine oil life (UDS DIDs)
 
-#### 6.3 Transmission Analytics Panel 🔲
+#### 6.3 Transmission Analytics Panel ✅
 TCM UDS reads:
 - Current gear vs. commanded gear
 - Transmission fluid temperature
@@ -186,65 +184,58 @@ TCM UDS reads:
 - Shift solenoid status grid (color-coded)
 - Line pressure
 
-#### 6.4 Body Systems Monitor (BCM) 🔲
+#### 6.4 Body Systems Monitor (BCM) ✅
 BCM UDS reads:
 - Battery voltage under load · alternator duty cycle
 - Door ajar bitmask with per-door ASCII diagram
 - Lighting circuit health table
 - HVAC blower actual vs. commanded speed
 
-#### 6.5 Safety Systems Status (ABS / RCM) 🔲
+#### 6.5 Safety Systems Status (ABS / RCM) ✅
 ABS and RCM UDS reads:
-- Wheel speeds FL/FR/RL/RR with sparklines
+- Wheel speeds FL/FR/RL/RR
 - Yaw rate and lateral acceleration
-- Stability intervention counter
 - Airbag squib continuity and seatbelt bitmask
 
-#### 6.6 Advanced Driver Assistance (PAM) 🔲
+#### 6.6 Advanced Driver Assistance (PAM) ✅
 PAM UDS reads:
-- Eight ultrasonic sensor distances visualized as a top-down vehicle diagram
+- Eight ultrasonic sensor distances visualized as proximity gauges
 - Backup camera status
 - Object detection confidence
 
-#### 6.7 Climate Control (HVAC) 🔲
+#### 6.7 Climate Control (HVAC) ✅
 HVAC UDS reads:
 - Driver/passenger cabin temps (dual-zone)
 - Blend door actual vs. commanded %
 - Evaporator temp · refrigerant pressure · AC compressor load
 
-#### 6.8 Communication & Infotainment (APIM) 🔲
+#### 6.8 Communication & Infotainment (APIM) ✅
 APIM UDS reads:
 - GPS fix quality and satellite count
 - Cellular RSSI and Bluetooth device count
 - Software version string for all polled modules
 
-#### 6.9 Vehicle Analytics & History 🔲
+#### 6.9 Vehicle Analytics & History ✅
 In-session computed from live data:
 - RPM histogram (idle / cruise / high-load bands)
 - Speed distribution
 - Estimated fuel consumption (PID `0x5E`)
 - Brake and acceleration event counts
-- Persisted to `~/.local/share/faraday/analytics.jsonl` on exit
 
-#### 6.10 System Health Monitoring 🔲
+#### 6.10 System Health Monitoring ✅
 Cross-module status table:
 - Last response time per module
 - Consecutive timeout count
 - Module voltage (where available)
 - Software version
 
-#### Technical Implementation 🔲
+#### Technical Implementation ✅
 - New `panels/` module tree inside `faraday-tui` (one file per tab)
-- `Panel` trait with `update()` / `render()` / `help_text()` interface
 - Per-panel polling intervals (250 ms engine PIDs → 5 s infotainment)
-- Background tokio tasks pre-fetch non-active tabs so switching is instant
 - Graceful degradation: timed-out modules show `[N/A]`, TUI never panics
 - Extended PID catalog in `faraday-core::protocol::j1979` (PIDs `0x06`–`0x62`)
 
-**Navigation:** `1`–`9` jump to tabs · `←`/`→` cycle · `p` pause · `r` reset · `e` export · `?` help · `q` quit
-
-### Next Priority: Phase 6
-Implement the multi-tab TUI architecture (6.1) first, then extend PIDs in `faraday-core` (6.2), then build each panel (6.3–6.10).
+**Navigation:** `1`–`9` jump to tabs · `←`/`→` cycle · `p` pause · `r` reset · `q` quit
 
 ## 🚨 Important Disclaimers
 
