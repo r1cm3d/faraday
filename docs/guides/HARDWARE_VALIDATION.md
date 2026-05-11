@@ -235,7 +235,108 @@ faraday read-did --module ipc F190 --verbose
 
 ## Phase 3 Validation: MS-CAN + As-Built Reads
 
-### 3.1 As-Built Dump
+This section covers two validation tracks: a simulator track (no hardware required) and a physical device track.
+
+### Track A — Simulator (faraday-emu)
+
+#### Prerequisites
+
+```bash
+cargo build
+```
+
+#### Steps
+
+**1. Start the emulator.** It prints the PTY slave path on stdout.
+
+```bash
+cargo run -p faraday-emu
+# Output example: Listening on /dev/pts/3
+```
+
+Keep it running and open a second terminal for the steps below.
+
+**2. Dump BCM as-built configuration.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt dump --module bcm
+```
+
+Expected output (YAML):
+
+```yaml
+blocks:
+  - id: 726-01
+    description: BCM Configuration Block 01 - Lighting and DRL
+    did: '0x0701'
+    data: 0000000004030000
+    features:
+      - name: drl_enabled
+        description: Daytime Running Lights Enable
+        value: DRL Enabled
+        raw: 1
+      - name: auto_headlights
+        description: Automatic Headlight Control
+        value: Manual Headlights Only
+        raw: 0
+      - name: welcome_lighting
+        description: Welcome Lighting Duration
+        value: 3 seconds
+        raw: 3
+  - id: 726-02
+    ...
+```
+
+**3. Show a single feature.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt show --module bcm --feature drl_enabled
+```
+
+Expected:
+
+```
+drl_enabled: DRL Enabled (raw: 1)
+```
+
+**4. Dump IPC configuration.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt dump --module ipc
+```
+
+Expected: blocks `720-01` and `720-02`. Block `720-01` must show `show_digital_speedometer: Digital Speedometer Shown`. Block `720-02` must show `welcome_animation: Animation Enabled` and `gauge_brightness: Level 6`.
+
+**5. Verify YAML idempotency.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt dump --module bcm > a.yaml
+faraday --adapter /dev/pts/3 asbuilt dump --module bcm > b.yaml
+diff a.yaml b.yaml
+echo "Exit code: $?"   # must print 0
+```
+
+**6. Confirm error on unknown feature.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt show --module bcm --feature nonexistent
+echo "Exit code: $?"   # must be non-zero
+```
+
+Expected: error message `unknown feature: nonexistent`.
+
+**7. Confirm error for unsupported module.**
+
+```bash
+faraday --adapter /dev/pts/3 asbuilt dump --module tcm
+echo "Exit code: $?"   # must be non-zero
+```
+
+Expected: error message about no as-built blocks defined.
+
+### Track B — Physical Device
+
+#### 3.1 As-Built Dump
 
 ```bash
 # Dump all known BCM blocks
@@ -252,7 +353,7 @@ faraday asbuilt dump --module pcm --verbose
 - [ ] Re-running produces identical output (idempotent)
 - [ ] MS-CAN switching works (BCM/IPC differ from PCM bus)
 
-### 3.2 Feature Show
+#### 3.2 Feature Show
 
 ```bash
 # Read a specific feature from BCM
@@ -268,6 +369,12 @@ faraday asbuilt show --module ipc --feature show_digital_speedometer
 - [ ] Feature values make sense for current vehicle configuration
 - [ ] Boolean features display true/false descriptions
 - [ ] Enumerated features display correct option names
+
+#### Known Constraints
+
+- **MS-CAN switching**: the vLinker FS automatically switches to the 125 kbps MS-CAN bus when communicating with BCM/IPC addresses. If reads time out, verify the adapter firmware version and that MS-CAN wiring (pins 3/11) is connected.
+- **Extended session**: `read_asbuilt_block` automatically enters UDS extended diagnostic session (service `0x10 0x03`) before reading each DID. No manual session setup is needed.
+- **No active DTCs**: communication DTCs on the MS-CAN bus can prevent extended session entry. Clear them with `faraday clear-dtc --module bcm` if reads fail with `Conditions not correct (0x22)`.
 
 ---
 
