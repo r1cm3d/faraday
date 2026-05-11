@@ -1,4 +1,4 @@
-use super::fmt_opt_f;
+use super::{fmt_opt_f, fmt_pressure_kpa, fmt_temp};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -101,7 +101,7 @@ impl TransmissionPanel {
             .block(Block::default().borders(Borders::ALL).title("Fluid Temp"))
             .gauge_style(Style::default().fg(temp_color))
             .percent(((temp + 40.0) / 150.0 * 100.0).clamp(0.0, 100.0) as u16)
-            .label(fmt_opt_f(d.fluid_temp, 1, "°C"));
+            .label(fmt_temp(d.fluid_temp, 1));
         f.render_widget(temp_gauge, cols[0]);
 
         let tc_slip = d.tc_slip.unwrap_or(0.0);
@@ -129,7 +129,7 @@ impl TransmissionPanel {
             )),
             Spans::from(format!(
                 "Line Pressure: {}",
-                fmt_opt_f(d.line_pressure, 0, " kPa")
+                fmt_pressure_kpa(d.line_pressure)
             )),
             Spans::from(Span::raw("")),
             Spans::from(Span::styled(

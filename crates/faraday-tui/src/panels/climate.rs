@@ -1,4 +1,4 @@
-use super::fmt_opt_f;
+use super::{fmt_opt_f, fmt_pressure_kpa, fmt_temp};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -92,7 +92,7 @@ impl ClimatePanel {
             .block(Block::default().borders(Borders::ALL).title("Driver Zone"))
             .gauge_style(Style::default().fg(Color::Cyan))
             .percent(((driver_temp + 20.0) / 60.0 * 100.0).clamp(0.0, 100.0) as u16)
-            .label(fmt_opt_f(d.cabin_temp_driver, 1, "°C"));
+            .label(fmt_temp(d.cabin_temp_driver, 1));
         f.render_widget(driver_gauge, temp_cols[0]);
 
         let pass_temp = d.cabin_temp_pass.unwrap_or(20.0);
@@ -104,7 +104,7 @@ impl ClimatePanel {
             )
             .gauge_style(Style::default().fg(Color::Cyan))
             .percent(((pass_temp + 20.0) / 60.0 * 100.0).clamp(0.0, 100.0) as u16)
-            .label(fmt_opt_f(d.cabin_temp_pass, 1, "°C"));
+            .label(fmt_temp(d.cabin_temp_pass, 1));
         f.render_widget(pass_gauge, temp_cols[1]);
 
         let blend_cols = Layout::default()
@@ -139,8 +139,8 @@ impl ClimatePanel {
         let info_lines = vec![
             Spans::from(format!(
                 "Evap Temp: {}  Refrigerant: {}",
-                fmt_opt_f(d.evap_temp, 1, "°C"),
-                fmt_opt_f(d.refrigerant_pressure, 0, " kPa"),
+                fmt_temp(d.evap_temp, 1),
+                fmt_pressure_kpa(d.refrigerant_pressure),
             )),
             Spans::from(format!(
                 "Compressor Load: {}  Blower: {}",

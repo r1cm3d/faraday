@@ -1,3 +1,4 @@
+use super::fmt_dist_cm;
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -87,9 +88,7 @@ impl AdasPanel {
                 Some(_) => Color::Green,
                 None => Color::DarkGray,
             };
-            let label_str = sensor
-                .map(|v| format!("{}: {}cm", label, v))
-                .unwrap_or_else(|| format!("{}: --", label));
+            let label_str = format!("{}: {}", label, fmt_dist_cm(sensor));
             let gauge = Gauge::default()
                 .block(Block::default().borders(Borders::ALL))
                 .gauge_style(Style::default().fg(color))
@@ -120,9 +119,7 @@ impl AdasPanel {
                 Some(_) => Color::Green,
                 None => Color::DarkGray,
             };
-            let label_str = sensor
-                .map(|v| format!("{}: {}cm", label, v))
-                .unwrap_or_else(|| format!("{}: --", label));
+            let label_str = format!("{}: {}", label, fmt_dist_cm(sensor));
             let gauge = Gauge::default()
                 .block(Block::default().borders(Borders::ALL))
                 .gauge_style(Style::default().fg(color))

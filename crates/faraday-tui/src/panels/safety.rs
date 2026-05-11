@@ -1,4 +1,4 @@
-use super::fmt_opt_f;
+use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -115,8 +115,8 @@ impl SafetyPanel {
 
         let front_text = vec![
             Spans::from("── Front Axle ──"),
-            Spans::from(format!("FL: {} km/h", fmt_opt_f(d.wheel_speed_fl, 1, ""))),
-            Spans::from(format!("FR: {} km/h", fmt_opt_f(d.wheel_speed_fr, 1, ""))),
+            Spans::from(format!("FL: {}", fmt_speed_kmh(d.wheel_speed_fl))),
+            Spans::from(format!("FR: {}", fmt_speed_kmh(d.wheel_speed_fr))),
             Spans::from(Span::raw("")),
             Spans::from(format!(
                 "Yaw Rate:     {}",
@@ -133,8 +133,8 @@ impl SafetyPanel {
 
         let rear_text = vec![
             Spans::from("── Rear Axle ──"),
-            Spans::from(format!("RL: {} km/h", fmt_opt_f(d.wheel_speed_rl, 1, ""))),
-            Spans::from(format!("RR: {} km/h", fmt_opt_f(d.wheel_speed_rr, 1, ""))),
+            Spans::from(format!("RL: {}", fmt_speed_kmh(d.wheel_speed_rl))),
+            Spans::from(format!("RR: {}", fmt_speed_kmh(d.wheel_speed_rr))),
         ];
         let rear_para = Paragraph::new(rear_text)
             .block(Block::default().borders(Borders::ALL).title("Wheel Speeds"));
@@ -199,7 +199,7 @@ impl SafetyPanel {
                 .map(|p| (p / 345.0 * 100.0).clamp(0.0, 100.0) as u16)
                 .unwrap_or(0);
             let label_str = match val {
-                Some(p) => format!("{}: {:.0} kPa / {} PSI", label, p, (p / 6.895).round() as u32),
+                Some(_) => format!("{}: {}", label, fmt_tpms_kpa(val)),
                 None => format!("{}: --", label),
             };
             let gauge = Gauge::default()

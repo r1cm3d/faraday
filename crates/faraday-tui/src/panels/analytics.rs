@@ -141,8 +141,9 @@ impl AnalyticsPanel {
         let stats_lines = vec![
             Spans::from(format!("Total data points: {}", self.data_points)),
             Spans::from(format!(
-                "Total fuel consumed: {:.2} L",
-                self.total_fuel_liters
+                "Total fuel consumed: {:.2} L / {:.2} gal",
+                self.total_fuel_liters,
+                self.total_fuel_liters * 0.264172,
             )),
             Spans::from(format!("Brake events (est.): {}", self.brake_events)),
             Spans::from(format!("Hard accel events:   {}", self.accel_events)),

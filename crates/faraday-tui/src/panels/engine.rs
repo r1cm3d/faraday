@@ -1,4 +1,4 @@
-use super::{clamp_percent, fmt_opt_f};
+use super::{clamp_percent, fmt_fuel_rate, fmt_opt_f, fmt_speed_kmh, fmt_temp};
 use faraday_core::{
     commands::CommandExecutor, protocol::j1979::Pid, transport::IsoTpTransport, Module,
 };
@@ -185,7 +185,7 @@ impl EnginePanel {
             .block(Block::default().borders(Borders::ALL).title("Speed"))
             .gauge_style(Style::default().fg(Color::Green))
             .percent(clamp_percent(speed, 220.0))
-            .label(format!("{:.0} km/h", speed));
+            .label(fmt_speed_kmh(s.speed));
         f.render_widget(speed_gauge, gauge_row[1]);
 
         let load = s.engine_load.unwrap_or(0.0);
@@ -208,14 +208,16 @@ impl EnginePanel {
 
         let temps = vec![
             Spans::from(format!(
-                "Coolant: {}  Oil: {}",
-                fmt_opt_f(s.coolant_temp, 1, "°C"),
-                fmt_opt_f(s.oil_temp, 1, "°C"),
+                "Coolant: {}",
+                fmt_temp(s.coolant_temp, 1),
             )),
             Spans::from(format!(
-                "Intake:  {}  Ambient: {}",
-                fmt_opt_f(s.intake_temp, 1, "°C"),
-                fmt_opt_f(s.intake_temp, 1, "°C"),
+                "Oil:     {}",
+                fmt_temp(s.oil_temp, 1),
+            )),
+            Spans::from(format!(
+                "Intake:  {}",
+                fmt_temp(s.intake_temp, 1),
             )),
             Spans::from(format!(
                 "Throttle: {}  Rel: {}",
@@ -260,7 +262,7 @@ impl EnginePanel {
             )),
             Spans::from(format!(
                 "Fuel Rate: {}  Torque: {}",
-                fmt_opt_f(s.fuel_rate, 2, " L/h"),
+                fmt_fuel_rate(s.fuel_rate),
                 fmt_opt_f(s.engine_torque, 0, "%"),
             )),
         ];
