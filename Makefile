@@ -4,7 +4,7 @@
 .PHONY: help have deps build build/debug build/check test test/unit test/integration \
         lint fmt fmt/check doc doc/open install install/tui install/emu \
         clean clean/all dev/check dev/quick deps/update deps/audit size \
-        git/status git/prepare
+        git/status git/prepare profile/validate profile/apply
 
 # Default target
 help: ## Show this help message
@@ -111,6 +111,15 @@ size: build ## Show binary sizes
 	@ls -lh target/release/faraday 2>/dev/null || echo "❌ faraday binary not found"
 	@ls -lh target/release/faraday-tui 2>/dev/null || echo "❌ faraday-tui binary not found"
 	@ls -lh target/release/faraday-emu 2>/dev/null || echo "❌ faraday-emu binary not found"
+
+# Profile targets
+profile/validate: ## Validate a YAML profile file (PROFILE=path/to/profile.yml)
+	@echo "Validating profile..."
+	@faraday profile validate $(PROFILE)
+
+profile/apply: ## Apply a YAML profile to the vehicle (PROFILE=path, add DRY_RUN=--dry-run to preview)
+	@echo "Applying profile..."
+	@faraday profile apply $(PROFILE) $(DRY_RUN)
 
 # Git integration
 git/status: ## Show git status

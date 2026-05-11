@@ -150,11 +150,11 @@ CLI commands: `asbuilt write`, `asbuilt snapshot`, `asbuilt restore`
 - **Audit logging:** ✅ `~/.local/share/faraday/audit.jsonl` (JSONL, one entry per operation)
 - **Safety guards:** ✅ Programming DID block (`F0xx`/`F1xx`), interactive confirmation, `--yes` for scripts
 
-### Phase 5: Polish and ergonomics 🔶
+### Phase 5: Polish and ergonomics ✅
 Live data TUI, YAML profiles, structured logging, documentation
 - **Live data TUI:** ✅ Complete (`faraday-tui` fully functional)
-- **YAML profiles:** ❌ Not implemented
-- **Structured logging:** 🔶 Partial (tracing + audit JSONL done; session logging TBD)
+- **YAML profiles:** ✅ `faraday profile apply my-fusion.yml` / `faraday profile validate`
+- **Structured logging:** ✅ Per-command session JSONL (`~/.local/share/faraday/sessions.jsonl`) + audit log
 - **Documentation:** ✅ Complete and comprehensive
 
 ### Phase 6: Comprehensive Hidden Diagnostic TUI 🔶
@@ -172,10 +172,8 @@ Transform TUI from basic OBD-II viewer to professional Ford diagnostic interface
 - **Vehicle history tracking** with engine operating hours, trip data visualization, and cold start frequency
 - **Professional diagnostic capabilities** matching FORScan functionality
 
-### Next Priority: Phase 5 & 6
-1. YAML profile support (`faraday profile apply my-fusion.yml`)
-2. Structured session logging beyond audit JSONL (mdBook documentation)
-3. **Phase 6:** Comprehensive diagnostic TUI expansion across all vehicle systems
+### Next Priority: Phase 6
+- **Phase 6:** Comprehensive diagnostic TUI expansion across all vehicle systems
 
 ## 🚨 Important Disclaimers
 

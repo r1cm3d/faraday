@@ -1,0 +1,12 @@
+vehicle:
+  vin: "3FA6P0H7XHR123456"
+  model: "Fusion 2017 SEL"
+
+modules:
+  bcm:
+    drl_enabled: true
+    auto_lock_on_drive: true
+    unlock_beeps: 2
+  ipc:
+    show_digital_speedometer: true
+    welcome_animation: true

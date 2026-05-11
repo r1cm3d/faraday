@@ -49,7 +49,7 @@ pub fn snapshot_dir() -> PathBuf {
     data_dir().join("snapshots")
 }
 
-fn data_dir() -> PathBuf {
+pub fn data_dir() -> PathBuf {
     std::env::var("XDG_DATA_HOME")
         .ok()
         .map(PathBuf::from)

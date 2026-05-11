@@ -251,11 +251,9 @@ Fields: `timestamp` (ISO 8601), `operation` (`write`|`restore`), `module` (Debug
 ### Phase 5 — Polish and ergonomics
 
 **Deliverables:**
-- Live data TUI with `ratatui` (gauges, RPM/speed sparklines).
-- Versioned YAML profiles: `faraday profile apply my-fusion.yml`.
-- Structured session logging in JSONL for audit.
-- mdBook documentation.
-- Distribution: cargo install + pre-built binaries via GitHub Actions.
+- Live data TUI with `ratatui` (gauges, RPM/speed sparklines). ✅
+- Versioned YAML profiles: `faraday profile apply my-fusion.yml`. ✅
+- Structured session logging in JSONL (`~/.local/share/faraday/sessions.jsonl`). ✅
 
 ---
 
@@ -328,7 +326,23 @@ modules:
     welcome_animation: true
 ```
 
-Application: `faraday profile apply my-fusion.yml --commit`. The CLI resolves each semantic feature to the byte/bit in the corresponding as-built block, snapshots, writes, and validates.
+Commands:
+
+- `faraday profile validate my-fusion.yml` — checks every module/feature/value against the known block catalog without connecting to a vehicle.
+- `faraday profile apply my-fusion.yml` — validates, then writes each feature in order; auto-snapshots each affected block and appends audit log entries.
+- `faraday profile apply my-fusion.yml --dry-run` — shows the diff without writing.
+
+The CLI resolves each semantic feature to the byte/bit in the corresponding as-built block, snapshots, writes, and validates.
+
+### Session Logging
+
+Every CLI invocation appends one JSON object to `~/.local/share/faraday/sessions.jsonl`:
+
+```json
+{"timestamp":"2026-05-10T14:30:05Z","command":"profile apply examples/my-fusion.yml","adapter":"/dev/ttyUSB0","duration_ms":1243,"result":"ok"}
+```
+
+Fields: `timestamp` (ISO 8601), `command` (human-readable label), `adapter` (device path), `duration_ms` (wall time), `result` (`ok` | `error: <message>`). Session logging failures are non-fatal warnings.
 
 ---
 

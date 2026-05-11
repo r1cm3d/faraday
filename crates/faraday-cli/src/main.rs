@@ -10,10 +10,14 @@ mod cli;
 mod commands;
 mod error;
 mod output;
+mod profile;
+mod session_log;
 
 use anyhow::Result;
+use chrono::Utc;
 use clap::Parser;
-use cli::{Args, Commands};
+use cli::{Args, AsBuiltAction, Commands, ProfileAction};
+use std::time::Instant;
 use tracing::{error, info};
 
 #[tokio::main]
@@ -24,7 +28,20 @@ async fn main() -> Result<()> {
 
     info!("Faraday CLI v{} starting", env!("CARGO_PKG_VERSION"));
 
-    if let Err(err) = run_command(args).await {
+    let adapter = args.adapter.clone();
+    let command_label = command_label(&args.command);
+    let start = Instant::now();
+
+    let result = run_command(args).await;
+
+    let duration_ms = start.elapsed().as_millis() as u64;
+    let result_str = match &result {
+        Ok(_) => "ok".to_string(),
+        Err(e) => format!("error: {}", e),
+    };
+    log_session(adapter, command_label, duration_ms, result_str);
+
+    if let Err(err) = result {
         error!("Command failed: {}", err);
         std::process::exit(1);
     }
@@ -54,6 +71,48 @@ async fn run_command(args: Args) -> Result<()> {
             commands::session::execute(args.adapter, module, session).await
         }
         Commands::Asbuilt { action } => commands::asbuilt::execute(args.adapter, action).await,
+        Commands::Profile { action } => commands::profile::execute(args.adapter, action).await,
+    }
+}
+
+fn command_label(cmd: &Commands) -> String {
+    match cmd {
+        Commands::ReadDtc { .. } => "read-dtc".to_string(),
+        Commands::ClearDtc { .. } => "clear-dtc".to_string(),
+        Commands::Live { .. } => "live".to_string(),
+        Commands::Vin { .. } => "vin".to_string(),
+        Commands::ReadDid { did, .. } => format!("read-did {}", did),
+        Commands::Session { .. } => "session".to_string(),
+        Commands::Asbuilt { action } => match action {
+            AsBuiltAction::Dump { .. } => "asbuilt dump".to_string(),
+            AsBuiltAction::Show { feature, .. } => format!("asbuilt show {}", feature),
+            AsBuiltAction::Write { feature, .. } => format!("asbuilt write {}", feature),
+            AsBuiltAction::Snapshot { .. } => "asbuilt snapshot".to_string(),
+            AsBuiltAction::Restore { .. } => "asbuilt restore".to_string(),
+        },
+        Commands::Profile { action } => match action {
+            ProfileAction::Apply { file, .. } => {
+                format!("profile apply {}", file.display())
+            }
+            ProfileAction::Validate { file } => {
+                format!("profile validate {}", file.display())
+            }
+        },
+    }
+}
+
+fn log_session(adapter: String, command: String, duration_ms: u64, result: String) {
+    let entry = session_log::SessionEntry {
+        timestamp: Utc::now().format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+        command,
+        adapter,
+        duration_ms,
+        result,
+    };
+    if let Ok(logger) = session_log::SessionLogger::new() {
+        if let Err(e) = logger.log(&entry) {
+            tracing::warn!("session log failed: {}", e);
+        }
     }
 }
 

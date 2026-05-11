@@ -209,7 +209,7 @@ pub async fn restore(adapter_path: String, snapshot_path: PathBuf, yes: bool) ->
     Ok(())
 }
 
-fn find_feature(blocks: &[AsBuiltBlock], name: &str) -> Option<(AsBuiltBlock, Feature)> {
+pub(crate) fn find_feature(blocks: &[AsBuiltBlock], name: &str) -> Option<(AsBuiltBlock, Feature)> {
     for block in blocks {
         if let Some(feature) = block.features.iter().find(|f| f.name == name) {
             return Some((block.clone(), feature.clone()));
@@ -218,7 +218,7 @@ fn find_feature(blocks: &[AsBuiltBlock], name: &str) -> Option<(AsBuiltBlock, Fe
     None
 }
 
-fn parse_value(feature: &Feature, raw: &str) -> Result<u8> {
+pub(crate) fn parse_value(feature: &Feature, raw: &str) -> Result<u8> {
     match &feature.feature_type {
         FeatureType::Boolean { .. } => match raw.to_ascii_lowercase().as_str() {
             "true" | "1" | "on" | "enabled" | "yes" => Ok(1),
@@ -329,7 +329,7 @@ fn module_from_can_id(can_id_str: &str) -> Option<Module> {
     }
 }
 
-fn known_blocks(module: &ModuleArg) -> Vec<AsBuiltBlock> {
+pub(crate) fn known_blocks(module: &ModuleArg) -> Vec<AsBuiltBlock> {
     match module {
         ModuleArg::Bcm => faraday_asbuilt::bcm::get_known_blocks(),
         ModuleArg::Ipc => faraday_asbuilt::ipc::get_known_blocks(),

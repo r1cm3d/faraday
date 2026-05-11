@@ -109,6 +109,15 @@ pub enum Commands {
         #[command(subcommand)]
         action: AsBuiltAction,
     },
+
+    #[command(
+        name = "profile",
+        about = "Apply or validate YAML configuration profiles"
+    )]
+    Profile {
+        #[command(subcommand)]
+        action: ProfileAction,
+    },
 }
 
 #[derive(Subcommand, Clone)]
@@ -168,6 +177,30 @@ pub enum AsBuiltAction {
 
         #[arg(long, short = 'y', help = "Skip confirmation prompt")]
         yes: bool,
+    },
+}
+
+#[derive(Subcommand, Clone)]
+pub enum ProfileAction {
+    #[command(name = "apply", about = "Apply a YAML profile to the vehicle")]
+    Apply {
+        #[arg(help = "Path to YAML profile file")]
+        file: PathBuf,
+
+        #[arg(long, help = "Preview changes without writing to the vehicle")]
+        dry_run: bool,
+
+        #[arg(long, short = 'y', help = "Skip confirmation prompt")]
+        yes: bool,
+    },
+
+    #[command(
+        name = "validate",
+        about = "Validate a YAML profile without connecting to the vehicle"
+    )]
+    Validate {
+        #[arg(help = "Path to YAML profile file")]
+        file: PathBuf,
     },
 }
 
