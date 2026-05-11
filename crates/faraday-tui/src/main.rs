@@ -54,13 +54,20 @@ async fn main() -> Result<()> {
 }
 
 async fn run_tui(args: Args) -> Result<()> {
+    let app = app::App::new(args.adapter).await?;
+
+    std::panic::set_hook(Box::new(|info| {
+        let _ = disable_raw_mode();
+        let _ = execute!(io::stdout(), LeaveAlternateScreen, DisableMouseCapture);
+        eprintln!("panic: {info}");
+    }));
+
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let app = app::App::new(args.adapter).await?;
     let res = run_app(&mut terminal, app).await;
 
     disable_raw_mode()?;
@@ -70,6 +77,7 @@ async fn run_tui(args: Args) -> Result<()> {
         DisableMouseCapture
     )?;
     terminal.show_cursor()?;
+    let _ = std::panic::take_hook();
 
     if let Err(err) = res {
         error!("TUI error: {}", err);
