@@ -4,7 +4,7 @@
 .PHONY: help have deps build build/debug build/check test test/unit test/integration \
         lint fmt fmt/check doc doc/open install install/tui install/emu \
         clean clean/all dev/check dev/quick deps/update deps/audit size \
-        git/status git/prepare profile/validate profile/apply \
+        profile/validate profile/apply \
         tui/run tui/emu tui/dev
 
 # Default target
@@ -71,9 +71,13 @@ doc/open: ## Generate and open documentation
 	@cargo doc --no-deps --all-features --open
 
 # Installation
-install: build ## Install faraday CLI globally
+install: build ## Install all faraday binaries globally
 	@echo "⚡ Installing faraday CLI..."
 	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-cli --force
+	@echo "📺 Installing faraday TUI..."
+	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-tui --force
+	@echo "🔌 Installing faraday-emu..."
+	@CARGO_INSTALL_ROOT=$(HOME)/.cargo cargo install --path crates/faraday-emu --force
 
 install/tui: build ## Install faraday TUI globally
 	@echo "📺 Installing faraday TUI..."
@@ -137,10 +141,3 @@ tui/emu: ## Run TUI against the PTY emulator (starts emulator then TUI)
 tui/dev: fmt lint ## Quick TUI dev check (format, lint, then compile TUI only)
 	@echo "🔍 Checking faraday-tui..."
 	@cargo check -p faraday-tui
-
-# Git integration
-git/status: ## Show git status
-	@git status --short
-
-git/prepare: dev/check ## Prepare for commit (run all checks)
-	@echo "✅ Ready for commit"
