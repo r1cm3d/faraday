@@ -9,7 +9,11 @@ use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
-    vec![create_block_720_01(), create_block_720_02(), create_block_720_04()]
+    vec![
+        create_block_720_01(),
+        create_block_720_02(),
+        create_block_720_04(),
+    ]
 }
 
 fn create_block_720_01() -> AsBuiltBlock {

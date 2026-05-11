@@ -10,6 +10,21 @@ use crate::{
 use tracing::info;
 
 impl<T: IsoTpTransport> CommandExecutor<T> {
+    async fn read_string_did(
+        &mut self,
+        request_id: crate::CanId,
+        response_id: crate::CanId,
+        did: DataIdentifier,
+    ) -> Result<String> {
+        let mut uds = Uds::new(&mut self.transport);
+        let data = uds
+            .read_data_by_identifier(request_id, response_id, did)
+            .await?;
+        String::from_utf8(data)
+            .map(|s| s.trim_end_matches('\0').to_string())
+            .map_err(|_| crate::Error::invalid_data("Invalid string encoding"))
+    }
+
     pub async fn read_vin(&mut self) -> Result<String> {
         info!("Reading VIN via J1979");
         let mut j1979 = J1979::new(&mut self.transport);
@@ -18,26 +33,17 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
 
     pub async fn read_vin_uds(&mut self, module: Module) -> Result<String> {
         info!("Reading VIN via UDS from {:?}", module);
-
-        let mut uds = Uds::new(&mut self.transport);
-        let data = uds
-            .read_data_by_identifier(
-                module.request_id(),
-                module.response_id(),
-                DataIdentifier::VIN,
-            )
-            .await?;
-
-        let vin = String::from_utf8(data)
-            .map_err(|_| crate::Error::invalid_data("Invalid VIN encoding"))?;
-
-        Ok(vin.trim_end_matches('\0').to_string())
+        self.read_string_did(
+            module.request_id(),
+            module.response_id(),
+            DataIdentifier::VIN,
+        )
+        .await
     }
 
     pub async fn read_ecu_info(&mut self, module: Module) -> Result<EcuInfo> {
         info!("Reading ECU information from {:?}", module);
 
-        // Set extended session first
         {
             let mut uds = Uds::new(&mut self.transport);
             uds.diagnostic_session_control(
@@ -48,81 +54,29 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
             .await?;
         }
 
-        // Read each DID sequentially with separate UDS instances
-        let software_number = {
-            let mut uds = Uds::new(&mut self.transport);
-            let data = uds
-                .read_data_by_identifier(
-                    module.request_id(),
-                    module.response_id(),
-                    DataIdentifier::ECU_SOFTWARE_NUMBER,
-                )
-                .await
-                .ok()
-                .and_then(|data| String::from_utf8(data).ok())
-                .map(|s| s.trim_end_matches('\0').to_string());
-            data
-        };
+        let req = module.request_id();
+        let resp = module.response_id();
 
-        let hardware_number = {
-            let mut uds = Uds::new(&mut self.transport);
-            let data = uds
-                .read_data_by_identifier(
-                    module.request_id(),
-                    module.response_id(),
-                    DataIdentifier::ECU_HARDWARE_NUMBER,
-                )
-                .await
-                .ok()
-                .and_then(|data| String::from_utf8(data).ok())
-                .map(|s| s.trim_end_matches('\0').to_string());
-            data
-        };
-
-        let supplier_id = {
-            let mut uds = Uds::new(&mut self.transport);
-            let data = uds
-                .read_data_by_identifier(
-                    module.request_id(),
-                    module.response_id(),
-                    DataIdentifier::SUPPLIER_IDENTIFIER,
-                )
-                .await
-                .ok()
-                .and_then(|data| String::from_utf8(data).ok())
-                .map(|s| s.trim_end_matches('\0').to_string());
-            data
-        };
-
-        let manufacturing_date = {
-            let mut uds = Uds::new(&mut self.transport);
-            let data = uds
-                .read_data_by_identifier(
-                    module.request_id(),
-                    module.response_id(),
-                    DataIdentifier::ECU_MANUFACTURING_DATE,
-                )
-                .await
-                .ok()
-                .and_then(|data| String::from_utf8(data).ok())
-                .map(|s| s.trim_end_matches('\0').to_string());
-            data
-        };
-
-        let serial_number = {
-            let mut uds = Uds::new(&mut self.transport);
-            let data = uds
-                .read_data_by_identifier(
-                    module.request_id(),
-                    module.response_id(),
-                    DataIdentifier::ECU_SERIAL_NUMBER,
-                )
-                .await
-                .ok()
-                .and_then(|data| String::from_utf8(data).ok())
-                .map(|s| s.trim_end_matches('\0').to_string());
-            data
-        };
+        let software_number = self
+            .read_string_did(req, resp, DataIdentifier::ECU_SOFTWARE_NUMBER)
+            .await
+            .ok();
+        let hardware_number = self
+            .read_string_did(req, resp, DataIdentifier::ECU_HARDWARE_NUMBER)
+            .await
+            .ok();
+        let supplier_id = self
+            .read_string_did(req, resp, DataIdentifier::SUPPLIER_IDENTIFIER)
+            .await
+            .ok();
+        let manufacturing_date = self
+            .read_string_did(req, resp, DataIdentifier::ECU_MANUFACTURING_DATE)
+            .await
+            .ok();
+        let serial_number = self
+            .read_string_did(req, resp, DataIdentifier::ECU_SERIAL_NUMBER)
+            .await
+            .ok();
 
         Ok(EcuInfo {
             module,

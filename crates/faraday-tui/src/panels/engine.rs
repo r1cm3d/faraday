@@ -207,18 +207,9 @@ impl EnginePanel {
             .split(rows[1]);
 
         let temps = vec![
-            Spans::from(format!(
-                "Coolant: {}",
-                fmt_temp(s.coolant_temp, 1),
-            )),
-            Spans::from(format!(
-                "Oil:     {}",
-                fmt_temp(s.oil_temp, 1),
-            )),
-            Spans::from(format!(
-                "Intake:  {}",
-                fmt_temp(s.intake_temp, 1),
-            )),
+            Spans::from(format!("Coolant: {}", fmt_temp(s.coolant_temp, 1),)),
+            Spans::from(format!("Oil:     {}", fmt_temp(s.oil_temp, 1),)),
+            Spans::from(format!("Intake:  {}", fmt_temp(s.intake_temp, 1),)),
             Spans::from(format!(
                 "Throttle: {}  Rel: {}",
                 fmt_opt_f(s.throttle_pos, 1, "%"),

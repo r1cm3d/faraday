@@ -397,9 +397,9 @@ impl GlossaryPanel {
     }
 
     fn total_lines() -> usize {
-        SECTIONS.iter().fold(1, |acc, (_, entries)| {
-            acc + 1 + 1 + entries.len() * 2 + 1
-        })
+        SECTIONS
+            .iter()
+            .fold(1, |acc, (_, entries)| acc + 1 + 1 + entries.len() * 2 + 1)
     }
 
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
