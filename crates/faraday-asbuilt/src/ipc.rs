@@ -9,7 +9,7 @@ use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
-    vec![create_block_720_01(), create_block_720_02()]
+    vec![create_block_720_01(), create_block_720_02(), create_block_720_04()]
 }
 
 fn create_block_720_01() -> AsBuiltBlock {
@@ -114,6 +114,26 @@ fn create_block_720_02() -> AsBuiltBlock {
     }
 }
 
+fn create_block_720_04() -> AsBuiltBlock {
+    let mut units = HashMap::new();
+    units.insert(4u8, "psi".to_string());
+    units.insert(8u8, "kpa".to_string());
+    units.insert(12u8, "bar".to_string());
+
+    AsBuiltBlock {
+        id: BlockId::new("720", "04"),
+        description: "IPC Configuration Block 04 - TPMS Display Settings".to_string(),
+        did: 0x0401,
+        data: vec![0; 1],
+        features: vec![Feature {
+            name: "tpms_display_units".to_string(),
+            description: "Tire Pressure Display Units".to_string(),
+            bit_position: BitPosition { byte: 0, bit: 0 },
+            feature_type: FeatureType::Enumerated { values: units },
+        }],
+    }
+}
+
 pub fn get_block_by_id(id: &str) -> Option<AsBuiltBlock> {
     get_known_blocks()
         .into_iter()
@@ -134,9 +154,10 @@ mod tests {
     #[test]
     fn test_get_known_blocks() {
         let blocks = get_known_blocks();
-        assert_eq!(blocks.len(), 2);
+        assert_eq!(blocks.len(), 3);
         assert_eq!(blocks[0].id.to_string(), "720-01");
         assert_eq!(blocks[1].id.to_string(), "720-02");
+        assert_eq!(blocks[2].id.to_string(), "720-04");
     }
 
     #[test]
@@ -162,5 +183,14 @@ mod tests {
         let blocks = get_known_blocks();
         assert_eq!(blocks[0].did, 0x0101);
         assert_eq!(blocks[1].did, 0x0102);
+        assert_eq!(blocks[2].did, 0x0401);
+    }
+
+    #[test]
+    fn test_block_720_04_tpms_feature() {
+        let block = create_block_720_04();
+        assert_eq!(block.features.len(), 1);
+        assert_eq!(block.features[0].name, "tpms_display_units");
+        assert_eq!(block.features[0].bit_position.byte, 0);
     }
 }

@@ -10,3 +10,4 @@ modules:
   ipc:
     show_digital_speedometer: true
     welcome_animation: true
+    tpms_display_units: "kpa"

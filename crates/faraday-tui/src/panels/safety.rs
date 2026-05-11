@@ -5,7 +5,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph},
+    widgets::{Block, Borders, Gauge, Paragraph},
     Frame,
 };
 use std::time::Instant;
@@ -20,6 +20,8 @@ pub struct SafetyData {
     pub lateral_accel: Option<f64>,
     pub airbag_squib: Option<u8>,
     pub seatbelt_status: Option<u8>,
+    pub tpms_front_kpa: Option<f64>,
+    pub tpms_rear_kpa: Option<f64>,
 }
 
 pub struct SafetyPanel {
@@ -81,6 +83,16 @@ impl SafetyPanel {
             d.seatbelt_status = None;
         }
 
+        if let Ok(raw) = executor.read_asbuilt_block(Module::Bcm, 0x0201).await {
+            if raw.len() >= 2 {
+                d.tpms_front_kpa = Some(raw[0] as f64 * 6.89476);
+                d.tpms_rear_kpa = Some(raw[1] as f64 * 6.89476);
+            }
+        } else {
+            d.tpms_front_kpa = None;
+            d.tpms_rear_kpa = None;
+        }
+
         self.last_updated = Some(Instant::now());
     }
 
@@ -89,7 +101,11 @@ impl SafetyPanel {
 
         let rows = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+            .constraints([
+                Constraint::Percentage(40),
+                Constraint::Percentage(40),
+                Constraint::Percentage(20),
+            ])
             .split(area);
 
         let wheel_cols = Layout::default()
@@ -163,9 +179,39 @@ impl SafetyPanel {
         let rcm_para = Paragraph::new(rcm_lines)
             .block(Block::default().borders(Borders::ALL).title("RCM / Airbag"));
         f.render_widget(rcm_para, rows[1]);
+
+        let tpms_cols = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+            .split(rows[2]);
+
+        for (label, val, col) in [
+            ("Front", d.tpms_front_kpa, tpms_cols[0]),
+            ("Rear", d.tpms_rear_kpa, tpms_cols[1]),
+        ] {
+            let color = match val {
+                Some(p) if !(172.0..=310.0).contains(&p) => Color::Red,
+                Some(p) if p < 207.0 => Color::Yellow,
+                Some(_) => Color::Green,
+                None => Color::DarkGray,
+            };
+            let percent = val
+                .map(|p| (p / 345.0 * 100.0).clamp(0.0, 100.0) as u16)
+                .unwrap_or(0);
+            let label_str = match val {
+                Some(p) => format!("{}: {:.0} kPa / {} PSI", label, p, (p / 6.895).round() as u32),
+                None => format!("{}: --", label),
+            };
+            let gauge = Gauge::default()
+                .block(Block::default().borders(Borders::ALL).title("TPMS"))
+                .gauge_style(Style::default().fg(color))
+                .percent(percent)
+                .label(label_str);
+            f.render_widget(gauge, col);
+        }
     }
 
     pub fn help_text(&self) -> &str {
-        "Safety: Wheel Speeds · Yaw Rate · Lateral Accel · Seatbelts · Airbag Squib"
+        "Safety: Wheel Speeds · Yaw Rate · Lateral Accel · Seatbelts · Airbag Squib · TPMS Front/Rear"
     }
 }

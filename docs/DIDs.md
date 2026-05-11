@@ -72,12 +72,14 @@ Faraday blocks all write attempts to these ranges for safety.
 #### BCM (726/72E)
 | DID | Description |
 |-----|-------------|
+| `0201` | TPMS tire pressures — front axle / rear axle (1 byte each = PSI, per-axle; FORScan: `726-02-01`) |
 | `726A-726F` | As-built configuration blocks |
 | `7270` | Feature enable/disable flags |
 
 #### IPC (720/728)
 | DID | Description |
 |-----|-------------|
+| `0401` | TPMS display units — `0x04`=PSI · `0x08`=kPa · `0x0C`=Bar (FORScan: `720-04-01`) |
 | `720A-720F` | Display configuration blocks |
 | `7211` | Language settings |
 | `7212` | Units settings (metric/imperial) |

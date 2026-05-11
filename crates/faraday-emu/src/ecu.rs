@@ -302,6 +302,7 @@ impl SimulatedEcu {
 
     fn did_bcm(&mut self, did: u16) -> Vec<u8> {
         match did {
+            0x0201 => vec![0x23, 0x23],
             0x0701 => vec![0x00, 0x00, 0x00, 0x04, 0x03, 0x00, 0x00, 0x00],
             0x0702 => vec![0x00, 0x08, 0x01, 0x00, 0x00, 0x02, 0x00, 0x00],
             0x4001 => {
@@ -323,6 +324,7 @@ impl SimulatedEcu {
         match did {
             0x0101 => vec![0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00],
             0x0102 => vec![0x80, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00],
+            0x0401 => vec![0x08],
             0xF101 => vec![0x01],
             _ => vec![0x00; 4],
         }
@@ -584,6 +586,23 @@ mod tests {
         assert_eq!(resp.id, CanId::new(0x70B));
         assert_eq!(resp.data[1], 0x62);
         assert_eq!(resp.data[4], 0x01);
+    }
+
+    #[test]
+    fn responds_to_bcm_tpms_pressures() {
+        let mut ecu = SimulatedEcu::new();
+        let req = CanFrame::new(
+            CanId::new(0x726),
+            vec![0x03, 0x22, 0x02, 0x01, 0x55, 0x55, 0x55, 0x55],
+        );
+        ecu.process_frame(&req);
+        let resp = ecu.pop_response().unwrap();
+        assert_eq!(resp.id, CanId::new(0x72E));
+        assert_eq!(resp.data[1], 0x62);
+        assert_eq!(resp.data[2], 0x02);
+        assert_eq!(resp.data[3], 0x01);
+        assert_eq!(resp.data[4], 0x23);
+        assert_eq!(resp.data[5], 0x23);
     }
 
     fn resp_id_from_first_frame(frame: &CanFrame) -> u32 {

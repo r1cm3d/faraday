@@ -35,7 +35,7 @@ This document provides a comprehensive overview of all configurable features and
 **Advanced Features:**
 - Continuously Controlled Damping (CCD) suspension control
 - Adaptive steering control
-- Tire pressure monitoring activation
+- Tire pressure monitoring activation and display units (`tpms_display_units`: psi / kpa / bar via IPC DID `0x0401`)
 - Climate control integration
 - Warning light configurations
 - Trip computer settings
@@ -166,6 +166,7 @@ This document provides a comprehensive overview of all configurable features and
 #### BCM (Body Control Module)
 - **Battery voltage** under various load conditions
 - **Charging system** performance and alternator output
+- **Tire pressure** front/rear axle in PSI via BCM DID `0x0201` (per-axle summary; individual FL/FR/RL/RR DID not confirmed — individual sensor data processed internally via RTM→BCM LIN link)
 - **Individual door lock** actuator feedback
 - **Window motor** current draw and position feedback
 - **Lighting circuits** individual bulb status and current draw

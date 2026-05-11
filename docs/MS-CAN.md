@@ -51,6 +51,9 @@ The Medium-Speed CAN bus in the Ford Fusion 2017 SEL operates at 125 kbps and co
 - Welcome lighting duration and pattern
 - Auto-down window behavior
 
+**TPMS Data (DID `0x0201`):**
+The BCM aggregates tire pressure sensor readings received from the RTM (Remote Transceiver Module) via LIN and exposes front/rear axle pressures via DID `0x0201` (FORScan: `726-02-01`). Format: 2 bytes where each byte = tire pressure in PSI (e.g., `[0x23, 0x23]` = 35 PSI front, 35 PSI rear). Note: individual per-tire (FL/FR/RL/RR) readings are not exposed on CAN via confirmed UDS DIDs; the BCM processes them internally before presenting the axle-level summary.
+
 **Faraday Access:**
 ```bash
 # Read BCM as-built configuration
@@ -79,6 +82,7 @@ faraday read-did --module bcm 0x726A
 - Gauge sweep behavior
 - Warning chime volume levels
 - Display brightness and contrast
+- TPMS display units (`tpms_display_units`: psi / kpa / bar via DID `0x0401`, FORScan: `720-04-01`)
 
 **Common DIDs:**
 - `0x720A-720F`: Display configuration blocks
