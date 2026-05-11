@@ -75,6 +75,18 @@ pub fn fmt_fuel_rate(val: Option<f64>) -> String {
     }
 }
 
+pub fn fmt_fuel_economy(speed: Option<f64>, fuel_rate: Option<f64>) -> String {
+    match (speed, fuel_rate) {
+        (Some(kmh), Some(lph)) if kmh >= 1.0 && lph > 0.0 => {
+            let kml = kmh / lph;
+            let l100 = 100.0 / kml;
+            let mpg = kml * 2.35215;
+            format!("{:.1} km/L / {:.1} L/100km / {:.1} MPG", kml, l100, mpg)
+        }
+        _ => "--".to_string(),
+    }
+}
+
 pub fn clamp_percent(val: f64, max: f64) -> u16 {
     ((val / max * 100.0).clamp(0.0, 100.0)) as u16
 }

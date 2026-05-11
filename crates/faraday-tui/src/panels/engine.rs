@@ -1,4 +1,4 @@
-use super::{clamp_percent, fmt_fuel_rate, fmt_opt_f, fmt_speed_kmh, fmt_temp};
+use super::{clamp_percent, fmt_fuel_economy, fmt_fuel_rate, fmt_opt_f, fmt_speed_kmh, fmt_temp};
 use faraday_core::{
     commands::CommandExecutor, protocol::j1979::Pid, transport::IsoTpTransport, Module,
 };
@@ -264,6 +264,10 @@ impl EnginePanel {
                 "Fuel Rate: {}  Torque: {}",
                 fmt_fuel_rate(s.fuel_rate),
                 fmt_opt_f(s.engine_torque, 0, "%"),
+            )),
+            Spans::from(format!(
+                "Fuel Econ: {}",
+                fmt_fuel_economy(s.speed, s.fuel_rate),
             )),
         ];
         let emissions_para = Paragraph::new(emissions).block(
