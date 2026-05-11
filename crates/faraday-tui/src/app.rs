@@ -3,7 +3,7 @@ use faraday_core::{commands::CommandExecutor, link::vlinker::VLinkerFs, transpor
 use std::time::{Duration, Instant};
 
 use crate::panels::{
-    AdasPanel, AnalyticsPanel, BodyPanel, ClimatePanel, EnginePanel, HealthPanel,
+    AdasPanel, AnalyticsPanel, BodyPanel, ClimatePanel, EnginePanel, GlossaryPanel, HealthPanel,
     InfotainmentPanel, SafetyPanel, TransmissionPanel,
 };
 
@@ -18,9 +18,10 @@ pub enum ActiveTab {
     Infotainment = 6,
     Analytics = 7,
     Health = 8,
+    Glossary = 9,
 }
 
-const N_TABS: usize = 9;
+const N_TABS: usize = 10;
 
 impl ActiveTab {
     pub fn from_index(i: usize) -> Self {
@@ -33,7 +34,8 @@ impl ActiveTab {
             5 => ActiveTab::Climate,
             6 => ActiveTab::Infotainment,
             7 => ActiveTab::Analytics,
-            _ => ActiveTab::Health,
+            8 => ActiveTab::Health,
+            _ => ActiveTab::Glossary,
         }
     }
 
@@ -59,6 +61,7 @@ impl ActiveTab {
             ActiveTab::Infotainment | ActiveTab::Analytics | ActiveTab::Health => {
                 Duration::from_secs(5)
             }
+            ActiveTab::Glossary => Duration::from_secs(60),
         }
     }
 
@@ -73,6 +76,7 @@ impl ActiveTab {
             ActiveTab::Infotainment => "7:Info",
             ActiveTab::Analytics => "8:Analytics",
             ActiveTab::Health => "9:Health",
+            ActiveTab::Glossary => "0:Glossary",
         }
     }
 }
@@ -102,6 +106,7 @@ pub struct App {
     pub infotainment: InfotainmentPanel,
     pub analytics: AnalyticsPanel,
     pub health: HealthPanel,
+    pub glossary: GlossaryPanel,
 }
 
 impl App {
@@ -126,6 +131,7 @@ impl App {
             infotainment: InfotainmentPanel::new(),
             analytics: AnalyticsPanel::new(),
             health: HealthPanel::new(),
+            glossary: GlossaryPanel::new(),
         })
     }
 
@@ -221,6 +227,9 @@ impl App {
                 self.health.update(&mut self.executor).await;
                 self.connection_status = ConnectionStatus::Connected;
             }
+            ActiveTab::Glossary => {
+                self.connection_status = ConnectionStatus::Connected;
+            }
         }
     }
 
@@ -250,6 +259,7 @@ impl App {
         self.infotainment = InfotainmentPanel::new();
         self.analytics = AnalyticsPanel::new();
         self.health = HealthPanel::new();
+        self.glossary = GlossaryPanel::new();
         self.last_panel_update = [None; N_TABS];
         self.error_message = None;
     }
@@ -269,6 +279,15 @@ impl App {
             ActiveTab::Infotainment => self.infotainment.help_text(),
             ActiveTab::Analytics => self.analytics.help_text(),
             ActiveTab::Health => self.health.help_text(),
+            ActiveTab::Glossary => self.glossary.help_text(),
         }
+    }
+
+    pub fn scroll_glossary_up(&mut self) {
+        self.glossary.scroll_up();
+    }
+
+    pub fn scroll_glossary_down(&mut self) {
+        self.glossary.scroll_down();
     }
 }

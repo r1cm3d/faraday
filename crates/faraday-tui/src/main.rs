@@ -114,6 +114,17 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> R
                     KeyCode::Char('7') => app.goto_tab(ActiveTab::Infotainment),
                     KeyCode::Char('8') => app.goto_tab(ActiveTab::Analytics),
                     KeyCode::Char('9') => app.goto_tab(ActiveTab::Health),
+                    KeyCode::Char('0') => app.goto_tab(ActiveTab::Glossary),
+                    KeyCode::Up | KeyCode::Char('k')
+                        if app.active_tab == ActiveTab::Glossary =>
+                    {
+                        app.scroll_glossary_up()
+                    }
+                    KeyCode::Down | KeyCode::Char('j')
+                        if app.active_tab == ActiveTab::Glossary =>
+                    {
+                        app.scroll_glossary_down()
+                    }
                     _ => {}
                 }
             }

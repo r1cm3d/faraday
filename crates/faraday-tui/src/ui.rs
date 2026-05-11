@@ -27,7 +27,7 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, app: &mut App) {
 }
 
 fn draw_tab_bar<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
-    let tab_count = 9;
+    let tab_count = 10;
     let titles: Vec<Spans> = (0..tab_count)
         .map(|i| Spans::from(ActiveTab::from_index(i).title()))
         .collect();
@@ -92,11 +92,12 @@ fn draw_panel<B: Backend>(f: &mut Frame<B>, area: Rect, app: &mut App) {
         ActiveTab::Infotainment => app.infotainment.render(f, area),
         ActiveTab::Analytics => app.analytics.render(f, area),
         ActiveTab::Health => app.health.render(f, area),
+        ActiveTab::Glossary => app.glossary.render(f, area),
     }
 }
 
 fn draw_help_bar<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
-    let nav = "←/→: tabs | 1-9: jump | p: pause | r: reset | q: quit";
+    let nav = "←/→: tabs | 1-9/0: jump | p: pause | r: reset | q: quit";
     let panel_help = app.active_help_text();
     let text = format!("{}  |  {}", nav, panel_help);
     let help_para = Paragraph::new(text.as_str())
