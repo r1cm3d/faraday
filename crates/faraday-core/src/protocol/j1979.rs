@@ -22,15 +22,32 @@ pub struct Pid(pub u8);
 impl Pid {
     pub const ENGINE_LOAD: Pid = Pid(0x04);
     pub const COOLANT_TEMP: Pid = Pid(0x05);
+    pub const SHORT_FUEL_TRIM_B1: Pid = Pid(0x06);
+    pub const LONG_FUEL_TRIM_B1: Pid = Pid(0x07);
+    pub const SHORT_FUEL_TRIM_B2: Pid = Pid(0x08);
+    pub const LONG_FUEL_TRIM_B2: Pid = Pid(0x09);
     pub const ENGINE_RPM: Pid = Pid(0x0C);
     pub const VEHICLE_SPEED: Pid = Pid(0x0D);
+    pub const TIMING_ADVANCE: Pid = Pid(0x0E);
     pub const INTAKE_TEMP: Pid = Pid(0x0F);
     pub const MAF_RATE: Pid = Pid(0x10);
     pub const THROTTLE_POS: Pid = Pid(0x11);
+    pub const O2_SENSORS_PRESENT: Pid = Pid(0x13);
+    pub const O2_B1S1_VOLTAGE: Pid = Pid(0x14);
+    pub const O2_B1S2_VOLTAGE: Pid = Pid(0x15);
+    pub const EGR_COMMANDED: Pid = Pid(0x2C);
+    pub const EGR_ERROR: Pid = Pid(0x2D);
     pub const FUEL_TANK_LEVEL: Pid = Pid(0x2F);
+    pub const FUEL_AIR_EQUIV_RATIO: Pid = Pid(0x44);
     pub const CONTROL_MODULE_VOLTAGE: Pid = Pid(0x42);
     pub const AMBIENT_TEMP: Pid = Pid(0x46);
+    pub const RUNTIME_MIL_ON: Pid = Pid(0x4D);
+    pub const RUNTIME_SINCE_CLEAR: Pid = Pid(0x4E);
+    pub const REL_THROTTLE_POS: Pid = Pid(0x5A);
     pub const ENGINE_OIL_TEMP: Pid = Pid(0x5C);
+    pub const ENGINE_FUEL_RATE: Pid = Pid(0x5E);
+    pub const DRIVER_DEMAND_TORQUE: Pid = Pid(0x61);
+    pub const ACTUAL_ENGINE_TORQUE: Pid = Pid(0x62);
 }
 
 impl From<u8> for Pid {
@@ -99,7 +116,7 @@ impl PidValue {
 
     fn interpret_value(pid: Pid, raw_value: &[u8]) -> (Option<f64>, Option<String>) {
         match pid {
-            Pid::ENGINE_LOAD => {
+            Pid::ENGINE_LOAD | Pid::FUEL_TANK_LEVEL => {
                 if !raw_value.is_empty() {
                     let value = (raw_value[0] as f64 * 100.0) / 255.0;
                     (Some(value), Some("%".to_string()))
@@ -107,10 +124,22 @@ impl PidValue {
                     (None, None)
                 }
             }
-            Pid::COOLANT_TEMP | Pid::INTAKE_TEMP | Pid::AMBIENT_TEMP => {
+            Pid::COOLANT_TEMP | Pid::INTAKE_TEMP | Pid::AMBIENT_TEMP | Pid::ENGINE_OIL_TEMP => {
                 if !raw_value.is_empty() {
                     let value = raw_value[0] as f64 - 40.0;
                     (Some(value), Some("°C".to_string()))
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::SHORT_FUEL_TRIM_B1
+            | Pid::LONG_FUEL_TRIM_B1
+            | Pid::SHORT_FUEL_TRIM_B2
+            | Pid::LONG_FUEL_TRIM_B2
+            | Pid::EGR_ERROR => {
+                if !raw_value.is_empty() {
+                    let value = (raw_value[0] as f64 - 128.0) * 100.0 / 128.0;
+                    (Some(value), Some("%".to_string()))
                 } else {
                     (None, None)
                 }
@@ -131,10 +160,33 @@ impl PidValue {
                     (None, None)
                 }
             }
-            Pid::THROTTLE_POS => {
+            Pid::TIMING_ADVANCE => {
+                if !raw_value.is_empty() {
+                    let value = raw_value[0] as f64 / 2.0 - 64.0;
+                    (Some(value), Some("°".to_string()))
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::THROTTLE_POS | Pid::REL_THROTTLE_POS | Pid::EGR_COMMANDED => {
                 if !raw_value.is_empty() {
                     let value = (raw_value[0] as f64 * 100.0) / 255.0;
                     (Some(value), Some("%".to_string()))
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::O2_SENSORS_PRESENT => {
+                if !raw_value.is_empty() {
+                    (Some(raw_value[0] as f64), None)
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::O2_B1S1_VOLTAGE | Pid::O2_B1S2_VOLTAGE => {
+                if raw_value.len() >= 2 {
+                    let voltage = raw_value[0] as f64 * 0.005;
+                    (Some(voltage), Some("V".to_string()))
                 } else {
                     (None, None)
                 }
@@ -147,10 +199,11 @@ impl PidValue {
                     (None, None)
                 }
             }
-            Pid::FUEL_TANK_LEVEL => {
-                if !raw_value.is_empty() {
-                    let value = (raw_value[0] as f64 * 100.0) / 255.0;
-                    (Some(value), Some("%".to_string()))
+            Pid::FUEL_AIR_EQUIV_RATIO => {
+                if raw_value.len() >= 4 {
+                    let value =
+                        ((raw_value[0] as u32) << 8 | raw_value[1] as u32) as f64 * 2.0 / 65536.0;
+                    (Some(value), Some("λ".to_string()))
                 } else {
                     (None, None)
                 }
@@ -163,10 +216,26 @@ impl PidValue {
                     (None, None)
                 }
             }
-            Pid::ENGINE_OIL_TEMP => {
+            Pid::RUNTIME_MIL_ON | Pid::RUNTIME_SINCE_CLEAR => {
+                if raw_value.len() >= 2 {
+                    let value = ((raw_value[0] as u16) << 8 | raw_value[1] as u16) as f64;
+                    (Some(value), Some("min".to_string()))
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::ENGINE_FUEL_RATE => {
+                if raw_value.len() >= 2 {
+                    let value = ((raw_value[0] as u16) << 8 | raw_value[1] as u16) as f64 * 0.05;
+                    (Some(value), Some("L/h".to_string()))
+                } else {
+                    (None, None)
+                }
+            }
+            Pid::DRIVER_DEMAND_TORQUE | Pid::ACTUAL_ENGINE_TORQUE => {
                 if !raw_value.is_empty() {
-                    let value = raw_value[0] as f64 - 40.0;
-                    (Some(value), Some("°C".to_string()))
+                    let value = raw_value[0] as f64 - 125.0;
+                    (Some(value), Some("%".to_string()))
                 } else {
                     (None, None)
                 }
@@ -341,9 +410,29 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
             | Pid::THROTTLE_POS
             | Pid::FUEL_TANK_LEVEL
             | Pid::AMBIENT_TEMP
-            | Pid::ENGINE_OIL_TEMP => 1,
+            | Pid::ENGINE_OIL_TEMP
+            | Pid::SHORT_FUEL_TRIM_B1
+            | Pid::LONG_FUEL_TRIM_B1
+            | Pid::SHORT_FUEL_TRIM_B2
+            | Pid::LONG_FUEL_TRIM_B2
+            | Pid::TIMING_ADVANCE
+            | Pid::O2_SENSORS_PRESENT
+            | Pid::EGR_COMMANDED
+            | Pid::EGR_ERROR
+            | Pid::REL_THROTTLE_POS
+            | Pid::DRIVER_DEMAND_TORQUE
+            | Pid::ACTUAL_ENGINE_TORQUE => 1,
 
-            Pid::ENGINE_RPM | Pid::MAF_RATE | Pid::CONTROL_MODULE_VOLTAGE => 2,
+            Pid::ENGINE_RPM
+            | Pid::MAF_RATE
+            | Pid::CONTROL_MODULE_VOLTAGE
+            | Pid::O2_B1S1_VOLTAGE
+            | Pid::O2_B1S2_VOLTAGE
+            | Pid::RUNTIME_MIL_ON
+            | Pid::RUNTIME_SINCE_CLEAR
+            | Pid::ENGINE_FUEL_RATE => 2,
+
+            Pid::FUEL_AIR_EQUIV_RATIO => 4,
 
             _ => 1,
         }

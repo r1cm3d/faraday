@@ -1,40 +1,83 @@
 use anyhow::Result;
-use faraday_core::{
-    commands::CommandExecutor, link::vlinker::VLinkerFs, protocol::j1979::Pid,
-    transport::isotp::IsoTp, Module,
+use faraday_core::{commands::CommandExecutor, link::vlinker::VLinkerFs, transport::isotp::IsoTp};
+use std::time::{Duration, Instant};
+
+use crate::panels::{
+    AdasPanel, AnalyticsPanel, BodyPanel, ClimatePanel, EnginePanel, HealthPanel,
+    InfotainmentPanel, SafetyPanel, TransmissionPanel,
 };
-use std::{
-    collections::VecDeque,
-    time::{Duration, Instant},
-};
 
-pub struct App {
-    executor: CommandExecutor<IsoTp<VLinkerFs>>,
-    update_interval: Duration,
-    last_update: Instant,
-    paused: bool,
-
-    // Data storage
-    engine_data: VecDeque<EngineSnapshot>,
-    max_history: usize,
-
-    // Status
-    connection_status: ConnectionStatus,
-    error_message: Option<String>,
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum ActiveTab {
+    Engine = 0,
+    Transmission = 1,
+    Body = 2,
+    Safety = 3,
+    Adas = 4,
+    Climate = 5,
+    Infotainment = 6,
+    Analytics = 7,
+    Health = 8,
 }
 
-#[derive(Clone)]
-pub struct EngineSnapshot {
-    #[allow(dead_code)]
-    pub timestamp: Instant,
-    pub rpm: Option<f64>,
-    pub speed: Option<f64>,
-    pub coolant_temp: Option<f64>,
-    pub engine_load: Option<f64>,
-    pub throttle_position: Option<f64>,
+const N_TABS: usize = 9;
+
+impl ActiveTab {
+    pub fn from_index(i: usize) -> Self {
+        match i {
+            0 => ActiveTab::Engine,
+            1 => ActiveTab::Transmission,
+            2 => ActiveTab::Body,
+            3 => ActiveTab::Safety,
+            4 => ActiveTab::Adas,
+            5 => ActiveTab::Climate,
+            6 => ActiveTab::Infotainment,
+            7 => ActiveTab::Analytics,
+            _ => ActiveTab::Health,
+        }
+    }
+
+    pub fn index(self) -> usize {
+        self as usize
+    }
+
+    pub fn next(self) -> Self {
+        ActiveTab::from_index((self.index() + 1) % N_TABS)
+    }
+
+    pub fn prev(self) -> Self {
+        ActiveTab::from_index((self.index() + N_TABS - 1) % N_TABS)
+    }
+
+    pub fn poll_interval(self) -> Duration {
+        match self {
+            ActiveTab::Engine => Duration::from_millis(250),
+            ActiveTab::Transmission => Duration::from_millis(500),
+            ActiveTab::Body | ActiveTab::Safety | ActiveTab::Adas | ActiveTab::Climate => {
+                Duration::from_secs(1)
+            }
+            ActiveTab::Infotainment | ActiveTab::Analytics | ActiveTab::Health => {
+                Duration::from_secs(5)
+            }
+        }
+    }
+
+    pub fn title(self) -> &'static str {
+        match self {
+            ActiveTab::Engine => "1:Engine",
+            ActiveTab::Transmission => "2:Trans",
+            ActiveTab::Body => "3:Body",
+            ActiveTab::Safety => "4:Safety",
+            ActiveTab::Adas => "5:ADAS",
+            ActiveTab::Climate => "6:Climate",
+            ActiveTab::Infotainment => "7:Info",
+            ActiveTab::Analytics => "8:Analytics",
+            ActiveTab::Health => "9:Health",
+        }
+    }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum ConnectionStatus {
     Disconnected,
     Connecting,
@@ -42,21 +85,47 @@ pub enum ConnectionStatus {
     Error,
 }
 
+pub struct App {
+    executor: CommandExecutor<IsoTp<VLinkerFs>>,
+    pub active_tab: ActiveTab,
+    pub paused: bool,
+    pub connection_status: ConnectionStatus,
+    pub error_message: Option<String>,
+    last_panel_update: [Option<Instant>; N_TABS],
+
+    pub engine: EnginePanel,
+    pub transmission: TransmissionPanel,
+    pub body: BodyPanel,
+    pub safety: SafetyPanel,
+    pub adas: AdasPanel,
+    pub climate: ClimatePanel,
+    pub infotainment: InfotainmentPanel,
+    pub analytics: AnalyticsPanel,
+    pub health: HealthPanel,
+}
+
 impl App {
-    pub async fn new(adapter_path: String, update_interval: Duration) -> Result<Self> {
+    pub async fn new(adapter_path: String) -> Result<Self> {
         let vlinker = VLinkerFs::with_port_name(&adapter_path)?;
         let isotp = IsoTp::new(vlinker);
         let executor = CommandExecutor::new(isotp);
 
         Ok(Self {
             executor,
-            update_interval,
-            last_update: Instant::now(),
+            active_tab: ActiveTab::Engine,
             paused: false,
-            engine_data: VecDeque::new(),
-            max_history: 200, // Keep 200 data points
             connection_status: ConnectionStatus::Disconnected,
             error_message: None,
+            last_panel_update: [None; N_TABS],
+            engine: EnginePanel::new(),
+            transmission: TransmissionPanel::new(),
+            body: BodyPanel::new(),
+            safety: SafetyPanel::new(),
+            adas: AdasPanel::new(),
+            climate: ClimatePanel::new(),
+            infotainment: InfotainmentPanel::new(),
+            analytics: AnalyticsPanel::new(),
+            health: HealthPanel::new(),
         })
     }
 
@@ -65,102 +134,141 @@ impl App {
             return Ok(());
         }
 
-        if self.last_update.elapsed() >= self.update_interval {
-            self.update_data().await;
-            self.last_update = Instant::now();
+        let now = Instant::now();
+        let tab = self.active_tab;
+        let interval = tab.poll_interval();
+        let due = self.last_panel_update[tab.index()]
+            .map(|t| now.duration_since(t) >= interval)
+            .unwrap_or(true);
+
+        if due {
+            self.update_active_panel().await;
+            self.last_panel_update[tab.index()] = Some(Instant::now());
         }
 
         Ok(())
     }
 
-    async fn update_data(&mut self) {
+    async fn update_active_panel(&mut self) {
         self.connection_status = ConnectionStatus::Connecting;
         self.error_message = None;
 
-        match self.fetch_engine_data().await {
-            Ok(snapshot) => {
+        match self.active_tab {
+            ActiveTab::Engine => {
+                self.engine.update(&mut self.executor).await;
+                self.health.record_engine_ok();
+                if self.engine.error.is_some() {
+                    self.connection_status = ConnectionStatus::Error;
+                    self.error_message = self.engine.error.clone();
+                } else {
+                    self.connection_status = ConnectionStatus::Connected;
+                    let snap = self.engine.latest.clone();
+                    self.analytics.ingest(&snap, 0.25);
+                }
+            }
+            ActiveTab::Transmission => {
+                self.transmission.update(&mut self.executor).await;
+                self.connection_status = if self.transmission.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Body => {
+                self.body.update(&mut self.executor).await;
+                self.connection_status = if self.body.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Safety => {
+                self.safety.update(&mut self.executor).await;
+                self.connection_status = if self.safety.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Adas => {
+                self.adas.update(&mut self.executor).await;
+                self.connection_status = if self.adas.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Climate => {
+                self.climate.update(&mut self.executor).await;
+                self.connection_status = if self.climate.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Infotainment => {
+                self.infotainment.update(&mut self.executor).await;
+                self.connection_status = if self.infotainment.error.is_some() {
+                    ConnectionStatus::Error
+                } else {
+                    ConnectionStatus::Connected
+                };
+            }
+            ActiveTab::Analytics => {
                 self.connection_status = ConnectionStatus::Connected;
-                self.add_snapshot(snapshot);
             }
-            Err(e) => {
-                self.connection_status = ConnectionStatus::Error;
-                self.error_message = Some(format!("Error: {}", e));
+            ActiveTab::Health => {
+                self.health.update(&mut self.executor).await;
+                self.connection_status = ConnectionStatus::Connected;
             }
         }
     }
 
-    async fn fetch_engine_data(&mut self) -> Result<EngineSnapshot> {
-        let pids = vec![
-            Pid::ENGINE_RPM,
-            Pid::VEHICLE_SPEED,
-            Pid::COOLANT_TEMP,
-            Pid::ENGINE_LOAD,
-            Pid::THROTTLE_POS,
-        ];
-
-        let values = self.executor.read_live_data(Module::Pcm, &pids).await?;
-
-        let mut snapshot = EngineSnapshot {
-            timestamp: Instant::now(),
-            rpm: None,
-            speed: None,
-            coolant_temp: None,
-            engine_load: None,
-            throttle_position: None,
-        };
-
-        for value in values {
-            match value.pid {
-                Pid::ENGINE_RPM => snapshot.rpm = value.interpreted_value,
-                Pid::VEHICLE_SPEED => snapshot.speed = value.interpreted_value,
-                Pid::COOLANT_TEMP => snapshot.coolant_temp = value.interpreted_value,
-                Pid::ENGINE_LOAD => snapshot.engine_load = value.interpreted_value,
-                Pid::THROTTLE_POS => snapshot.throttle_position = value.interpreted_value,
-                _ => {}
-            }
-        }
-
-        Ok(snapshot)
+    pub fn goto_tab(&mut self, tab: ActiveTab) {
+        self.active_tab = tab;
     }
 
-    fn add_snapshot(&mut self, snapshot: EngineSnapshot) {
-        self.engine_data.push_back(snapshot);
-
-        while self.engine_data.len() > self.max_history {
-            self.engine_data.pop_front();
-        }
+    pub fn next_tab(&mut self) {
+        self.active_tab = self.active_tab.next();
     }
 
-    pub fn reset_data(&mut self) {
-        self.engine_data.clear();
-        self.error_message = None;
+    pub fn prev_tab(&mut self) {
+        self.active_tab = self.active_tab.prev();
     }
 
     pub fn toggle_pause(&mut self) {
         self.paused = !self.paused;
     }
 
-    pub fn is_paused(&self) -> bool {
-        self.paused
+    pub fn reset_data(&mut self) {
+        self.engine = EnginePanel::new();
+        self.transmission = TransmissionPanel::new();
+        self.body = BodyPanel::new();
+        self.safety = SafetyPanel::new();
+        self.adas = AdasPanel::new();
+        self.climate = ClimatePanel::new();
+        self.infotainment = InfotainmentPanel::new();
+        self.analytics = AnalyticsPanel::new();
+        self.health = HealthPanel::new();
+        self.last_panel_update = [None; N_TABS];
+        self.error_message = None;
     }
 
-    pub fn connection_status(&self) -> ConnectionStatus {
-        self.connection_status
+    pub fn battery_voltage(&self) -> Option<f64> {
+        self.engine.battery_voltage()
     }
 
-    pub fn error_message(&self) -> Option<&str> {
-        self.error_message.as_deref()
-    }
-
-    pub fn engine_data(&self) -> &VecDeque<EngineSnapshot> {
-        &self.engine_data
-    }
-
-    pub fn latest_snapshot(&self) -> Option<&EngineSnapshot> {
-        self.engine_data.back()
-    }
-
-    pub fn data_points_count(&self) -> usize {
-        self.engine_data.len()
+    pub fn active_help_text(&self) -> &str {
+        match self.active_tab {
+            ActiveTab::Engine => self.engine.help_text(),
+            ActiveTab::Transmission => self.transmission.help_text(),
+            ActiveTab::Body => self.body.help_text(),
+            ActiveTab::Safety => self.safety.help_text(),
+            ActiveTab::Adas => self.adas.help_text(),
+            ActiveTab::Climate => self.climate.help_text(),
+            ActiveTab::Infotainment => self.infotainment.help_text(),
+            ActiveTab::Analytics => self.analytics.help_text(),
+            ActiveTab::Health => self.health.help_text(),
+        }
     }
 }

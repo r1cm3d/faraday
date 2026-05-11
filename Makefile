@@ -4,7 +4,8 @@
 .PHONY: help have deps build build/debug build/check test test/unit test/integration \
         lint fmt fmt/check doc doc/open install install/tui install/emu \
         clean clean/all dev/check dev/quick deps/update deps/audit size \
-        git/status git/prepare profile/validate profile/apply
+        git/status git/prepare profile/validate profile/apply \
+        tui/run tui/emu tui/dev
 
 # Default target
 help: ## Show this help message
@@ -120,6 +121,22 @@ profile/validate: ## Validate a YAML profile file (PROFILE=path/to/profile.yml)
 profile/apply: ## Apply a YAML profile to the vehicle (PROFILE=path, add DRY_RUN=--dry-run to preview)
 	@echo "Applying profile..."
 	@faraday profile apply $(PROFILE) $(DRY_RUN)
+
+# TUI development targets (Phase 6)
+tui/run: build/debug ## Run TUI against real adapter (ADAPTER=/dev/ttyUSB0)
+	@echo "📺 Starting faraday-tui..."
+	@cargo run -p faraday-tui -- --adapter $(or $(ADAPTER),/dev/ttyUSB0)
+
+tui/emu: ## Run TUI against the PTY emulator (starts emulator then TUI)
+	@echo "🔌 Starting emulator + TUI..."
+	@cargo build --all 2>/dev/null
+	@target/debug/faraday-emu --link /tmp/faraday-dev &
+	@sleep 0.3
+	@cargo run -p faraday-tui -- --adapter /tmp/faraday-dev; kill %1 2>/dev/null || true
+
+tui/dev: fmt lint ## Quick TUI dev check (format, lint, then compile TUI only)
+	@echo "🔍 Checking faraday-tui..."
+	@cargo check -p faraday-tui
 
 # Git integration
 git/status: ## Show git status

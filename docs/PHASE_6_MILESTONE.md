@@ -3,10 +3,12 @@
 ## Milestone Overview
 
 **Title:** Phase 6: Comprehensive Hidden Diagnostic TUI
-**Status:** Planned
+**Status:** Ready to implement — architecture planned, all prior phases complete
 **Priority:** Medium-High
-**Estimated Duration:** 8-12 weeks
-**Dependencies:** Phase 5 completion
+**Estimated Duration:** 8-10 weeks
+**Dependencies:** Phase 5 complete ✅
+
+See `docs/SPEC.md §4 Phase 6` for the full technical specification including the extended PID catalog, Ford UDS DID table, `Panel` trait design, per-tab polling intervals, and acceptance criteria.
 
 ## Description
 
@@ -252,28 +254,37 @@ Transform the faraday TUI from a basic OBD-II viewer displaying 4 simple gauges 
 
 ## Timeline Estimate
 
-### Phase 6.1: Architecture & Framework (2-3 weeks)
-- Multi-tab navigation system
-- Enhanced data collection layer
-- Basic UI framework expansion
+### Phase 6.1: Multi-Tab Architecture (Weeks 1-2)
+- `ActiveTab` enum + tab bar widget in `ui.rs`
+- Keyboard routing in `main.rs` (`1`–`9`, `←`/`→`)
+- `Panel` trait definition; stub implementations for all 9 panels
+- Per-panel background tokio tasks for data pre-fetching
 
-### Phase 6.2: Core Diagnostic Panels (4-5 weeks)
-- Engine/Powertrain dashboard
-- Transmission analytics
-- Body systems monitor
-- Safety systems status
+### Phase 6.2: Extended PID Catalog (Week 2)
+- Add PIDs `0x06`–`0x62` to `faraday-core::protocol::j1979`
+- Extend `interpret_value` and `get_pid_data_length`
+- Unit tests for every new PID formula
 
-### Phase 6.3: Advanced Features (2-3 weeks)
-- Vehicle analytics & history
-- System health monitoring
-- Configuration system
-- Performance optimization
+### Phase 6.3: Core Diagnostic Panels (Weeks 3-6)
+- Tab 1 — Engine & Powertrain (enhanced from Phase 5 base)
+- Tab 2 — Transmission (TCM UDS DIDs)
+- Tab 3 — Body Systems (BCM UDS DIDs)
+- Tab 4 — Safety (ABS/RCM UDS DIDs)
+- Tab 5 — ADAS/Parking (PAM UDS DIDs)
+- Tab 6 — Climate (HVAC UDS DIDs)
+- Tab 7 — Infotainment (APIM UDS DIDs)
 
-### Phase 6.4: Polish & Testing (1-2 weeks)
-- Documentation completion
-- Comprehensive testing
-- Bug fixes and performance tuning
-- Final integration and validation
+### Phase 6.4: Analytics and Health Panels (Weeks 7-8)
+- Tab 8 — Vehicle Analytics (in-session computation + JSONL export)
+- Tab 9 — System Health (cross-module timeout/version table)
+- Context-sensitive help overlay (`?`)
+- Alert threshold system with color-coded indicators
+
+### Phase 6.5: Polish & Testing (Weeks 9-10)
+- YAML profiles for diagnostic scenarios (extend Phase 5 profile system)
+- Hardware-in-the-loop validation of all Ford UDS DID addresses
+- Performance profiling (ensure < 5% CPU at 250 ms engine poll)
+- Documentation and in-TUI help text completion
 
 ## Acceptance Criteria
 

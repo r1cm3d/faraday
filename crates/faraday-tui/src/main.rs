@@ -1,14 +1,10 @@
-/*!
-Faraday TUI - Real-time OBD-II data visualization.
-
-A terminal user interface for monitoring live vehicle data with
-gauges, graphs, and real-time updates.
-*/
-
 mod app;
+mod panels;
 mod ui;
+mod widgets;
 
 use anyhow::Result;
+use app::ActiveTab;
 use clap::Parser;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
@@ -29,7 +25,7 @@ use tracing::{error, info};
 #[command(
     name = "faraday-tui",
     version,
-    about = "Terminal UI for live OBD-II data visualization"
+    about = "Comprehensive Ford diagnostic terminal UI"
 )]
 struct Args {
     #[arg(
@@ -39,14 +35,6 @@ struct Args {
         help = "OBD-II adapter device path or port"
     )]
     adapter: String,
-
-    #[arg(
-        long,
-        short,
-        default_value = "500",
-        help = "Update interval in milliseconds"
-    )]
-    interval: u64,
 
     #[arg(
         short,
@@ -60,11 +48,8 @@ struct Args {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
-
     setup_logging(args.verbose)?;
-
     info!("Faraday TUI v{} starting", env!("CARGO_PKG_VERSION"));
-
     run_tui(args).await
 }
 
@@ -75,7 +60,7 @@ async fn run_tui(args: Args) -> Result<()> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let app = app::App::new(args.adapter, Duration::from_millis(args.interval)).await?;
+    let app = app::App::new(args.adapter).await?;
     let res = run_app(&mut terminal, app).await;
 
     disable_raw_mode()?;
@@ -95,14 +80,14 @@ async fn run_tui(args: Args) -> Result<()> {
 
 async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> Result<()> {
     let mut last_tick = Instant::now();
-    let tick_rate = Duration::from_millis(250);
+    let tick_rate = Duration::from_millis(100);
 
     loop {
         terminal.draw(|f| ui::draw(f, &mut app))?;
 
         let timeout = tick_rate
             .checked_sub(last_tick.elapsed())
-            .unwrap_or_else(|| Duration::from_secs(0));
+            .unwrap_or_default();
 
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
@@ -110,6 +95,17 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> R
                     KeyCode::Char('q') | KeyCode::Esc => return Ok(()),
                     KeyCode::Char('r') => app.reset_data(),
                     KeyCode::Char('p') => app.toggle_pause(),
+                    KeyCode::Left => app.prev_tab(),
+                    KeyCode::Right => app.next_tab(),
+                    KeyCode::Char('1') => app.goto_tab(ActiveTab::Engine),
+                    KeyCode::Char('2') => app.goto_tab(ActiveTab::Transmission),
+                    KeyCode::Char('3') => app.goto_tab(ActiveTab::Body),
+                    KeyCode::Char('4') => app.goto_tab(ActiveTab::Safety),
+                    KeyCode::Char('5') => app.goto_tab(ActiveTab::Adas),
+                    KeyCode::Char('6') => app.goto_tab(ActiveTab::Climate),
+                    KeyCode::Char('7') => app.goto_tab(ActiveTab::Infotainment),
+                    KeyCode::Char('8') => app.goto_tab(ActiveTab::Analytics),
+                    KeyCode::Char('9') => app.goto_tab(ActiveTab::Health),
                     _ => {}
                 }
             }
@@ -136,6 +132,5 @@ fn setup_logging(verbose: u8) -> Result<()> {
         .finish();
 
     tracing::subscriber::set_global_default(subscriber)?;
-
     Ok(())
 }

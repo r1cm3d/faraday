@@ -74,13 +74,16 @@ pub enum Module {
     Apim,
     Pam,
     Dsm,
+    Hvac,
 }
 
 impl Module {
     pub fn bus(&self) -> CanBus {
         match self {
             Module::Pcm | Module::Tcm | Module::Abs | Module::Rcm | Module::Pscm => CanBus::HsCan,
-            Module::Bcm | Module::Ipc | Module::Apim | Module::Pam | Module::Dsm => CanBus::MsCan,
+            Module::Bcm | Module::Ipc | Module::Apim | Module::Pam | Module::Dsm | Module::Hvac => {
+                CanBus::MsCan
+            }
         }
     }
 
@@ -96,6 +99,7 @@ impl Module {
             Module::Apim => CanId::new(0x7D0),
             Module::Pam => CanId::new(0x733),
             Module::Dsm => CanId::new(0x727),
+            Module::Hvac => CanId::new(0x703),
         }
     }
 
@@ -111,6 +115,37 @@ impl Module {
             Module::Apim => CanId::new(0x7D8),
             Module::Pam => CanId::new(0x73B),
             Module::Dsm => CanId::new(0x72F),
+            Module::Hvac => CanId::new(0x70B),
         }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Module::Pcm => "PCM",
+            Module::Tcm => "TCM",
+            Module::Abs => "ABS",
+            Module::Rcm => "RCM",
+            Module::Pscm => "PSCM",
+            Module::Bcm => "BCM",
+            Module::Ipc => "IPC",
+            Module::Apim => "APIM",
+            Module::Pam => "PAM",
+            Module::Dsm => "DSM",
+            Module::Hvac => "HVAC",
+        }
+    }
+
+    pub fn all() -> &'static [Module] {
+        &[
+            Module::Pcm,
+            Module::Tcm,
+            Module::Abs,
+            Module::Rcm,
+            Module::Bcm,
+            Module::Ipc,
+            Module::Apim,
+            Module::Pam,
+            Module::Hvac,
+        ]
     }
 }

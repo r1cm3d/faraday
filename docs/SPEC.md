@@ -255,6 +255,213 @@ Fields: `timestamp` (ISO 8601), `operation` (`write`|`restore`), `module` (Debug
 - Versioned YAML profiles: `faraday profile apply my-fusion.yml`. ✅
 - Structured session logging in JSONL (`~/.local/share/faraday/sessions.jsonl`). ✅
 
+### Phase 6 — Comprehensive Hidden Diagnostic TUI
+
+**Scope:** Transform `faraday-tui` from a basic 5-PID viewer into a professional multi-tab diagnostic interface covering all vehicle systems reachable via HS-CAN and MS-CAN.
+
+**Motivation:** The Phase 5 TUI exposes fewer than 5% of the diagnostic information the Ford Fusion 2017 makes available. Phase 6 closes this gap, matching the diagnostic depth of tools like FORScan in a scriptable, keyboard-driven terminal interface.
+
+#### 6.1 Multi-Tab Interface Architecture
+
+Replace the single-view layout with a tab bar at the top of the screen. Each tab owns a dedicated `Panel` type that carries its own data model and rendering logic.
+
+**Tab index and key bindings:**
+
+| Key | Tab |
+|-----|-----|
+| `1` | Engine & Powertrain |
+| `2` | Transmission |
+| `3` | Body Systems (BCM) |
+| `4` | Safety (ABS/RCM) |
+| `5` | ADAS / Parking |
+| `6` | Climate (HVAC) |
+| `7` | Infotainment (APIM) |
+| `8` | Vehicle Analytics |
+| `9` | System Health |
+| `←`/`→` | Cycle tabs |
+| `p` | Pause/resume data collection |
+| `r` | Reset history buffers |
+| `e` | Export current tab data to JSONL |
+| `?` | Toggle context-sensitive help overlay |
+| `q`/`Esc` | Quit |
+
+**Status bar (always visible):** connection state · active tab · data-point count · current update rate · battery voltage (PID `0x42`).
+
+#### 6.2 Extended PID Catalog
+
+Phase 6 adds the following standard OBD-II PIDs to `faraday-core::protocol::j1979`:
+
+| PID | Name | Unit | Formula |
+|-----|------|------|---------|
+| `0x06` | Short-term fuel trim bank 1 | % | `(A − 128) × 100 / 128` |
+| `0x07` | Long-term fuel trim bank 1 | % | `(A − 128) × 100 / 128` |
+| `0x08` | Short-term fuel trim bank 2 | % | `(A − 128) × 100 / 128` |
+| `0x09` | Long-term fuel trim bank 2 | % | `(A − 128) × 100 / 128` |
+| `0x0E` | Timing advance | ° before TDC | `A / 2 − 64` |
+| `0x13` | O2 sensors present | bitmask | — |
+| `0x14` | O2 bank 1 sensor 1 voltage | V / % | `A × 0.005` / `(B − 128) × 100/128` |
+| `0x15` | O2 bank 1 sensor 2 voltage | V / % | same |
+| `0x2C` | EGR commanded | % | `A × 100 / 255` |
+| `0x2D` | EGR error | % | `(A − 128) × 100 / 128` |
+| `0x44` | Fuel-air equivalence ratio | λ | `(256A + B) × 2 / 65536` |
+| `0x4D` | Engine runtime with MIL on | min | `256A + B` |
+| `0x4E` | Engine runtime since codes cleared | min | `256A + B` |
+| `0x5A` | Relative throttle position | % | `A × 100 / 255` |
+| `0x5E` | Engine fuel rate | L/h | `(256A + B) × 0.05` |
+| `0x61` | Driver demand torque | % | `A − 125` |
+| `0x62` | Actual engine torque | % | `A − 125` |
+
+All new PIDs follow the same `Pid(u8)` newtype pattern and extend `interpret_value`/`get_pid_data_length` in `j1979.rs`.
+
+#### 6.3 Ford-Specific UDS DID Queries
+
+Many Phase 6 panels require module-specific reads via UDS service `0x22`. These are issued through `CommandExecutor::read_did`, already implemented in Phase 2. The new work is organizing queries into per-panel fetch functions.
+
+Representative DIDs (addresses subject to hardware validation):
+
+| Module | DID | Description |
+|--------|-----|-------------|
+| TCM `7E1` | `0xDD01` | Transmission fluid temperature |
+| TCM `7E1` | `0xDD02` | Current gear / commanded gear |
+| TCM `7E1` | `0xDD03` | Torque converter slip |
+| BCM `726` | `0x4001` | Battery voltage under load |
+| BCM `726` | `0x4002` | Alternator duty cycle |
+| BCM `726` | `0x4010` | Door ajar bitmask |
+| ABS `7E2` | `0xC001` | Wheel speed FL/FR/RL/RR |
+| ABS `7E2` | `0xC002` | Yaw rate · lateral acceleration |
+| PAM `733` | `0xE001` | Ultrasonic sensor distances (8 sensors) |
+| HVAC | `0xB001` | Blend door positions |
+| HVAC | `0xB002` | Evaporator temp · refrigerant pressure |
+| APIM `7D0` | `0xA001` | GPS fix quality / satellite count |
+| APIM `7D0` | `0xA002` | Cellular RSSI |
+| APIM `7D0` | `0xA010` | Module software version string |
+| PCM `7E0` | `0x1900` | Engine oil life percentage |
+| PCM `7E0` | `0x1901` | Individual cylinder misfire counters |
+
+**Note:** All DID addresses marked with module addresses above require hardware validation on the real vehicle. The values listed match community-documented FORScan DIDs but may differ in firmware revisions.
+
+#### 6.4 Panel Specifications
+
+**Tab 1 — Engine & Powertrain**
+
+Metrics: RPM · speed · coolant temp · engine load · throttle position · MAF · intake air temp · fuel trim (STFT/LTFT both banks) · timing advance · O2 sensor voltages · EGR command/error · fuel-air ratio · fuel rate · engine torque · oil temp · oil life · cylinder misfire counters.
+
+Layout: left column gauges (RPM/speed/load) + right column sparklines (fuel trim trend) + bottom grid for misfire counters per cylinder.
+
+**Tab 2 — Transmission**
+
+Metrics (via TCM UDS DIDs): fluid temperature · current gear vs. commanded gear · torque converter slip % · line pressure · shift solenoid status grid.
+
+Layout: top row gauges + solenoid status grid (color-coded: green = energised, gray = off) + fluid temp sparkline.
+
+**Tab 3 — Body Systems (BCM)**
+
+Metrics (via BCM UDS DIDs): battery voltage under load · alternator duty cycle · door ajar bitmask (individual door indicators) · window motor status · lighting circuit health · HVAC blower actual vs. commanded.
+
+Layout: battery/charging gauges + door diagram (ASCII art with per-door status) + table for lighting circuits.
+
+**Tab 4 — Safety Systems (ABS / RCM)**
+
+Metrics (via ABS/RCM UDS DIDs): wheel speeds (FL/FR/RL/RR) · yaw rate · lateral acceleration · steering angle · stability intervention counter · airbag squib continuity bitmask · seatbelt bitmask.
+
+Layout: four-corner wheel speed display + yaw/lateral sparklines + safety bitmask grid.
+
+**Tab 5 — ADAS / Parking**
+
+Metrics (via PAM UDS DIDs): eight ultrasonic sensor distances (front/rear four each) + backup camera status + object detection confidence.
+
+Layout: top-down vehicle silhouette (ASCII) with distance bars radiating from front/rear bumpers.
+
+**Tab 6 — Climate Control (HVAC)**
+
+Metrics (via HVAC UDS DIDs): driver/passenger cabin temps · blend door actual vs. commanded % · evaporator temp · refrigerant pressure · AC compressor load · blower actual speed.
+
+Layout: two-zone temperature display + pressure gauge + blend door bars.
+
+**Tab 7 — Infotainment (APIM)**
+
+Metrics (via APIM UDS DIDs): GPS fix quality · satellite count · cellular RSSI · Bluetooth device count · software version string.
+
+Layout: signal strength indicators + version table.
+
+**Tab 8 — Vehicle Analytics**
+
+In-session computed metrics: RPM histogram (idle / cruise / high-load bands) · speed distribution · estimated fuel consumption (from PID `0x5E`) · brake events (inferred from speed drops > 10 km/h/s) · acceleration events (> 0.3 g).
+
+Persistence: appended to `~/.local/share/faraday/analytics.jsonl` when the TUI exits.
+
+**Tab 9 — System Health**
+
+Cross-module status table: for each known module — last response time · consecutive timeout count · reported voltage (if available) · software version. Serves as a connectivity overview.
+
+#### 6.5 Data Architecture in `faraday-tui`
+
+```
+faraday-tui/src/
+├── main.rs          # CLI args, terminal setup, event loop (tab navigation added)
+├── app.rs           # App struct owns all panel states + ActiveTab enum
+├── ui.rs            # draw() dispatches to per-tab render fn
+├── panels/
+│   ├── mod.rs
+│   ├── engine.rs    # EnginePanel data + render
+│   ├── transmission.rs
+│   ├── body.rs
+│   ├── safety.rs
+│   ├── adas.rs
+│   ├── climate.rs
+│   ├── infotainment.rs
+│   ├── analytics.rs
+│   └── health.rs
+└── widgets/
+    ├── mod.rs
+    ├── sparkline_ext.rs   # Multi-series sparkline helper
+    ├── status_grid.rs     # Bitmask → colored cell grid
+    └── vehicle_diagram.rs # ASCII vehicle top-down + distance bars
+```
+
+Each panel implements a `Panel` trait:
+
+```rust
+pub trait Panel {
+    fn title(&self) -> &str;
+    fn update(&mut self, executor: &mut CommandExecutor<impl IsoTpTransport>) -> impl Future<Output = ()>;
+    fn render(&self, f: &mut Frame, area: Rect);
+    fn help_text(&self) -> &str;
+}
+```
+
+The `App` struct holds `Vec<Box<dyn Panel>>` and an `active_tab: usize` index. The event loop calls `panels[active_tab].update()` every tick and `ui::draw()` on every frame.
+
+#### 6.6 Polling Strategy
+
+Not all data changes at the same rate. The update loop uses per-panel intervals:
+
+| Panel | Interval |
+|-------|----------|
+| Engine (PIDs) | 250 ms |
+| Transmission (UDS) | 500 ms |
+| Body, Safety, ADAS, Climate | 1 s |
+| Infotainment, Analytics, Health | 5 s |
+
+Background tokio tasks collect data for non-active tabs at their native interval so switching tabs shows fresh data immediately.
+
+#### 6.7 Graceful Degradation
+
+If a module does not respond within one timeout:
+- The panel shows `[N/A]` in place of unavailable fields.
+- The System Health tab marks the module as `TIMEOUT`.
+- Collection retries with exponential back-off (1 s → 2 s → 4 s, capped at 30 s).
+- No panic. The TUI remains fully operational for responding modules.
+
+#### 6.8 Acceptance Criteria
+
+- All 9 tabs navigate correctly with number keys and arrow keys.
+- Engine tab displays ≥ 15 distinct metrics in real-time.
+- Switching tabs shows data for the new tab within one tick of its polling interval.
+- A module that stops responding degrades gracefully without crashing the TUI.
+- Vehicle Analytics tab writes a valid JSONL record on exit.
+- All new PIDs round-trip correctly in the existing mock-transport unit tests.
+
 ---
 
 ## 5. Supported UDS Command Model
