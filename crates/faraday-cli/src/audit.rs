@@ -7,9 +7,16 @@ use std::{
 };
 
 #[derive(Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AuditOperation {
+    Write,
+    Restore,
+}
+
+#[derive(Serialize)]
 pub struct AuditEntry {
     pub timestamp: String,
-    pub operation: String,
+    pub operation: AuditOperation,
     pub module: String,
     pub did: u16,
     pub before_hex: String,

@@ -7,7 +7,7 @@ use faraday_core::Module;
 use std::path::PathBuf;
 
 use crate::{
-    audit::{AuditEntry, AuditLogger},
+    audit::{AuditEntry, AuditLogger, AuditOperation},
     cli::ModuleArg,
     commands::create_executor,
     output::OutputFormatter,
@@ -61,7 +61,7 @@ pub async fn write(
     if dry_run {
         fmt.print_info("[DRY RUN] no changes written to vehicle")?;
         append_audit(
-            "write",
+            AuditOperation::Write,
             module,
             block.did,
             &current_data,
@@ -79,7 +79,7 @@ pub async fn write(
     match &result {
         Ok(_) => {
             append_audit(
-                "write",
+                AuditOperation::Write,
                 module,
                 block.did,
                 &current_data,
@@ -92,7 +92,7 @@ pub async fn write(
         Err(e) => {
             let msg = format!("error: {}", e);
             append_audit(
-                "write",
+                AuditOperation::Write,
                 module,
                 block.did,
                 &current_data,
@@ -179,7 +179,7 @@ pub async fn restore(adapter_path: String, snapshot_path: PathBuf, yes: bool) ->
         match &result {
             Ok(_) => {
                 append_audit(
-                    "restore",
+                    AuditOperation::Restore,
                     module,
                     block.did,
                     &current,
@@ -192,7 +192,7 @@ pub async fn restore(adapter_path: String, snapshot_path: PathBuf, yes: bool) ->
             Err(e) => {
                 let msg = format!("error: {}", e);
                 append_audit(
-                    "restore",
+                    AuditOperation::Restore,
                     module,
                     block.did,
                     &current,
@@ -255,7 +255,7 @@ pub(crate) fn parse_value(feature: &Feature, raw: &str) -> Result<u8> {
 }
 
 fn append_audit(
-    operation: &str,
+    operation: AuditOperation,
     module: Module,
     did: u16,
     before: &[u8],
@@ -266,7 +266,7 @@ fn append_audit(
     let logger = AuditLogger::new()?;
     logger.log(&AuditEntry {
         timestamp: current_timestamp(),
-        operation: operation.to_string(),
+        operation,
         module: format!("{:?}", module),
         did,
         before_hex: hex::encode_upper(before),
