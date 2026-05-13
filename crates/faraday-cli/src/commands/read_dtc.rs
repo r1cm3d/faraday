@@ -1,6 +1,6 @@
 use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
-use faraday_core::Module;
+use faraday_core::{DtcKind, Module};
 
 pub async fn execute(
     adapter_path: String,
@@ -15,21 +15,18 @@ pub async fn execute(
 
     let read_all = !stored && !pending && !permanent;
 
-    if stored || read_all {
-        formatter.print_header("Stored DTCs")?;
-        let dtcs = executor.read_stored_dtcs(module).await?;
-        formatter.print_dtcs(&dtcs)?;
-    }
+    let categories = [
+        (stored || read_all, "Stored DTCs", DtcKind::Stored),
+        (pending || read_all, "Pending DTCs", DtcKind::Pending),
+        (permanent || read_all, "Permanent DTCs", DtcKind::Permanent),
+    ];
 
-    if pending || read_all {
-        formatter.print_header("Pending DTCs")?;
-        let dtcs = executor.read_pending_dtcs(module).await?;
-        formatter.print_dtcs(&dtcs)?;
-    }
-
-    if permanent || read_all {
-        formatter.print_header("Permanent DTCs")?;
-        let dtcs = executor.read_permanent_dtcs(module).await?;
+    for (should_read, header, kind) in categories {
+        if !should_read {
+            continue;
+        }
+        formatter.print_header(header)?;
+        let dtcs = executor.read_dtcs(module, kind).await?;
         formatter.print_dtcs(&dtcs)?;
     }
 

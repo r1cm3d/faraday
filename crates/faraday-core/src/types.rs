@@ -149,3 +149,10 @@ impl Module {
         ]
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DtcKind {
+    Stored,
+    Pending,
+    Permanent,
+}
