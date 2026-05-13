@@ -2,12 +2,14 @@ use super::CommandExecutor;
 use crate::{
     protocol::{
         seed_key,
-        uds::{DataIdentifier, DiagnosticSession, Uds},
+        uds::{DataIdentifier, DiagnosticSession, SecurityAccessType, Uds},
     },
     transport::IsoTpTransport,
-    Module, Result,
+    Error, Module, Result,
 };
 use tracing::info;
+
+const ASBUILT_ACCESS_LEVEL: u8 = SecurityAccessType::RequestSeed as u8;
 
 impl<T: IsoTpTransport> CommandExecutor<T> {
     /// Write a raw as-built configuration block to a module via UDS DID.
@@ -22,8 +24,10 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
         data: &[u8],
     ) -> Result<()> {
         let prefix = (did >> 8) as u8;
-        if prefix == 0xF0 || prefix == 0xF1 {
-            return Err(crate::Error::unsupported(format!(
+        if prefix == DataIdentifier::PROGRAMMING_DID_PREFIX
+            || prefix == DataIdentifier::IDENTIFICATION_DID_PREFIX
+        {
+            return Err(Error::unsupported(format!(
                 "writing programming DID {:04X} is blocked for safety",
                 did
             )));
@@ -44,14 +48,16 @@ impl<T: IsoTpTransport> CommandExecutor<T> {
 
         let seed = {
             let mut uds = Uds::new(&mut self.transport);
-            uds.security_access_request_seed(req, resp, 0x01).await?
+            uds.security_access_request_seed(req, resp, ASBUILT_ACCESS_LEVEL)
+                .await?
         };
 
-        let key = seed_key::compute_key(&seed, 0x01)?;
+        let key = seed_key::compute_key(&seed, ASBUILT_ACCESS_LEVEL)?;
 
         {
             let mut uds = Uds::new(&mut self.transport);
-            uds.security_access_send_key(req, resp, 0x01, &key).await?;
+            uds.security_access_send_key(req, resp, ASBUILT_ACCESS_LEVEL, &key)
+                .await?;
             uds.write_data_by_identifier(req, resp, DataIdentifier(did), data)
                 .await?;
         }
@@ -84,11 +90,11 @@ mod tests {
 
     #[async_trait]
     impl IsoTpTransport for MockTransport {
-        async fn send(&mut self, _req: CanId, _data: &[u8]) -> crate::Result<()> {
+        async fn send(&mut self, _req: CanId, _data: &[u8]) -> Result<()> {
             Ok(())
         }
 
-        async fn receive(&mut self, _req: CanId, _resp: CanId) -> crate::Result<Vec<u8>> {
+        async fn receive(&mut self, _req: CanId, _resp: CanId) -> Result<Vec<u8>> {
             Ok(vec![])
         }
 
@@ -97,7 +103,7 @@ mod tests {
             _req: CanId,
             _resp: CanId,
             data: &[u8],
-        ) -> crate::Result<Vec<u8>> {
+        ) -> Result<Vec<u8>> {
             self.request_log.lock().unwrap().push(data.to_vec());
             match data[0] {
                 0x10 => Ok(vec![0x50, data[1], 0x00, 0x19, 0x01, 0xF4]),
@@ -114,7 +120,7 @@ mod tests {
 
         async fn set_timeout(&mut self, _timeout: std::time::Duration) {}
 
-        async fn set_can_bus(&mut self, bus: CanBus) -> crate::Result<()> {
+        async fn set_can_bus(&mut self, bus: CanBus) -> Result<()> {
             self.bus_calls.lock().unwrap().push(bus);
             Ok(())
         }

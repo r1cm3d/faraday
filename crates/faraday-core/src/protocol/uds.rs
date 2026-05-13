@@ -33,6 +33,9 @@ impl DataIdentifier {
     pub const SUPPLIER_IDENTIFIER: DataIdentifier = DataIdentifier(0xF18A);
     pub const ECU_MANUFACTURING_DATE: DataIdentifier = DataIdentifier(0xF18B);
     pub const ECU_SERIAL_NUMBER: DataIdentifier = DataIdentifier(0xF18C);
+
+    pub const PROGRAMMING_DID_PREFIX: u8 = 0xF0;
+    pub const IDENTIFICATION_DID_PREFIX: u8 = 0xF1;
 }
 
 impl From<u16> for DataIdentifier {
