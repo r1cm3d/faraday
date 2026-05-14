@@ -95,9 +95,7 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> R
     loop {
         terminal.draw(|f| ui::draw(f, &mut app))?;
 
-        let timeout = tick_rate
-            .checked_sub(last_tick.elapsed())
-            .unwrap_or_default();
+        let timeout = tick_rate.saturating_sub(last_tick.elapsed());
 
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {

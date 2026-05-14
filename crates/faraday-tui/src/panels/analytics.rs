@@ -121,10 +121,11 @@ impl AnalyticsPanel {
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
             .split(rows[1]);
 
-        let fuel_data = if self.fuel_rate_history.is_empty() {
-            vec![0u64]
+        let empty = [0u64];
+        let fuel_data: &[u64] = if self.fuel_rate_history.is_empty() {
+            &empty
         } else {
-            self.fuel_rate_history.clone()
+            &self.fuel_rate_history
         };
         let sparkline = Sparkline::default()
             .block(
@@ -133,10 +134,9 @@ impl AnalyticsPanel {
                     .title("Fuel Rate History (×0.1 L/h)"),
             )
             .style(Style::default().fg(Color::Yellow))
-            .data(&fuel_data);
+            .data(fuel_data);
         f.render_widget(sparkline, bottom_cols[0]);
 
-        let _total_rpm_pts: u64 = self.rpm_histogram.iter().sum();
         let total_spd_pts: u64 = self.speed_distribution.iter().sum::<u64>().max(1);
         let stats_lines = vec![
             Spans::from(format!("Total data points: {}", self.data_points)),
