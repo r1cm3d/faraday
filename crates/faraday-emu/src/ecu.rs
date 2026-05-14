@@ -1,3 +1,5 @@
+//! Simulated multi-module ECU with OBD-II and UDS response generation.
+
 use faraday_core::{CanFrame, CanId};
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 use std::collections::VecDeque;
@@ -18,12 +20,14 @@ impl SimState {
     }
 }
 
+/// Simulates the response behaviour of the Ford Fusion 2017 SEL ECU modules.
 pub struct SimulatedEcu {
     response_queue: VecDeque<CanFrame>,
     state: SimState,
 }
 
 impl SimulatedEcu {
+    /// Creates a new `SimulatedEcu` with an empty response queue and a seeded RNG.
     pub fn new() -> Self {
         Self {
             response_queue: VecDeque::new(),
@@ -31,6 +35,7 @@ impl SimulatedEcu {
         }
     }
 
+    /// Processes an incoming ISO-TP CAN frame and enqueues any applicable response frames.
     pub fn process_frame(&mut self, frame: &CanFrame) {
         if frame.data.is_empty() {
             return;
@@ -52,6 +57,7 @@ impl SimulatedEcu {
         }
     }
 
+    /// Removes and returns the next pending response frame, or `None` if the queue is empty.
     pub fn pop_response(&mut self) -> Option<CanFrame> {
         self.response_queue.pop_front()
     }
@@ -447,7 +453,7 @@ mod tests {
         assert_eq!(resp.data[2], 0x0C);
         let raw_rpm = ((resp.data[3] as u16) << 8) | resp.data[4] as u16;
         assert!(
-            raw_rpm >= 2960 && raw_rpm <= 3440,
+            (2960..=3440).contains(&raw_rpm),
             "RPM raw {raw_rpm} outside expected idle range"
         );
     }
@@ -542,7 +548,7 @@ mod tests {
         assert_eq!(resp.data[2], 0xDD);
         assert_eq!(resp.data[3], 0x01);
         let raw_temp = resp.data[4] as f64 - 40.0;
-        assert!(raw_temp >= 80.0 && raw_temp <= 100.0);
+        assert!((80.0..=100.0).contains(&raw_temp));
     }
 
     #[test]

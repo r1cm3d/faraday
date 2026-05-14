@@ -1,29 +1,44 @@
+//! STN/ELM327 command parser and ECU request dispatcher.
+
 use crate::ecu::SimulatedEcu;
 use faraday_core::{CanFrame, CanId};
 
+/// Decoded representation of a single STN/ELM327 protocol command.
 pub enum StnCommand {
+    /// `ATZ` — reset adapter.
     Atz,
+    /// `STI` — identify adapter.
     Sti,
+    /// `STSLBRP` — set sleep baud rate period.
     Stslbrp,
+    /// `STFAP` — filter all packets.
     Stfap,
+    /// `STCP 24` — connect to HS-CAN (500 kbps).
     StcpHsCan,
+    /// `STCP 25` — connect to MS-CAN (125 kbps).
     StcpMsCan,
+    /// `STPX H:<id>,<n>,<hex>` — transmit a CAN frame.
     Stpx { can_id: u32, data: Vec<u8> },
+    /// `STRX` — receive the next queued CAN frame response.
     Strx,
+    /// Any command that was not recognized.
     Unknown,
 }
 
+/// Stateful ELM327/STN command handler backed by a simulated ECU.
 pub struct EcuHandler {
     ecu: SimulatedEcu,
 }
 
 impl EcuHandler {
+    /// Creates a new handler with a freshly initialized simulated ECU.
     pub fn new() -> Self {
         Self {
             ecu: SimulatedEcu::new(),
         }
     }
 
+    /// Parses a text line received from the serial port into an [`StnCommand`].
     pub fn parse_command(line: &str) -> StnCommand {
         let upper = line.trim().to_uppercase();
         match upper.as_str() {
@@ -39,6 +54,7 @@ impl EcuHandler {
         }
     }
 
+    /// Executes a parsed command and returns the raw bytes to write back to the adapter.
     pub fn handle(&mut self, cmd: StnCommand) -> Vec<u8> {
         match cmd {
             StnCommand::Atz => b"ELM327 v1.5\r\n>".to_vec(),

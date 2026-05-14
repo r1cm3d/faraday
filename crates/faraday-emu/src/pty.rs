@@ -1,3 +1,5 @@
+//! PTY creation, raw-mode configuration, and symlink management.
+
 use anyhow::{Context, Result};
 use nix::fcntl::{fcntl, FcntlArg, OFlag};
 use nix::pty::openpty;
@@ -7,7 +9,11 @@ use std::os::unix::fs::symlink;
 use std::os::unix::io::{AsFd, AsRawFd, OwnedFd};
 use std::path::{Path, PathBuf};
 
-pub struct PtyCleanup(pub Option<PathBuf>);
+/// RAII guard that removes an optional symlink when dropped.
+pub struct PtyCleanup(
+    /// Path of the symlink to remove on drop, or `None` if no cleanup is needed.
+    pub Option<PathBuf>,
+);
 
 impl Drop for PtyCleanup {
     fn drop(&mut self) {
@@ -17,14 +23,20 @@ impl Drop for PtyCleanup {
     }
 }
 
+/// An open PTY pair (master + slave) ready for async I/O.
 pub struct PtyPair {
+    /// Owned file descriptor for the master side of the PTY.
     pub master: OwnedFd,
+    /// Path to the slave device (e.g. `/dev/pts/3`).
     pub slave_path: PathBuf,
+    /// Cleans up the optional symlink when this `PtyPair` is dropped.
     pub cleanup: PtyCleanup,
     _slave_keepalive: OwnedFd,
 }
 
 impl PtyPair {
+    /// Opens a new PTY pair, sets the master to raw non-blocking mode, and optionally
+    /// creates a symlink at `symlink_path` pointing to the slave device.
     pub fn open(symlink_path: Option<&Path>) -> Result<Self> {
         let result = openpty(None, None).context("openpty failed")?;
         let slave_path = ttyname(result.slave.as_fd()).context("ttyname failed")?;
@@ -53,7 +65,6 @@ fn make_raw(fd: i32) -> Result<()> {
     let borrowed = unsafe { BorrowedFd::borrow_raw(fd) };
     let mut termios = tcgetattr(borrowed).context("tcgetattr failed")?;
     cfmakeraw(&mut termios);
-    let borrowed = unsafe { BorrowedFd::borrow_raw(fd) };
     tcsetattr(borrowed, SetArg::TCSANOW, &termios).context("tcsetattr failed")?;
     Ok(())
 }
