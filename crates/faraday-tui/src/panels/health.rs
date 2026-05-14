@@ -1,3 +1,4 @@
+//! Per-module heartbeat connectivity status panel.
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,

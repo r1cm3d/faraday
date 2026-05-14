@@ -1,3 +1,4 @@
+//! Engine and powertrain live data panel.
 use super::{clamp_percent, fmt_fuel_economy, fmt_fuel_rate, fmt_opt_f, fmt_speed_kmh, fmt_temp};
 use faraday_core::{
     commands::CommandExecutor, protocol::j1979::Pid, transport::IsoTpTransport, Module,

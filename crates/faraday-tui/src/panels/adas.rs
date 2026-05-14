@@ -1,3 +1,4 @@
+//! Parking aid module ultrasonic sensor panel.
 use super::{fmt_dist_cm, sensor_opt, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{

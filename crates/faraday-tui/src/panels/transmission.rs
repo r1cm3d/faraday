@@ -1,3 +1,4 @@
+//! Transmission control module live data panel.
 use super::{celsius_from_raw, fmt_opt_f, fmt_pressure_kpa, fmt_temp, u16_be, HISTORY_LEN};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{

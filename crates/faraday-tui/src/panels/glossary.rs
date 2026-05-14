@@ -1,3 +1,4 @@
+//! Scrollable diagnostic term glossary.
 use ratatui::{
     backend::Backend,
     layout::Rect,

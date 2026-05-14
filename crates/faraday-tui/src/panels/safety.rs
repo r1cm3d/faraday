@@ -1,3 +1,4 @@
+//! ABS, ESC, RCM, and TPMS safety diagnostic panel.
 use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa, u16_be, KPA_PER_PSI};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{

@@ -1,3 +1,4 @@
+//! Panel submodules and shared byte-decode and formatting utilities.
 pub mod adas;
 pub mod analytics;
 pub mod body;

@@ -1,3 +1,4 @@
+//! Sparkline data conversion utility.
 #[allow(dead_code)]
 pub fn offset_trim_to_u64(data: &[f64]) -> Vec<u64> {
     data.iter()

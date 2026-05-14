@@ -1,3 +1,4 @@
+//! Application state and tab navigation for the diagnostic TUI.
 use anyhow::Result;
 use faraday_core::{commands::CommandExecutor, link::vlinker::VLinkerFs, transport::isotp::IsoTp};
 use std::time::{Duration, Instant};

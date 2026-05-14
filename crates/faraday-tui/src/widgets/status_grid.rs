@@ -1,3 +1,4 @@
+//! Boolean status cell renderer for table views.
 use ratatui::{
     style::{Color, Style},
     text::{Span, Spans},

@@ -1,3 +1,4 @@
+//! Session analytics: RPM histogram, fuel consumption, brake and acceleration events.
 use super::{engine::EngineSnapshot, HISTORY_LEN};
 use ratatui::{
     backend::Backend,

@@ -1,3 +1,4 @@
+//! APIM/SYNC infotainment diagnostic panel.
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,

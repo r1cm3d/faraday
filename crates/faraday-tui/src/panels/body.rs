@@ -1,3 +1,4 @@
+//! Body control module live data panel.
 use super::{fmt_opt_f, pwm_to_percent, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{

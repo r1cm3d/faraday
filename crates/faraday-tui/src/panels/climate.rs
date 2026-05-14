@@ -1,3 +1,4 @@
+//! HVAC climate control diagnostic panel.
 use super::{celsius_from_raw, fmt_opt_f, fmt_pressure_kpa, fmt_temp, pwm_to_percent, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{

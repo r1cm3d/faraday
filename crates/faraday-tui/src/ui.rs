@@ -1,3 +1,4 @@
+//! Top-level frame layout: tab bar, status bar, panel area, and help bar.
 use crate::app::{ActiveTab, App, ConnectionStatus};
 use ratatui::{
     backend::Backend,

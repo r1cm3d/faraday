@@ -1,3 +1,4 @@
+//! Entry point: CLI argument parsing, terminal setup, and main event loop.
 mod app;
 mod panels;
 mod ui;
