@@ -5,6 +5,7 @@ use ratatui::{
 };
 
 #[allow(dead_code)]
+/// Render a labeled on/off/unknown cell as a colored `Spans` for use in table rows.
 pub fn bool_cell(label: &str, active: Option<bool>) -> Spans<'static> {
     let (text, color) = match active {
         Some(true) => (format!("{}:ON ", label), Color::Green),
