@@ -1,4 +1,4 @@
-use super::fmt_opt_f;
+use super::{fmt_opt_f, pwm_to_percent, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -38,7 +38,7 @@ impl BodyPanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Bcm, 0x4001).await {
             if raw.len() >= 2 {
-                d.battery_voltage = Some(((raw[0] as u16) << 8 | raw[1] as u16) as f64 / 1000.0);
+                d.battery_voltage = Some(u16_be(raw[0], raw[1]) as f64 / 1000.0);
             }
         } else {
             d.battery_voltage = None;
@@ -46,7 +46,7 @@ impl BodyPanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Bcm, 0x4002).await {
             if !raw.is_empty() {
-                d.alternator_duty = Some(raw[0] as f64 * 100.0 / 255.0);
+                d.alternator_duty = Some(pwm_to_percent(raw[0]));
             }
         } else {
             d.alternator_duty = None;

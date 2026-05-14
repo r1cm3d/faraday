@@ -1,4 +1,4 @@
-use super::fmt_dist_cm;
+use super::{fmt_dist_cm, sensor_opt, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -39,15 +39,12 @@ impl AdasPanel {
         if let Ok(raw) = executor.read_asbuilt_block(Module::Pam, 0xE001).await {
             if raw.len() >= 16 {
                 for i in 0..4 {
-                    let val = ((raw[i * 2] as u16) << 8) | raw[i * 2 + 1] as u16;
-                    d.sensors_front[i] = if val == 0xFFFF { None } else { Some(val) };
-                    let val = ((raw[8 + i * 2] as u16) << 8) | raw[8 + i * 2 + 1] as u16;
-                    d.sensors_rear[i] = if val == 0xFFFF { None } else { Some(val) };
+                    d.sensors_front[i] = sensor_opt(u16_be(raw[i * 2], raw[i * 2 + 1]));
+                    d.sensors_rear[i] = sensor_opt(u16_be(raw[8 + i * 2], raw[8 + i * 2 + 1]));
                 }
             } else if raw.len() >= 8 {
                 for i in 0..4 {
-                    let val = ((raw[i * 2] as u16) << 8) | raw[i * 2 + 1] as u16;
-                    d.sensors_front[i] = if val == 0xFFFF { None } else { Some(val) };
+                    d.sensors_front[i] = sensor_opt(u16_be(raw[i * 2], raw[i * 2 + 1]));
                 }
             }
         } else {

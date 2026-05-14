@@ -20,6 +20,26 @@ pub use infotainment::InfotainmentPanel;
 pub use safety::SafetyPanel;
 pub use transmission::TransmissionPanel;
 
+pub fn u16_be(high: u8, low: u8) -> u16 {
+    ((high as u16) << 8) | low as u16
+}
+
+pub fn celsius_from_raw(raw: u8) -> f64 {
+    raw as f64 - 40.0
+}
+
+pub fn pwm_to_percent(pwm: u8) -> f64 {
+    pwm as f64 * 100.0 / 255.0
+}
+
+pub fn sensor_opt(val: u16) -> Option<u16> {
+    if val == 0xFFFF {
+        None
+    } else {
+        Some(val)
+    }
+}
+
 pub fn fmt_opt_f(val: Option<f64>, precision: usize, unit: &str) -> String {
     match val {
         Some(v) => format!("{:.prec$}{}", v, unit, prec = precision),

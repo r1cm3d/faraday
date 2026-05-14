@@ -1,4 +1,4 @@
-use super::{fmt_opt_f, fmt_pressure_kpa, fmt_temp};
+use super::{celsius_from_raw, fmt_opt_f, fmt_pressure_kpa, fmt_temp, pwm_to_percent, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -43,10 +43,10 @@ impl ClimatePanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Hvac, 0xB001).await {
             if raw.len() >= 4 {
-                d.blend_driver = Some(raw[0] as f64 * 100.0 / 255.0);
-                d.blend_pass = Some(raw[1] as f64 * 100.0 / 255.0);
-                d.cabin_temp_driver = Some(raw[2] as f64 - 40.0);
-                d.cabin_temp_pass = Some(raw[3] as f64 - 40.0);
+                d.blend_driver = Some(pwm_to_percent(raw[0]));
+                d.blend_pass = Some(pwm_to_percent(raw[1]));
+                d.cabin_temp_driver = Some(celsius_from_raw(raw[2]));
+                d.cabin_temp_pass = Some(celsius_from_raw(raw[3]));
             }
         } else {
             d.blend_driver = None;
@@ -57,9 +57,9 @@ impl ClimatePanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Hvac, 0xB002).await {
             if raw.len() >= 4 {
-                d.evap_temp = Some(raw[0] as f64 - 40.0);
-                d.refrigerant_pressure = Some(((raw[1] as u16) << 8 | raw[2] as u16) as f64 * 0.1);
-                d.compressor_load = Some(raw[3] as f64 * 100.0 / 255.0);
+                d.evap_temp = Some(celsius_from_raw(raw[0]));
+                d.refrigerant_pressure = Some(u16_be(raw[1], raw[2]) as f64 * 0.1);
+                d.compressor_load = Some(pwm_to_percent(raw[3]));
             }
         } else {
             d.evap_temp = None;

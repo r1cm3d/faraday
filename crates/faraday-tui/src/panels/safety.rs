@@ -1,4 +1,4 @@
-use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa};
+use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa, u16_be};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -45,10 +45,10 @@ impl SafetyPanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Abs, 0xC001).await {
             if raw.len() >= 8 {
-                d.wheel_speed_fl = Some(((raw[0] as u16) << 8 | raw[1] as u16) as f64 * 0.1);
-                d.wheel_speed_fr = Some(((raw[2] as u16) << 8 | raw[3] as u16) as f64 * 0.1);
-                d.wheel_speed_rl = Some(((raw[4] as u16) << 8 | raw[5] as u16) as f64 * 0.1);
-                d.wheel_speed_rr = Some(((raw[6] as u16) << 8 | raw[7] as u16) as f64 * 0.1);
+                d.wheel_speed_fl = Some(u16_be(raw[0], raw[1]) as f64 * 0.1);
+                d.wheel_speed_fr = Some(u16_be(raw[2], raw[3]) as f64 * 0.1);
+                d.wheel_speed_rl = Some(u16_be(raw[4], raw[5]) as f64 * 0.1);
+                d.wheel_speed_rr = Some(u16_be(raw[6], raw[7]) as f64 * 0.1);
             }
         } else {
             d.wheel_speed_fl = None;
@@ -59,8 +59,8 @@ impl SafetyPanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Abs, 0xC002).await {
             if raw.len() >= 4 {
-                d.yaw_rate = Some(((raw[0] as i16) << 8 | raw[1] as i16) as f64 * 0.1);
-                d.lateral_accel = Some(((raw[2] as i16) << 8 | raw[3] as i16) as f64 * 0.01);
+                d.yaw_rate = Some(u16_be(raw[0], raw[1]) as i16 as f64 * 0.1);
+                d.lateral_accel = Some(u16_be(raw[2], raw[3]) as i16 as f64 * 0.01);
             }
         } else {
             d.yaw_rate = None;
