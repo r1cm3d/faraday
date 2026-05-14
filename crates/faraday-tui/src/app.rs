@@ -185,7 +185,7 @@ impl App {
         let tab = self.active_tab;
         let interval = tab.poll_interval();
         let due = self.last_panel_update[tab.index()]
-            .map_or(true, |t| now.duration_since(t) >= interval);
+            .is_none_or(|t| now.duration_since(t) >= interval);
 
         if due {
             self.update_active_panel().await;

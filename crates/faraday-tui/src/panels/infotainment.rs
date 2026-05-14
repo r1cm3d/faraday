@@ -13,22 +13,33 @@ use std::time::Instant;
 const GPS_SAT_MAX: f64 = 15.0;
 const RSSI_FLOOR_DBM: f64 = -120.0;
 
+/// Latest APIM data values read from the CAN bus.
 #[derive(Default)]
 pub struct InfotainmentData {
+    /// Number of GPS satellites in view (APIM DID 0xA001 byte 1).
     pub gps_satellites: Option<u8>,
+    /// GPS fix type: 0=none, 1=GPS, 2=DGPS, 3=RTK (APIM DID 0xA001 byte 0).
     pub gps_fix: Option<u8>,
+    /// Cellular RSSI in dBm (APIM DID 0xA002, signed byte).
     pub cellular_rssi: Option<i8>,
+    /// Number of paired Bluetooth devices (not yet populated).
     pub bt_device_count: Option<u8>,
+    /// SYNC software version string (APIM DID 0xA010, null-terminated UTF-8).
     pub software_version: Option<String>,
 }
 
+/// Live APIM/SYNC infotainment diagnostic panel.
 pub struct InfotainmentPanel {
+    /// Most recent APIM data values.
     pub data: InfotainmentData,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl InfotainmentPanel {
+    /// Create a new `InfotainmentPanel` with empty state.
     pub fn new() -> Self {
         Self {
             data: InfotainmentData::default(),
@@ -37,6 +48,7 @@ impl InfotainmentPanel {
         }
     }
 
+    /// Poll APIM DIDs and update GPS, cellular, and software version fields.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let d = &mut self.data;
@@ -72,6 +84,7 @@ impl InfotainmentPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the infotainment panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let d = &self.data;
 
@@ -166,6 +179,7 @@ impl InfotainmentPanel {
         f.render_widget(info_para, rows[1]);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Infotainment: GPS · Cellular Signal · Bluetooth · APIM Software Version"
     }

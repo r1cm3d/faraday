@@ -379,19 +379,23 @@ const SECTIONS: &[Section] = &[
     ),
 ];
 
+/// Scrollable panel displaying the diagnostic term glossary.
 pub struct GlossaryPanel {
     scroll_offset: usize,
 }
 
 impl GlossaryPanel {
+    /// Create a new `GlossaryPanel` scrolled to the top.
     pub fn new() -> Self {
         Self { scroll_offset: 0 }
     }
 
+    /// Scroll the glossary up by one line, clamping at the top.
     pub fn scroll_up(&mut self) {
         self.scroll_offset = self.scroll_offset.saturating_sub(1);
     }
 
+    /// Scroll the glossary down by one line, clamping at the last line.
     pub fn scroll_down(&mut self) {
         let max = Self::total_lines().saturating_sub(1);
         self.scroll_offset = (self.scroll_offset + 1).min(max);
@@ -403,6 +407,7 @@ impl GlossaryPanel {
             .fold(1, |acc, (_, entries)| acc + 1 + 1 + entries.len() * 2 + 1)
     }
 
+    /// Render the glossary panel into `area`, applying the current scroll offset.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let mut lines: Vec<Spans> = vec![Spans::from("")];
 
@@ -440,6 +445,7 @@ impl GlossaryPanel {
         f.render_widget(para, area);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "up/down or j/k: scroll glossary"
     }

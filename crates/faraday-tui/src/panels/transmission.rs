@@ -11,24 +11,37 @@ use ratatui::{
 };
 use std::time::Instant;
 
+/// Latest TCM data values read from the CAN bus.
 #[derive(Default)]
 pub struct TransmissionData {
+    /// Transmission fluid temperature in °C (DID 0xDD01).
     pub fluid_temp: Option<f64>,
+    /// Currently engaged gear reported by TCM (DID 0xDD02 byte 0).
     pub current_gear: Option<u8>,
+    /// Gear commanded by the shift strategy (DID 0xDD02 byte 1).
     pub commanded_gear: Option<u8>,
+    /// Torque converter slip percentage (DID 0xDD03, scaled ×0.1).
     pub tc_slip: Option<f64>,
+    /// Hydraulic line pressure in kPa.
     pub line_pressure: Option<f64>,
+    /// Engagement state of the six shift solenoids (SS1-SS4, TCC, LPC).
     pub solenoids: [Option<bool>; 6],
 }
 
+/// Live transmission control module diagnostic panel.
 pub struct TransmissionPanel {
+    /// Most recent TCM data values.
     pub data: TransmissionData,
+    /// Rolling fluid-temperature history (capped at `HISTORY_LEN` samples).
     pub fluid_history: Vec<f64>,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl TransmissionPanel {
+    /// Create a new `TransmissionPanel` with empty state.
     pub fn new() -> Self {
         Self {
             data: TransmissionData::default(),
@@ -38,6 +51,7 @@ impl TransmissionPanel {
         }
     }
 
+    /// Poll TCM DIDs and update fluid temperature, gear, TC slip, and solenoid state.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let d = &mut self.data;
@@ -77,6 +91,7 @@ impl TransmissionPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the transmission panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let d = &self.data;
 
@@ -159,6 +174,7 @@ impl TransmissionPanel {
         f.render_widget(info_para, rows[1]);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Transmission: Fluid Temp · Gear · TC Slip · Line Pressure · Solenoids"
     }

@@ -26,10 +26,14 @@ static MONITORED: &[Module] = &[
     Module::Hvac,
 ];
 
+/// Connectivity state of a single CAN module.
 #[derive(Clone)]
 pub struct ModuleStatus {
+    /// The ECU module being monitored.
     pub module: Module,
+    /// Timestamp of the last successful heartbeat read, or `None` if never seen.
     pub last_seen: Option<Instant>,
+    /// Number of consecutive failed heartbeat reads since the last success.
     pub consecutive_timeouts: u32,
 }
 
@@ -73,13 +77,18 @@ impl ModuleStatus {
     }
 }
 
+/// Live per-module heartbeat connectivity status panel.
 pub struct HealthPanel {
+    /// Status records for all monitored CAN modules.
     pub modules: Vec<ModuleStatus>,
+    /// Round-robin index of the module polled on the next update cycle.
     pub poll_index: usize,
+    /// Timestamp of the last update cycle.
     pub last_updated: Option<Instant>,
 }
 
 impl HealthPanel {
+    /// Create a new `HealthPanel` monitoring all entries in `MONITORED`.
     pub fn new() -> Self {
         let modules = MONITORED.iter().map(|&m| ModuleStatus::new(m)).collect();
         Self {
@@ -89,6 +98,7 @@ impl HealthPanel {
         }
     }
 
+    /// Poll one module per call (round-robin) and update its heartbeat status.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         let idx = self.poll_index % self.modules.len();
         let module = self.modules[idx].module;
@@ -107,6 +117,7 @@ impl HealthPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Mark the PCM as seen and reset its timeout counter, called after a successful engine update.
     pub fn record_engine_ok(&mut self) {
         if let Some(m) = self.modules.iter_mut().find(|m| m.module == Module::Pcm) {
             m.last_seen = Some(Instant::now());
@@ -114,6 +125,7 @@ impl HealthPanel {
         }
     }
 
+    /// Render the module health table into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let header = Row::new(vec![
             Cell::from("Module").style(Style::default().fg(Color::White)),
@@ -156,6 +168,7 @@ impl HealthPanel {
         f.render_widget(table, area);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Health: Module connectivity status, last seen time, consecutive timeout count"
     }

@@ -13,46 +13,81 @@ use ratatui::{
 };
 use std::collections::VecDeque;
 use std::time::Instant;
+
+/// Maximum number of `EngineSnapshot` entries kept in the rolling history buffer.
 pub const MAX_HISTORY: usize = 200;
+/// Maximum RPM used to scale the gauge (redline reference for Ford 2.0L EcoBoost).
 pub const RPM_MAX: f64 = 7000.0;
+/// Maximum speed used to scale the gauge in km/h.
 pub const SPEED_MAX_KMH: f64 = 220.0;
 
+/// Point-in-time snapshot of all engine and powertrain OBD-II values.
 #[derive(Clone, Default)]
 pub struct EngineSnapshot {
+    /// Engine speed in RPM (PID 0x0C).
     pub rpm: Option<f64>,
+    /// Vehicle speed in km/h (PID 0x0D).
     pub speed: Option<f64>,
+    /// Engine coolant temperature in °C (PID 0x05).
     pub coolant_temp: Option<f64>,
+    /// Calculated engine load as a percentage (PID 0x04).
     pub engine_load: Option<f64>,
+    /// Absolute throttle position as a percentage (PID 0x11).
     pub throttle_pos: Option<f64>,
+    /// Relative throttle position as a percentage (PID 0x45).
     pub rel_throttle_pos: Option<f64>,
+    /// Mass air flow rate in g/s (PID 0x10).
     pub maf_rate: Option<f64>,
+    /// Intake air temperature in °C (PID 0x0F).
     pub intake_temp: Option<f64>,
+    /// Engine oil temperature in °C (PID 0x5C).
     pub oil_temp: Option<f64>,
+    /// Short-term fuel trim bank 1 as a percentage (PID 0x06).
     pub stft_b1: Option<f64>,
+    /// Long-term fuel trim bank 1 as a percentage (PID 0x07).
     pub ltft_b1: Option<f64>,
+    /// Short-term fuel trim bank 2 as a percentage (PID 0x08).
     pub stft_b2: Option<f64>,
+    /// Long-term fuel trim bank 2 as a percentage (PID 0x09).
     pub ltft_b2: Option<f64>,
+    /// Ignition timing advance in degrees before TDC (PID 0x0E).
     pub timing_advance: Option<f64>,
+    /// O2 sensor bank 1 sensor 1 voltage (PID 0x14).
     pub o2_b1s1: Option<f64>,
+    /// O2 sensor bank 1 sensor 2 voltage (PID 0x15).
     pub o2_b1s2: Option<f64>,
+    /// Commanded EGR valve position as a percentage (PID 0x2C).
     pub egr_commanded: Option<f64>,
+    /// EGR error as a percentage (PID 0x2D).
     pub egr_error: Option<f64>,
+    /// Engine fuel consumption rate in L/h (PID 0x5E).
     pub fuel_rate: Option<f64>,
+    /// Driver demanded engine torque as a percentage (PID 0x61).
     pub driver_torque: Option<f64>,
+    /// Actual engine torque as a percentage (PID 0x62).
     pub engine_torque: Option<f64>,
+    /// Control module supply voltage in volts (PID 0x42).
     pub battery_voltage: Option<f64>,
+    /// Engine oil life remaining as a percentage (Ford proprietary DID 0x1900).
     pub oil_life: Option<f64>,
+    /// Per-cylinder misfire counts for cylinders 1-4 (Ford proprietary DID 0x1901).
     pub misfire_counts: [Option<u32>; 4],
 }
 
+/// Live engine and powertrain diagnostic panel with history buffering.
 pub struct EnginePanel {
+    /// Rolling history of the last `MAX_HISTORY` snapshots.
     pub history: VecDeque<EngineSnapshot>,
+    /// Most recently collected snapshot.
     pub latest: EngineSnapshot,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl EnginePanel {
+    /// Create a new `EnginePanel` with empty state.
     pub fn new() -> Self {
         Self {
             history: VecDeque::new(),
@@ -62,6 +97,7 @@ impl EnginePanel {
         }
     }
 
+    /// Poll all engine PIDs and proprietary DIDs and push a new snapshot.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let mut snap = EngineSnapshot::default();
@@ -154,6 +190,7 @@ impl EnginePanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the engine panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let s = &self.latest;
 
@@ -295,10 +332,12 @@ impl EnginePanel {
         f.render_widget(misfire_para, rows[2]);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Engine: RPM · Speed · Load · Fuel Trim · O2 · EGR · Timing · Misfires"
     }
 
+    /// Return the most recently read battery voltage, or `None` if not yet available.
     pub fn battery_voltage(&self) -> Option<f64> {
         self.latest.battery_voltage
     }

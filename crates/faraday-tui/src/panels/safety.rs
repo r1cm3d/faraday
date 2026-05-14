@@ -11,27 +11,43 @@ use ratatui::{
 };
 use std::time::Instant;
 
+/// Latest ABS, RCM, and TPMS data values read from the CAN bus.
 #[derive(Default)]
 pub struct SafetyData {
+    /// Front-left wheel speed in km/h (ABS DID 0xC001, scaled ×0.1).
     pub wheel_speed_fl: Option<f64>,
+    /// Front-right wheel speed in km/h (ABS DID 0xC001, scaled ×0.1).
     pub wheel_speed_fr: Option<f64>,
+    /// Rear-left wheel speed in km/h (ABS DID 0xC001, scaled ×0.1).
     pub wheel_speed_rl: Option<f64>,
+    /// Rear-right wheel speed in km/h (ABS DID 0xC001, scaled ×0.1).
     pub wheel_speed_rr: Option<f64>,
+    /// Yaw rate in °/s (ABS DID 0xC002, signed, scaled ×0.1).
     pub yaw_rate: Option<f64>,
+    /// Lateral acceleration in g (ABS DID 0xC002, signed, scaled ×0.01).
     pub lateral_accel: Option<f64>,
+    /// Airbag squib continuity bitmask (RCM DID 0xD001; 0xFF = all OK).
     pub airbag_squib: Option<u8>,
+    /// Seatbelt-buckled bitmask: bit N = occupant N buckled (RCM DID 0xD002).
     pub seatbelt_status: Option<u8>,
+    /// Front axle TPMS pressure in kPa (BCM DID 0x0201, scaled by KPA_PER_PSI).
     pub tpms_front_kpa: Option<f64>,
+    /// Rear axle TPMS pressure in kPa (BCM DID 0x0201, scaled by KPA_PER_PSI).
     pub tpms_rear_kpa: Option<f64>,
 }
 
+/// Live safety systems diagnostic panel (ABS, ESC, RCM, TPMS).
 pub struct SafetyPanel {
+    /// Most recent safety data values.
     pub data: SafetyData,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl SafetyPanel {
+    /// Create a new `SafetyPanel` with empty state.
     pub fn new() -> Self {
         Self {
             data: SafetyData::default(),
@@ -40,6 +56,7 @@ impl SafetyPanel {
         }
     }
 
+    /// Poll ABS, RCM, and BCM DIDs and update all safety data fields.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let d = &mut self.data;
@@ -97,6 +114,7 @@ impl SafetyPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the safety panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let d = &self.data;
 
@@ -212,6 +230,7 @@ impl SafetyPanel {
         }
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Safety: Wheel Speeds · Yaw Rate · Lateral Accel · Seatbelts · Airbag Squib · TPMS Front/Rear"
     }

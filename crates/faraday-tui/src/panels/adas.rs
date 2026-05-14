@@ -10,21 +10,30 @@ use ratatui::{
 };
 use std::time::Instant;
 
+/// Maximum measurable sensor distance in cm; used to scale the proximity gauges.
 const MAX_SENSOR_CM: u16 = 250;
 
+/// Latest PAM ultrasonic sensor readings.
 #[derive(Default)]
 pub struct AdasData {
+    /// Front sensor distances in cm (FL, FC-L, FC-R, FR); `None` = absent/out-of-range.
     pub sensors_front: [Option<u16>; 4],
+    /// Rear sensor distances in cm (RL, RC-L, RC-R, RR); `None` = absent/out-of-range.
     pub sensors_rear: [Option<u16>; 4],
 }
 
+/// Live parking aid module (PAM) ultrasonic sensor panel.
 pub struct AdasPanel {
+    /// Most recent PAM sensor readings.
     pub data: AdasData,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl AdasPanel {
+    /// Create a new `AdasPanel` with empty state.
     pub fn new() -> Self {
         Self {
             data: AdasData::default(),
@@ -33,6 +42,7 @@ impl AdasPanel {
         }
     }
 
+    /// Poll PAM DID 0xE001 and decode up to 8 ultrasonic sensor distances.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let d = &mut self.data;
@@ -56,6 +66,7 @@ impl AdasPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the ADAS sensor panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let d = &self.data;
 
@@ -127,6 +138,7 @@ impl AdasPanel {
         }
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "ADAS: 8 ultrasonic sensors (front/rear), backup camera status"
     }

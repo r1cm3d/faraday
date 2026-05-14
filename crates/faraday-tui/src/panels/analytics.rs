@@ -10,19 +10,29 @@ use ratatui::{
 };
 use std::time::Instant;
 
+/// Session-scoped analytics panel accumulating engine and driving statistics.
 pub struct AnalyticsPanel {
+    /// Counts of engine snapshots in four RPM bands: idle/<1k, low/1-2.5k, cruise/2.5-4.5k, high/>4.5k.
     pub rpm_histogram: [u64; 4],
+    /// Counts of speed samples in four bands: city/<30, suburban/30-79, highway/80-119, fast/>120 km/h.
     pub speed_distribution: [u64; 4],
+    /// Total fuel consumed since last reset in litres.
     pub total_fuel_liters: f64,
+    /// Number of estimated hard-braking events (decel > 8 km/h/s).
     pub brake_events: u64,
+    /// Number of estimated hard-acceleration events (accel > 2.7 km/h/s).
     pub accel_events: u64,
+    /// Total number of engine snapshots ingested since last reset.
     pub data_points: u64,
+    /// Rolling fuel-rate history scaled ×10 for sparkline display (capped at `HISTORY_LEN`).
     pub fuel_rate_history: Vec<u64>,
+    /// Timestamp of the last ingested snapshot.
     pub last_updated: Option<Instant>,
     prev_speed: Option<f64>,
 }
 
 impl AnalyticsPanel {
+    /// Create a new `AnalyticsPanel` with zeroed counters.
     pub fn new() -> Self {
         Self {
             rpm_histogram: [0; 4],
@@ -37,6 +47,7 @@ impl AnalyticsPanel {
         }
     }
 
+    /// Ingest one engine snapshot sampled at `interval_secs` seconds ago and update all accumulators.
     pub fn ingest(&mut self, snap: &EngineSnapshot, interval_secs: f64) {
         self.data_points += 1;
 
@@ -84,6 +95,7 @@ impl AnalyticsPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the analytics panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let rows = Layout::default()
             .direction(Direction::Vertical)
@@ -166,6 +178,7 @@ impl AnalyticsPanel {
         f.render_widget(stats_para, bottom_cols[1]);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Analytics: RPM histogram · Speed distribution · Fuel consumed · Brake/Accel events"
     }

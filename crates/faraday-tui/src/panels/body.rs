@@ -11,20 +11,29 @@ use ratatui::{
 };
 use std::time::Instant;
 
+/// Latest BCM data values read from the CAN bus.
 #[derive(Default)]
 pub struct BodyData {
+    /// Battery voltage under load in volts (DID 0x4001, scaled ÷1000).
     pub battery_voltage: Option<f64>,
+    /// Alternator duty cycle as a percentage (DID 0x4002, PWM-scaled).
     pub alternator_duty: Option<f64>,
+    /// Door-ajar bitmask: bit N = door N open (DID 0x4010).
     pub door_ajar: Option<u8>,
 }
 
+/// Live body control module diagnostic panel.
 pub struct BodyPanel {
+    /// Most recent BCM data values.
     pub data: BodyData,
+    /// Timestamp of the last successful update.
     pub last_updated: Option<Instant>,
+    /// Error message from the most recent failed update, if any.
     pub error: Option<String>,
 }
 
 impl BodyPanel {
+    /// Create a new `BodyPanel` with empty state.
     pub fn new() -> Self {
         Self {
             data: BodyData::default(),
@@ -33,6 +42,7 @@ impl BodyPanel {
         }
     }
 
+    /// Poll BCM DIDs and update battery voltage, alternator duty, and door status.
     pub async fn update<T: IsoTpTransport>(&mut self, executor: &mut CommandExecutor<T>) {
         self.error = None;
         let d = &mut self.data;
@@ -64,6 +74,7 @@ impl BodyPanel {
         self.last_updated = Some(Instant::now());
     }
 
+    /// Render the body panel into `area`.
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, area: Rect) {
         let d = &self.data;
 
@@ -128,6 +139,7 @@ impl BodyPanel {
         f.render_widget(door_para, rows[1]);
     }
 
+    /// Return the context-sensitive help string for this panel.
     pub fn help_text(&self) -> &str {
         "Body: Battery Voltage · Alternator · Door Ajar · Window Motors · Lighting"
     }

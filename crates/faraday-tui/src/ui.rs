@@ -9,6 +9,7 @@ use ratatui::{
     Frame,
 };
 
+/// Render the complete TUI frame: tab bar, status bar, active panel, and help bar.
 pub fn draw<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
