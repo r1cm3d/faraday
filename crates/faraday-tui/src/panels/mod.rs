@@ -20,20 +20,26 @@ pub use infotainment::InfotainmentPanel;
 pub use safety::SafetyPanel;
 pub use transmission::TransmissionPanel;
 
+pub const TEMP_OFFSET_CELSIUS: f64 = 40.0;
+pub const PWM_MAX: f64 = 255.0;
+pub const KPA_PER_PSI: f64 = 6.89476;
+pub const HISTORY_LEN: usize = 60;
+pub const SENSOR_SENTINEL: u16 = 0xFFFF;
+
 pub fn u16_be(high: u8, low: u8) -> u16 {
     ((high as u16) << 8) | low as u16
 }
 
 pub fn celsius_from_raw(raw: u8) -> f64 {
-    raw as f64 - 40.0
+    raw as f64 - TEMP_OFFSET_CELSIUS
 }
 
 pub fn pwm_to_percent(pwm: u8) -> f64 {
-    pwm as f64 * 100.0 / 255.0
+    pwm as f64 * 100.0 / PWM_MAX
 }
 
 pub fn sensor_opt(val: u16) -> Option<u16> {
-    if val == 0xFFFF {
+    if val == SENSOR_SENTINEL {
         None
     } else {
         Some(val)

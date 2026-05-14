@@ -1,4 +1,4 @@
-use super::engine::EngineSnapshot;
+use super::{engine::EngineSnapshot, HISTORY_LEN};
 use ratatui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},
@@ -75,7 +75,7 @@ impl AnalyticsPanel {
             self.total_fuel_liters += fuel_rate * interval_secs / 3600.0;
             let scaled = (fuel_rate * 10.0).clamp(0.0, u64::MAX as f64) as u64;
             self.fuel_rate_history.push(scaled);
-            if self.fuel_rate_history.len() > 60 {
+            if self.fuel_rate_history.len() > HISTORY_LEN {
                 self.fuel_rate_history.remove(0);
             }
         }

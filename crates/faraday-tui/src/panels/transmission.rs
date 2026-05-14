@@ -1,4 +1,4 @@
-use super::{celsius_from_raw, fmt_opt_f, fmt_pressure_kpa, fmt_temp, u16_be};
+use super::{celsius_from_raw, fmt_opt_f, fmt_pressure_kpa, fmt_temp, u16_be, HISTORY_LEN};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -46,7 +46,7 @@ impl TransmissionPanel {
                 d.fluid_temp = Some(celsius_from_raw(raw[0]));
                 if let Some(t) = d.fluid_temp {
                     self.fluid_history.push(t);
-                    if self.fluid_history.len() > 60 {
+                    if self.fluid_history.len() > HISTORY_LEN {
                         self.fluid_history.remove(0);
                     }
                 }

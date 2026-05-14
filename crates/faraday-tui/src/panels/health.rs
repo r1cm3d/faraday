@@ -10,6 +10,8 @@ use ratatui::{
 use std::time::Instant;
 
 const HEARTBEAT_DID: u16 = 0xF101;
+const STALE_SECS: u64 = 30;
+const TIMEOUT_THRESHOLD: u32 = 3;
 
 static MONITORED: &[Module] = &[
     Module::Pcm,
@@ -44,9 +46,9 @@ impl ModuleStatus {
             None => ("UNKNOWN", Color::DarkGray),
             Some(t) => {
                 let age = t.elapsed().as_secs();
-                if self.consecutive_timeouts >= 3 {
+                if self.consecutive_timeouts >= TIMEOUT_THRESHOLD {
                     ("TIMEOUT", Color::Red)
-                } else if age > 30 {
+                } else if age > STALE_SECS {
                     ("STALE", Color::Yellow)
                 } else {
                     ("OK", Color::Green)

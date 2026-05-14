@@ -9,6 +9,9 @@ use ratatui::{
 };
 use std::time::Instant;
 
+const GPS_SAT_MAX: f64 = 15.0;
+const RSSI_FLOOR_DBM: f64 = -120.0;
+
 #[derive(Default)]
 pub struct InfotainmentData {
     pub gps_satellites: Option<u8>,
@@ -89,7 +92,7 @@ impl InfotainmentPanel {
                     .title("GPS Satellites"),
             )
             .gauge_style(Style::default().fg(Color::Green))
-            .percent((sats / 15.0 * 100.0).clamp(0.0, 100.0) as u16)
+            .percent((sats / GPS_SAT_MAX * 100.0).clamp(0.0, 100.0) as u16)
             .label(
                 d.gps_satellites
                     .map(|s| format!("{} sats", s))
@@ -97,8 +100,8 @@ impl InfotainmentPanel {
             );
         f.render_widget(gps_gauge, sig_cols[0]);
 
-        let rssi = d.cellular_rssi.unwrap_or(-120) as f64;
-        let rssi_pct = ((rssi + 120.0) / 70.0 * 100.0).clamp(0.0, 100.0);
+        let rssi = d.cellular_rssi.map(|r| r as f64).unwrap_or(RSSI_FLOOR_DBM);
+        let rssi_pct = ((rssi - RSSI_FLOOR_DBM) / 70.0 * 100.0).clamp(0.0, 100.0);
         let rssi_color = if rssi > -70.0 {
             Color::Green
         } else if rssi > -90.0 {

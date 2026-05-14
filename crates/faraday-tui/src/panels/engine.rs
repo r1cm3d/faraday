@@ -13,6 +13,8 @@ use ratatui::{
 use std::collections::VecDeque;
 use std::time::Instant;
 pub const MAX_HISTORY: usize = 200;
+pub const RPM_MAX: f64 = 7000.0;
+pub const SPEED_MAX_KMH: f64 = 220.0;
 
 #[derive(Clone, Default)]
 pub struct EngineSnapshot {
@@ -176,7 +178,7 @@ impl EnginePanel {
         let rpm_gauge = Gauge::default()
             .block(Block::default().borders(Borders::ALL).title("RPM"))
             .gauge_style(Style::default().fg(Color::Cyan))
-            .percent(clamp_percent(rpm, 7000.0))
+            .percent(clamp_percent(rpm, RPM_MAX))
             .label(format!("{:.0} rpm", rpm));
         f.render_widget(rpm_gauge, gauge_row[0]);
 
@@ -184,7 +186,7 @@ impl EnginePanel {
         let speed_gauge = Gauge::default()
             .block(Block::default().borders(Borders::ALL).title("Speed"))
             .gauge_style(Style::default().fg(Color::Green))
-            .percent(clamp_percent(speed, 220.0))
+            .percent(clamp_percent(speed, SPEED_MAX_KMH))
             .label(fmt_speed_kmh(s.speed));
         f.render_widget(speed_gauge, gauge_row[1]);
 

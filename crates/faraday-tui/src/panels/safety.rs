@@ -1,4 +1,4 @@
-use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa, u16_be};
+use super::{fmt_opt_f, fmt_speed_kmh, fmt_tpms_kpa, u16_be, KPA_PER_PSI};
 use faraday_core::{commands::CommandExecutor, transport::IsoTpTransport, Module};
 use ratatui::{
     backend::Backend,
@@ -85,8 +85,8 @@ impl SafetyPanel {
 
         if let Ok(raw) = executor.read_asbuilt_block(Module::Bcm, 0x0201).await {
             if raw.len() >= 2 {
-                d.tpms_front_kpa = Some(raw[0] as f64 * 6.89476);
-                d.tpms_rear_kpa = Some(raw[1] as f64 * 6.89476);
+                d.tpms_front_kpa = Some(raw[0] as f64 * KPA_PER_PSI);
+                d.tpms_rear_kpa = Some(raw[1] as f64 * KPA_PER_PSI);
             }
         } else {
             d.tpms_front_kpa = None;
