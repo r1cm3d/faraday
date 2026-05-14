@@ -27,8 +27,7 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, app: &mut App) {
 }
 
 fn draw_tab_bar<B: Backend>(f: &mut Frame<B>, area: Rect, app: &App) {
-    let tab_count = 10;
-    let titles: Vec<Spans> = (0..tab_count)
+    let titles: Vec<Spans> = (0..crate::app::N_TABS)
         .map(|i| Spans::from(ActiveTab::from_index(i).title()))
         .collect();
 

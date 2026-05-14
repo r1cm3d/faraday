@@ -86,9 +86,11 @@ async fn run_tui(args: Args) -> Result<()> {
     Ok(())
 }
 
+const TICK_RATE_MS: u64 = 100;
+
 async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: app::App) -> Result<()> {
     let mut last_tick = Instant::now();
-    let tick_rate = Duration::from_millis(100);
+    let tick_rate = Duration::from_millis(TICK_RATE_MS);
 
     loop {
         terminal.draw(|f| ui::draw(f, &mut app))?;

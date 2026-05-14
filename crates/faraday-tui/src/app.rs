@@ -21,7 +21,7 @@ pub enum ActiveTab {
     Glossary = 9,
 }
 
-const N_TABS: usize = 10;
+pub const N_TABS: usize = 10;
 
 impl ActiveTab {
     pub fn from_index(i: usize) -> Self {
