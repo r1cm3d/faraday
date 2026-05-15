@@ -75,7 +75,18 @@ impl AdasPanel {
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
             .split(area);
 
-        let front_cols = Layout::default()
+        self.render_sensors(f, rows[0], &["FL", "FC-L", "FC-R", "FR"], &d.sensors_front);
+        self.render_sensors(f, rows[1], &["RL", "RC-L", "RC-R", "RR"], &d.sensors_rear);
+    }
+
+    fn render_sensors<B: Backend>(
+        &self,
+        f: &mut Frame<B>,
+        area: Rect,
+        labels: &[&str],
+        sensors: &[Option<u16>; 4],
+    ) {
+        let cols = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([
                 Constraint::Percentage(25),
@@ -83,42 +94,10 @@ impl AdasPanel {
                 Constraint::Percentage(25),
                 Constraint::Percentage(25),
             ])
-            .split(rows[0]);
+            .split(area);
 
-        let labels = ["FL", "FC-L", "FC-R", "FR"];
-        for (i, (label, &col)) in labels.iter().zip(front_cols.iter()).enumerate() {
-            let sensor = d.sensors_front[i];
-            let percent = sensor
-                .map(|v| 100u16.saturating_sub(v * 100 / MAX_SENSOR_CM))
-                .unwrap_or(0);
-            let color = match sensor {
-                Some(v) if v < 50 => Color::Red,
-                Some(v) if v < 100 => Color::Yellow,
-                Some(_) => Color::Green,
-                None => Color::DarkGray,
-            };
-            let label_str = format!("{}: {}", label, fmt_dist_cm(sensor));
-            let gauge = Gauge::default()
-                .block(Block::default().borders(Borders::ALL))
-                .gauge_style(Style::default().fg(color))
-                .percent(percent)
-                .label(label_str);
-            f.render_widget(gauge, col);
-        }
-
-        let rear_cols = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-            ])
-            .split(rows[1]);
-
-        let rear_labels = ["RL", "RC-L", "RC-R", "RR"];
-        for (i, (label, &col)) in rear_labels.iter().zip(rear_cols.iter()).enumerate() {
-            let sensor = d.sensors_rear[i];
+        for (i, (label, &col)) in labels.iter().zip(cols.iter()).enumerate() {
+            let sensor = sensors[i];
             let percent = sensor
                 .map(|v| 100u16.saturating_sub(v * 100 / MAX_SENSOR_CM))
                 .unwrap_or(0);
