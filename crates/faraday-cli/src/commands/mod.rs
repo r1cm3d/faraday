@@ -1,3 +1,5 @@
+//! CLI command dispatch.
+
 use anyhow::Result;
 use faraday_core::{
     commands::CommandExecutor,
@@ -15,6 +17,7 @@ pub mod read_dtc;
 pub mod session;
 pub mod vin;
 
+/// Opens the vLinker FS adapter at `adapter_path` and returns a ready [`CommandExecutor`].
 pub async fn create_executor(
     adapter_path: String,
 ) -> Result<CommandExecutor<IsoTp<Box<dyn LinkLayer>>>> {

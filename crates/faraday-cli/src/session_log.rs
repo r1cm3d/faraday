@@ -1,3 +1,5 @@
+//! Session-level diagnostic command logging.
+
 use anyhow::{Context, Result};
 use serde::Serialize;
 use std::{
@@ -8,20 +10,28 @@ use std::{
 
 use crate::audit::data_dir;
 
+/// One structured session record serialized to JSONL.
 #[derive(Serialize)]
 pub struct SessionEntry {
+    /// ISO-8601 timestamp when the command ran.
     pub timestamp: String,
+    /// The CLI sub-command that was executed (e.g. `"read-dtc"`).
     pub command: String,
+    /// Adapter device path used for this session.
     pub adapter: String,
+    /// Wall-clock duration of the command in milliseconds.
     pub duration_ms: u64,
+    /// `"ok"` on success, or a short error description.
     pub result: String,
 }
 
+/// Appends session entries to `~/.local/share/faraday/sessions.jsonl`.
 pub struct SessionLogger {
     path: PathBuf,
 }
 
 impl SessionLogger {
+    /// Creates the data directory if necessary and returns a ready logger.
     pub fn new() -> Result<Self> {
         let dir = data_dir();
         fs::create_dir_all(&dir)
@@ -31,6 +41,7 @@ impl SessionLogger {
         })
     }
 
+    /// Serializes `entry` as a JSON line and appends it to the session log.
     pub fn log(&self, entry: &SessionEntry) -> Result<()> {
         let mut file = OpenOptions::new()
             .create(true)

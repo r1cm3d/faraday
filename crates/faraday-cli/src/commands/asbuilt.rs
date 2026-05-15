@@ -1,3 +1,5 @@
+//! As-built dump and feature display commands.
+
 use anyhow::{anyhow, Result};
 use faraday_asbuilt::{decoder::AsBuiltDecoder, AsBuiltBlock, FeatureValue};
 use faraday_core::Module;

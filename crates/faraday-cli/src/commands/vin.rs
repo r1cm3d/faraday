@@ -1,3 +1,5 @@
+//! VIN read command.
+
 use crate::{cli::VinMethod, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::Module;

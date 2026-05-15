@@ -1,3 +1,5 @@
+//! UDS diagnostic session control command.
+
 use crate::{
     cli::{ModuleArg, SessionArg},
     output::OutputFormatter,

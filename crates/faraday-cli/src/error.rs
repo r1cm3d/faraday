@@ -1,1 +1,1 @@
-// Error handling utilities for CLI operations
+//! CLI error utilities.

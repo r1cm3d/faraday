@@ -1,3 +1,5 @@
+//! DTC clear command.
+
 use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::Module;

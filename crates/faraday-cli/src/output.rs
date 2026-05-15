@@ -1,15 +1,19 @@
+//! Human-readable and JSON output formatting for CLI commands.
+
 use faraday_asbuilt::{AsBuiltBlock, FeatureValue};
 use faraday_core::protocol::j1979::{Dtc, PidValue};
 use serde::Serialize;
 use std::io::{self, Write};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
+/// Renders CLI command output as coloured text or JSON, depending on mode.
 pub struct OutputFormatter {
     stdout: StandardStream,
     json_mode: bool,
 }
 
 impl OutputFormatter {
+    /// Creates a new formatter. Pass `json_mode = true` to emit machine-readable JSON.
     pub fn new(json_mode: bool) -> Self {
         Self {
             stdout: StandardStream::stdout(ColorChoice::Auto),
@@ -17,6 +21,7 @@ impl OutputFormatter {
         }
     }
 
+    /// Prints a list of DTCs, or a success message when the list is empty.
     pub fn print_dtcs(&mut self, dtcs: &[Dtc]) -> io::Result<()> {
         if self.json_mode {
             println!("{}", serde_json::to_string_pretty(dtcs)?);
@@ -37,6 +42,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a table of live PID values with engineering units where available.
     pub fn print_live_data(&mut self, values: &[PidValue]) -> io::Result<()> {
         if self.json_mode {
             println!("{}", serde_json::to_string_pretty(values)?);
@@ -64,6 +70,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints the vehicle VIN string.
     pub fn print_vin(&mut self, vin: &str) -> io::Result<()> {
         if self.json_mode {
             let json = serde_json::json!({ "vin": vin });
@@ -74,6 +81,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a UDS DID value as uppercase hex.
     pub fn print_did_data(&mut self, did: u16, data: &[u8]) -> io::Result<()> {
         if self.json_mode {
             let json = serde_json::json!({
@@ -87,6 +95,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a green success message prefixed with `✓`.
     pub fn print_success(&mut self, message: &str) -> io::Result<()> {
         self.stdout
             .set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
@@ -95,6 +104,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a blue informational message prefixed with `ℹ`.
     pub fn print_info(&mut self, message: &str) -> io::Result<()> {
         self.stdout
             .set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
@@ -103,6 +113,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a red error message prefixed with `✗`.
     pub fn print_error(&mut self, message: &str) -> io::Result<()> {
         self.stdout
             .set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
@@ -111,6 +122,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a bold cyan section header.
     pub fn print_header(&mut self, message: &str) -> io::Result<()> {
         self.stdout
             .set_color(ColorSpec::new().set_fg(Some(Color::Cyan)).set_bold(true))?;
@@ -119,6 +131,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Dumps all as-built blocks with their decoded feature values as YAML or JSON.
     pub fn print_asbuilt_dump(
         &mut self,
         blocks: &[(AsBuiltBlock, Vec<FeatureValue>)],
@@ -171,6 +184,7 @@ impl OutputFormatter {
         Ok(())
     }
 
+    /// Prints a single decoded as-built feature value.
     pub fn print_asbuilt_feature(&mut self, fv: &FeatureValue) -> io::Result<()> {
         println!(
             "{}: {} (raw: {})",

@@ -1,7 +1,10 @@
+//! CLI argument definitions for the faraday command.
+
 use clap::{Parser, Subcommand, ValueEnum};
 use faraday_core::Module;
 use std::path::PathBuf;
 
+/// Top-level CLI arguments parsed by clap.
 #[derive(Parser)]
 #[command(
     name = "faraday",
@@ -32,6 +35,7 @@ pub struct Args {
     pub command: Commands,
 }
 
+/// Available faraday sub-commands.
 #[derive(Subcommand)]
 pub enum Commands {
     #[command(name = "read-dtc", about = "Read diagnostic trouble codes")]
@@ -120,6 +124,7 @@ pub enum Commands {
     },
 }
 
+/// Sub-commands for the `asbuilt` top-level command.
 #[derive(Subcommand, Clone)]
 pub enum AsBuiltAction {
     #[command(name = "dump", about = "Dump all as-built blocks for a module as YAML")]
@@ -180,6 +185,7 @@ pub enum AsBuiltAction {
     },
 }
 
+/// Sub-commands for the `profile` top-level command.
 #[derive(Subcommand, Clone)]
 pub enum ProfileAction {
     #[command(name = "apply", about = "Apply a YAML profile to the vehicle")]
@@ -204,17 +210,28 @@ pub enum ProfileAction {
     },
 }
 
+/// CLI-facing module selector that clap parses from `--module` arguments.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum ModuleArg {
+    /// Powertrain Control Module.
     Pcm,
+    /// Transmission Control Module.
     Tcm,
+    /// Anti-lock Braking System module.
     Abs,
+    /// Restraint Control Module (airbag).
     Rcm,
+    /// Power Steering Control Module.
     Pscm,
+    /// Body Control Module.
     Bcm,
+    /// Instrument Panel Cluster.
     Ipc,
+    /// Accessory Protocol Interface Module (SYNC).
     Apim,
+    /// Parking Aid Module.
     Pam,
+    /// Driver Seat Module.
     Dsm,
 }
 
@@ -235,16 +252,23 @@ impl From<ModuleArg> for Module {
     }
 }
 
+/// Which protocol to use when reading the VIN.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum VinMethod {
+    /// OBD-II Mode 09 PID 02 (standard, works on all modules).
     J1979,
+    /// UDS DID `0xF190` (requires an extended session on some modules).
     Uds,
 }
 
+/// Which UDS diagnostic session to enter.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum SessionArg {
+    /// Default session — normal operation.
     Default,
+    /// Programming session — allows ECU software reprogramming.
     Programming,
+    /// Extended session — unlocks additional diagnostic services.
     Extended,
 }
 

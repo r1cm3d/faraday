@@ -1,3 +1,5 @@
+//! As-built write command with safety checks.
+
 use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
 use faraday_asbuilt::{
@@ -209,6 +211,7 @@ pub async fn restore(adapter_path: String, snapshot_path: PathBuf, yes: bool) ->
     Ok(())
 }
 
+/// Searches `blocks` for a feature with the given `name` and returns the owning block and feature.
 pub(crate) fn find_feature(blocks: &[AsBuiltBlock], name: &str) -> Option<(AsBuiltBlock, Feature)> {
     for block in blocks {
         if let Some(feature) = block.features.iter().find(|f| f.name == name) {
@@ -218,6 +221,7 @@ pub(crate) fn find_feature(blocks: &[AsBuiltBlock], name: &str) -> Option<(AsBui
     None
 }
 
+/// Parses a raw string value into a `u8` according to the feature's type constraints.
 pub(crate) fn parse_value(feature: &Feature, raw: &str) -> Result<u8> {
     match &feature.feature_type {
         FeatureType::Boolean { .. } => match raw.to_ascii_lowercase().as_str() {
@@ -329,6 +333,7 @@ fn module_from_can_id(can_id_str: &str) -> Option<Module> {
     }
 }
 
+/// Returns the catalog of known as-built blocks for the given module.
 pub(crate) fn known_blocks(module: &ModuleArg) -> Vec<AsBuiltBlock> {
     match module {
         ModuleArg::Bcm => faraday_asbuilt::bcm::get_known_blocks(),

@@ -1,3 +1,5 @@
+//! UDS read-data-by-identifier command.
+
 use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::{protocol::uds::DataIdentifier, Module};

@@ -1,3 +1,5 @@
+//! Live OBD-II data streaming command.
+
 use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::{protocol::j1979::Pid, Module};

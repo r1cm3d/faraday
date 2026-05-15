@@ -1,3 +1,5 @@
+//! Profile validation command.
+
 use anyhow::{anyhow, bail, Result};
 use std::path::PathBuf;
 

@@ -1,3 +1,5 @@
+//! DTC read command.
+
 use crate::{cli::ModuleArg, output::OutputFormatter};
 use anyhow::Result;
 use faraday_core::{DtcKind, Module};
