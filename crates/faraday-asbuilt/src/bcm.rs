@@ -8,6 +8,7 @@ lighting, locking, and other body functions.
 use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
+/// Returns all known BCM as-built blocks with their feature catalog.
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
     vec![create_block_726_01(), create_block_726_02()]
 }
@@ -94,12 +95,14 @@ fn create_block_726_02() -> AsBuiltBlock {
     }
 }
 
+/// Returns the BCM block whose index matches `id`, or `None` if not found.
 pub fn get_block_by_id(id: &str) -> Option<AsBuiltBlock> {
     get_known_blocks()
         .into_iter()
         .find(|block| block.id.id == id)
 }
 
+/// Returns a flat list of every feature defined across all BCM blocks.
 pub fn get_all_features() -> Vec<Feature> {
     get_known_blocks()
         .into_iter()

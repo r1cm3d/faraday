@@ -1,13 +1,18 @@
+//! Bit-field encoder: writes feature values back into raw as-built block data.
+
 use crate::{BitPosition, Error, Feature, FeatureType, Result};
 
+/// Stateless encoder that writes feature values into raw as-built block data.
 pub struct AsBuiltEncoder;
 
 impl AsBuiltEncoder {
+    /// Validates `raw_value` against `feature`'s type constraints and writes it into `data`.
     pub fn encode_feature(data: &mut [u8], feature: &Feature, raw_value: u8) -> Result<()> {
         Self::validate_value(&feature.feature_type, raw_value)?;
         Self::set_bit_value(data, feature.bit_position, raw_value)
     }
 
+    /// Sets or clears the single bit at `position` in `data` according to `value & 1`.
     pub fn set_bit_value(data: &mut [u8], position: BitPosition, value: u8) -> Result<()> {
         if position.byte >= data.len() {
             return Err(Error::data_too_short(position.byte + 1, data.len()));

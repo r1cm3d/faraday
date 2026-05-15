@@ -1,3 +1,5 @@
+//! As-built snapshot persistence (save/load to JSON files).
+
 use crate::{AsBuiltSnapshot, Error, Result};
 use std::{
     fs,
@@ -5,6 +7,7 @@ use std::{
     path::Path,
 };
 
+/// Serialises `snapshot` as pretty-printed JSON and writes it to `path`, creating parent dirs.
 pub fn save_snapshot(path: &Path, snapshot: &AsBuiltSnapshot) -> Result<()> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).map_err(|e| {
@@ -25,6 +28,7 @@ pub fn save_snapshot(path: &Path, snapshot: &AsBuiltSnapshot) -> Result<()> {
     Ok(())
 }
 
+/// Deserialises an [`AsBuiltSnapshot`] from the JSON file at `path`.
 pub fn load_snapshot(path: &Path) -> Result<AsBuiltSnapshot> {
     let file = fs::File::open(path)
         .map_err(|e| Error::invalid_block(format!("failed to open snapshot file: {}", e)))?;

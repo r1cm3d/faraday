@@ -1,8 +1,12 @@
+//! Bit-field decoder: extracts feature values from raw as-built block data.
+
 use crate::{AsBuiltBlock, BitPosition, Error, Feature, FeatureType, FeatureValue, Result};
 
+/// Stateless decoder that extracts feature values from raw as-built block data.
 pub struct AsBuiltDecoder;
 
 impl AsBuiltDecoder {
+    /// Decodes all features in `block` and returns a value for each one.
     pub fn decode_block(block: &AsBuiltBlock) -> Result<Vec<FeatureValue>> {
         let mut values = Vec::new();
 
@@ -20,6 +24,7 @@ impl AsBuiltDecoder {
         Ok(values)
     }
 
+    /// Decodes a single `feature` from the raw `data` slice.
     pub fn decode_feature(data: &[u8], feature: &Feature) -> Result<FeatureValue> {
         let raw_value = Self::extract_bit_value(data, feature.bit_position)?;
         let interpreted_value = Self::interpret_value(&feature.feature_type, raw_value);

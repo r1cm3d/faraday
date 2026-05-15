@@ -8,6 +8,7 @@ is not user-modifiable and relates to emissions compliance and performance.
 use crate::{AsBuiltBlock, BitPosition, BlockId, Feature, FeatureType};
 use std::collections::HashMap;
 
+/// Returns all known PCM as-built blocks with their feature catalog.
 pub fn get_known_blocks() -> Vec<AsBuiltBlock> {
     vec![create_block_7e0_01()]
 }
@@ -53,12 +54,14 @@ fn create_block_7e0_01() -> AsBuiltBlock {
     }
 }
 
+/// Returns the PCM block whose index matches `id`, or `None` if not found.
 pub fn get_block_by_id(id: &str) -> Option<AsBuiltBlock> {
     get_known_blocks()
         .into_iter()
         .find(|block| block.id.id == id)
 }
 
+/// Returns a flat list of every feature defined across all PCM blocks.
 pub fn get_all_features() -> Vec<Feature> {
     get_known_blocks()
         .into_iter()
