@@ -16,37 +16,66 @@ use tracing::{debug, trace};
 
 const FUNCTIONAL_REQUEST_ID: CanId = CanId(0x7DF);
 
+/// An OBD-II Parameter Identifier (PID) byte used in Mode 01/02 requests.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Pid(pub u8);
 
 impl Pid {
+    /// Calculated engine load (0–100 %).
     pub const ENGINE_LOAD: Pid = Pid(0x04);
+    /// Engine coolant temperature (−40 to +215 °C).
     pub const COOLANT_TEMP: Pid = Pid(0x05);
+    /// Short-term fuel trim, bank 1 (−100 to +99.2 %).
     pub const SHORT_FUEL_TRIM_B1: Pid = Pid(0x06);
+    /// Long-term fuel trim, bank 1 (−100 to +99.2 %).
     pub const LONG_FUEL_TRIM_B1: Pid = Pid(0x07);
+    /// Short-term fuel trim, bank 2 (−100 to +99.2 %).
     pub const SHORT_FUEL_TRIM_B2: Pid = Pid(0x08);
+    /// Long-term fuel trim, bank 2 (−100 to +99.2 %).
     pub const LONG_FUEL_TRIM_B2: Pid = Pid(0x09);
+    /// Engine speed (0–16 383.75 RPM).
     pub const ENGINE_RPM: Pid = Pid(0x0C);
+    /// Vehicle speed (0–255 km/h).
     pub const VEHICLE_SPEED: Pid = Pid(0x0D);
+    /// Ignition timing advance relative to TDC (−64 to +63.5 °).
     pub const TIMING_ADVANCE: Pid = Pid(0x0E);
+    /// Intake air temperature (−40 to +215 °C).
     pub const INTAKE_TEMP: Pid = Pid(0x0F);
+    /// Mass air-flow rate (0–655.35 g/s).
     pub const MAF_RATE: Pid = Pid(0x10);
+    /// Absolute throttle position (0–100 %).
     pub const THROTTLE_POS: Pid = Pid(0x11);
+    /// Oxygen sensors present (bitmask).
     pub const O2_SENSORS_PRESENT: Pid = Pid(0x13);
+    /// O2 sensor voltage — bank 1, sensor 1 (0–1.275 V).
     pub const O2_B1S1_VOLTAGE: Pid = Pid(0x14);
+    /// O2 sensor voltage — bank 1, sensor 2 (0–1.275 V).
     pub const O2_B1S2_VOLTAGE: Pid = Pid(0x15);
+    /// Commanded EGR valve position (0–100 %).
     pub const EGR_COMMANDED: Pid = Pid(0x2C);
+    /// EGR error (−100 to +99.2 %).
     pub const EGR_ERROR: Pid = Pid(0x2D);
+    /// Fuel tank level input (0–100 %).
     pub const FUEL_TANK_LEVEL: Pid = Pid(0x2F);
-    pub const FUEL_AIR_EQUIV_RATIO: Pid = Pid(0x44);
+    /// Control module supply voltage (0–65.535 V).
     pub const CONTROL_MODULE_VOLTAGE: Pid = Pid(0x42);
+    /// Commanded equivalence ratio (0–2).
+    pub const FUEL_AIR_EQUIV_RATIO: Pid = Pid(0x44);
+    /// Ambient air temperature (−40 to +215 °C).
     pub const AMBIENT_TEMP: Pid = Pid(0x46);
+    /// Time run with MIL on (minutes).
     pub const RUNTIME_MIL_ON: Pid = Pid(0x4D);
+    /// Time since diagnostic trouble codes were cleared (minutes).
     pub const RUNTIME_SINCE_CLEAR: Pid = Pid(0x4E);
+    /// Relative throttle position (0–100 %).
     pub const REL_THROTTLE_POS: Pid = Pid(0x5A);
+    /// Engine oil temperature (−40 to +215 °C).
     pub const ENGINE_OIL_TEMP: Pid = Pid(0x5C);
+    /// Engine fuel rate (0–3 276.75 L/h).
     pub const ENGINE_FUEL_RATE: Pid = Pid(0x5E);
+    /// Driver's demand engine torque (−125 to +130 %).
     pub const DRIVER_DEMAND_TORQUE: Pid = Pid(0x61);
+    /// Actual engine torque (−125 to +130 %).
     pub const ACTUAL_ENGINE_TORQUE: Pid = Pid(0x62);
 }
 
@@ -56,13 +85,17 @@ impl From<u8> for Pid {
     }
 }
 
+/// A decoded Diagnostic Trouble Code.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Dtc {
+    /// Five-character DTC string in the form `P0300` / `C0001` / `B0001` / `U0100`.
     pub code: String,
+    /// Human-readable description derived from the code.
     pub description: String,
 }
 
 impl Dtc {
+    /// Decodes a two-byte DTC payload from an OBD-II response into a `Dtc`.
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
         if bytes.len() != 2 {
             return Err(Error::invalid_data("DTC must be 2 bytes"));
@@ -87,23 +120,27 @@ impl Dtc {
             "{}{:X}{:X}{:02X}",
             prefix, first_digit, second_digit, third_fourth_digits
         );
+        let description = format!("Diagnostic Trouble Code {}", code);
 
-        Ok(Dtc {
-            code: code.clone(),
-            description: format!("Diagnostic Trouble Code {}", code),
-        })
+        Ok(Dtc { code, description })
     }
 }
 
+/// A decoded OBD-II PID measurement with optional engineering-unit interpretation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PidValue {
+    /// The PID that was queried.
     pub pid: Pid,
+    /// The raw bytes returned by the ECU.
     pub raw_value: Vec<u8>,
+    /// The scaled, physical-unit value (e.g. RPM, °C, %) if interpretation is defined.
     pub interpreted_value: Option<f64>,
+    /// The engineering unit string (e.g. `"RPM"`, `"°C"`, `"%"`).
     pub unit: Option<String>,
 }
 
 impl PidValue {
+    /// Constructs a `PidValue` by interpreting `raw_value` for the given `pid`.
     pub fn new(pid: Pid, raw_value: Vec<u8>) -> Self {
         let (interpreted_value, unit) = Self::interpret_value(pid, &raw_value);
         Self {
@@ -245,15 +282,18 @@ impl PidValue {
     }
 }
 
+/// Low-level J1979 (OBD-II) protocol driver.
 pub struct J1979<'a, T: IsoTpTransport> {
     transport: &'a mut T,
 }
 
 impl<'a, T: IsoTpTransport> J1979<'a, T> {
+    /// Wraps an existing transport in a new `J1979` driver instance.
     pub fn new(transport: &'a mut T) -> Self {
         Self { transport }
     }
 
+    /// Requests live Mode 01 data for `pids` from the given response CAN ID.
     pub async fn read_live_data(
         &mut self,
         module_response_id: CanId,
@@ -274,6 +314,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         self.parse_mode_01_response(&response, pids)
     }
 
+    /// Reads stored (confirmed) DTCs via Mode 03 from the given response CAN ID.
     pub async fn read_stored_dtcs(&mut self, module_response_id: CanId) -> Result<Vec<Dtc>> {
         debug!("Reading stored DTCs");
 
@@ -286,6 +327,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         self.parse_dtc_response(&response)
     }
 
+    /// Sends Mode 04 to clear all DTCs from the module.
     pub async fn clear_dtcs(&mut self, module_response_id: CanId) -> Result<()> {
         debug!("Clearing DTCs");
 
@@ -303,6 +345,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         }
     }
 
+    /// Reads pending (not yet confirmed) DTCs via Mode 07.
     pub async fn read_pending_dtcs(&mut self, module_response_id: CanId) -> Result<Vec<Dtc>> {
         debug!("Reading pending DTCs");
 
@@ -315,6 +358,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         self.parse_dtc_response(&response)
     }
 
+    /// Reads the Vehicle Identification Number via Mode 09 PID 02.
     pub async fn read_vin(&mut self, module_response_id: CanId) -> Result<String> {
         debug!("Reading VIN");
 
@@ -335,6 +379,7 @@ impl<'a, T: IsoTpTransport> J1979<'a, T> {
         }
     }
 
+    /// Reads permanent DTCs via Mode 0A (cannot be cleared by Mode 04).
     pub async fn read_permanent_dtcs(&mut self, module_response_id: CanId) -> Result<Vec<Dtc>> {
         debug!("Reading permanent DTCs");
 

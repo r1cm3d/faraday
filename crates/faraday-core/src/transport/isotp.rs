@@ -32,12 +32,14 @@ impl PciType {
     }
 }
 
+/// ISO-TP (ISO 15765-2) transport implemented over a [`LinkLayer`].
 pub struct IsoTp<L: LinkLayer> {
     link: L,
     timeout: Duration,
 }
 
 impl<L: LinkLayer> IsoTp<L> {
+    /// Wraps a link-layer adapter in a new `IsoTp` transport with the default 1-second timeout.
     pub fn new(link: L) -> Self {
         Self {
             link,

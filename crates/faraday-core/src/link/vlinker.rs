@@ -13,6 +13,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_serial::SerialStream;
 use tracing::{debug, trace};
 
+/// vLinker FS OBD-II adapter using STN1170/STN2120 serial protocol.
 pub struct VLinkerFs {
     port: Option<SerialStream>,
     current_bus: Option<CanBus>,
@@ -20,6 +21,7 @@ pub struct VLinkerFs {
 }
 
 impl VLinkerFs {
+    /// Creates an uninitialised `VLinkerFs`; call [`VLinkerFs::with_port_name`] to open a port.
     pub fn new() -> Self {
         Self {
             port: None,
@@ -28,6 +30,7 @@ impl VLinkerFs {
         }
     }
 
+    /// Opens the serial port at `port_name` with the standard 38 400 baud configuration.
     pub fn with_port_name(port_name: &str) -> Result<Self> {
         let builder = tokio_serial::new(port_name, 38400)
             .timeout(Duration::from_millis(1000))

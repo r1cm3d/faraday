@@ -15,18 +15,25 @@ use async_trait::async_trait;
 
 pub mod vlinker;
 
+/// Hardware abstraction for a physical OBD-II adapter.
 #[async_trait]
 pub trait LinkLayer: Send + Sync {
+    /// Opens the adapter connection and initializes the CAN bus.
     async fn connect(&mut self) -> Result<()>;
 
+    /// Closes the adapter connection gracefully.
     async fn disconnect(&mut self) -> Result<()>;
 
+    /// Transmits a single raw CAN frame.
     async fn send_frame(&mut self, frame: &CanFrame) -> Result<()>;
 
+    /// Waits for and returns the next incoming CAN frame.
     async fn receive_frame(&mut self) -> Result<CanFrame>;
 
+    /// Switches the adapter to the specified CAN bus (HS or MS).
     async fn set_can_bus(&mut self, bus: CanBus) -> Result<()>;
 
+    /// Returns `true` if the adapter is currently connected and ready.
     fn is_connected(&self) -> bool;
 }
 

@@ -15,15 +15,18 @@ pub mod live_data;
 pub mod vehicle_info;
 pub mod write_asbuilt;
 
+/// Top-level executor that exposes all faraday commands over a given transport.
 pub struct CommandExecutor<T: IsoTpTransport> {
     transport: T,
 }
 
 impl<T: IsoTpTransport> CommandExecutor<T> {
+    /// Wraps an existing transport in a new `CommandExecutor`.
     pub fn new(transport: T) -> Self {
         Self { transport }
     }
 
+    /// Returns a mutable reference to the underlying transport.
     pub fn transport(&mut self) -> &mut T {
         &mut self.transport
     }

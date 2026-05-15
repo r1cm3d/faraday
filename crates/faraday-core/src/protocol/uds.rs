@@ -16,25 +16,38 @@ use crate::{transport::IsoTpTransport, CanId, Error, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{debug, trace, warn};
 
+/// UDS diagnostic session types (service 0x10).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DiagnosticSession {
+    /// Default session — normal vehicle operation.
     Default = 0x01,
+    /// Programming session — allows reprogramming of ECU software.
     Programming = 0x02,
+    /// Extended diagnostic session — unlocks additional read/write services.
     Extended = 0x03,
 }
 
+/// A UDS Data Identifier (DID) used with service 0x22 / 0x2E.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct DataIdentifier(pub u16);
 
 impl DataIdentifier {
+    /// Vehicle Identification Number (DID `0xF190`).
     pub const VIN: DataIdentifier = DataIdentifier(0xF190);
+    /// ECU software (calibration) part number (DID `0xF194`).
     pub const ECU_SOFTWARE_NUMBER: DataIdentifier = DataIdentifier(0xF194);
+    /// ECU hardware part number (DID `0xF191`).
     pub const ECU_HARDWARE_NUMBER: DataIdentifier = DataIdentifier(0xF191);
+    /// Tier-1 supplier identifier (DID `0xF18A`).
     pub const SUPPLIER_IDENTIFIER: DataIdentifier = DataIdentifier(0xF18A);
+    /// ECU manufacturing date in `YYMMDD` format (DID `0xF18B`).
     pub const ECU_MANUFACTURING_DATE: DataIdentifier = DataIdentifier(0xF18B);
+    /// ECU serial number (DID `0xF18C`).
     pub const ECU_SERIAL_NUMBER: DataIdentifier = DataIdentifier(0xF18C);
 
+    /// High nibble prefix for programming / flashing DIDs (`0xF0xx`).
     pub const PROGRAMMING_DID_PREFIX: u8 = 0xF0;
+    /// High nibble prefix for identification DIDs (`0xF1xx`).
     pub const IDENTIFICATION_DID_PREFIX: u8 = 0xF1;
 }
 
@@ -44,20 +57,28 @@ impl From<u16> for DataIdentifier {
     }
 }
 
+/// Sub-function type for the UDS Security Access service (0x27).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SecurityAccessType {
+    /// Step 1 — request a seed from the ECU.
     RequestSeed = 0x01,
+    /// Step 2 — send the computed key back to the ECU.
     SendKey = 0x02,
 }
 
+/// A decoded UDS negative response (service ID `0x7F`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NegativeResponse {
+    /// The service ID that was rejected.
     pub service: u8,
+    /// The Negative Response Code (NRC) byte.
     pub nrc: u8,
+    /// Human-readable description of the NRC.
     pub description: String,
 }
 
 impl NegativeResponse {
+    /// Constructs a `NegativeResponse` from the raw service and NRC bytes.
     pub fn new(service: u8, nrc: u8) -> Self {
         let description = match nrc {
             0x10 => "General reject",
@@ -86,11 +107,13 @@ impl NegativeResponse {
         }
     }
 
+    /// Returns `true` when NRC `0x78` (response pending) is set.
     pub fn is_response_pending(&self) -> bool {
         self.nrc == 0x78
     }
 }
 
+/// Low-level UDS (ISO 14229) protocol driver.
 pub struct Uds<'a, T: IsoTpTransport> {
     transport: &'a mut T,
     current_session: DiagnosticSession,
@@ -99,6 +122,7 @@ pub struct Uds<'a, T: IsoTpTransport> {
 }
 
 impl<'a, T: IsoTpTransport> Uds<'a, T> {
+    /// Wraps an existing transport in a new `Uds` driver instance.
     pub fn new(transport: &'a mut T) -> Self {
         Self {
             transport,
@@ -108,6 +132,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         }
     }
 
+    /// Sends service 0x10 to switch the ECU into the requested diagnostic session.
     pub async fn diagnostic_session_control(
         &mut self,
         request_id: CanId,
@@ -136,6 +161,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(())
     }
 
+    /// Reads raw data for `did` from the ECU via service 0x22.
     pub async fn read_data_by_identifier(
         &mut self,
         request_id: CanId,
@@ -169,6 +195,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(data)
     }
 
+    /// Step 1 of security access: sends service 0x27 sub-function `access_type` and returns the seed.
     pub async fn security_access_request_seed(
         &mut self,
         request_id: CanId,
@@ -193,6 +220,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(seed)
     }
 
+    /// Step 2 of security access: sends the computed `key` for `access_type + 1`.
     pub async fn security_access_send_key(
         &mut self,
         request_id: CanId,
@@ -217,6 +245,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(())
     }
 
+    /// Writes `data` to `did` via service 0x2E (requires prior security access).
     pub async fn write_data_by_identifier(
         &mut self,
         request_id: CanId,
@@ -254,6 +283,7 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(())
     }
 
+    /// Sends a single TesterPresent (0x3E) keep-alive to the ECU.
     pub async fn tester_present(&mut self, request_id: CanId, response_id: CanId) -> Result<()> {
         trace!("Sending tester present");
 
@@ -321,10 +351,12 @@ impl<'a, T: IsoTpTransport> Uds<'a, T> {
         Ok(())
     }
 
+    /// Returns the currently active diagnostic session.
     pub fn current_session(&self) -> DiagnosticSession {
         self.current_session
     }
 
+    /// Returns `true` if security access has been successfully granted this session.
     pub fn is_security_access_granted(&self) -> bool {
         self.security_access_granted
     }
