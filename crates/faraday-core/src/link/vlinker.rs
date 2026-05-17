@@ -151,7 +151,7 @@ impl super::LinkLayer for VLinkerFs {
     }
 
     async fn receive_frame(&mut self) -> Result<CanFrame> {
-        loop {
+        for _ in 0..MAX_RECEIVE_RETRIES {
             let response = self.send_command("STRX").await?;
 
             if response.trim().is_empty() {
@@ -168,6 +168,8 @@ impl super::LinkLayer for VLinkerFs {
                 return Ok(frame);
             }
         }
+
+        Err(Error::Timeout)
     }
 
     async fn set_can_bus(&mut self, bus: CanBus) -> Result<()> {
@@ -192,15 +194,35 @@ impl super::LinkLayer for VLinkerFs {
     }
 }
 
+const MAX_RECEIVE_RETRIES: u32 = 50;
+
+const FATAL_RESPONSES: &[&str] = &[
+    "UNABLE TO CONNECT",
+    "CAN ERROR",
+    "BUS ERROR",
+    "FB ERROR",
+    "DATA ERROR",
+    "BUFFER FULL",
+];
+
 impl VLinkerFs {
     fn parse_can_frame(&self, response: &str) -> Result<Option<CanFrame>> {
-        if response.trim().is_empty() || response.contains("NO DATA") {
+        let trimmed = response.trim();
+
+        if trimmed.is_empty() || trimmed.contains("NO DATA") {
             return Ok(None);
         }
 
-        let parts: Vec<&str> = response.trim().split(',').collect();
+        for fatal in FATAL_RESPONSES {
+            if trimmed.contains(fatal) {
+                return Err(Error::link(format!("Adapter error: {}", trimmed)));
+            }
+        }
+
+        let parts: Vec<&str> = trimmed.split(',').collect();
         if parts.len() < 2 {
-            return Err(Error::invalid_frame("Invalid frame format"));
+            trace!("Ignoring non-frame adapter response: {}", trimmed);
+            return Ok(None);
         }
 
         let id_str = parts[0].trim();
